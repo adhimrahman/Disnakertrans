@@ -8,10 +8,10 @@ export default function Navbar() {
         <h1 className="text-lg font-semibold">DINAS KETENAGAKERJAAN DAN TRANSMIGRASI GOWA</h1>
       </div>
       <nav className="space-x-6">
-        <a href="#" className="text-white hover:underline">Home</a>
-        <a href="#" className="text-white hover:underline">Info</a>
-        <a href="#" className="text-white hover:underline">About Us</a>
-        <a href="#" className="text-white hover:underline">Contact Us</a>
+        <a href="./" className="text-white hover:underline">Home</a>
+        <a href="kegiatan/" className="text-white hover:underline">Info</a>
+        <a href="lapangan-kerja/" className="text-white hover:underline">Lowongan</a>
+        <a href="contact-us/" className="text-white hover:underline">Contact Us</a>
         <button className="bg-red-500 px-4 py-2 rounded text-white">Login</button>
       </nav>
     </header>
