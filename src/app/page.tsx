@@ -13,7 +13,7 @@ import Kegiatan from "./components/home/Kegiatan";
 import LowonganCarousel from "./components/home/LowonganCarousel";
 import InfografisSection from "./components/home/InfografisSection";
 import AboutSection from "./components/home/AboutSection";
-import ContactHighlight from "./components/home/ContactHighlight";
+import ContactHighlight from "./components/ContactHighlight";
 
 export default function HomePage() {
 	return (
