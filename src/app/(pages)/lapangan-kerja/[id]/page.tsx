@@ -83,7 +83,7 @@ export default function LowonganDetail() {
                     {data.Judul.toUpperCase()}
                 </h1>
                 <div className="text-sm text-gray-600 self-center">
-                    Deadline:{" "}
+                    Tenggat:{" "}
                     <span className="font-medium">{formatTanggal(data.BatasLowongan)}</span>
                 </div>
                 </div>
@@ -94,8 +94,8 @@ export default function LowonganDetail() {
                 </p>
 
                 {/* Gambar */}
-                <Image
-                src={data.ImageSampul} fill
+                <img
+                src={data.ImageSampul} 
                 alt={data.Judul}
                 className="w-full rounded-lg mb-6"
                 />

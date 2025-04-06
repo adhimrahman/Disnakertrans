@@ -11,7 +11,7 @@ export default function Navbar() {
 	return (
 		<header className="text-white p-4 flex flex-wrap justify-between items-center bg-[#3561A1]">
 			<div className="flex items-center">
-				<Image src={Logo} alt="Logo Disnaker" className="h-10 mr-3" />
+				<Image src={Logo} alt="Logo Disnaker" width={40} height={40} className="mr-4" />
 				<h1 className="text-lg font-semibold">DINAS KETENAGAKERJAAN DAN TRANSMIGRASI GOWA</h1>
 			</div>
 
@@ -27,7 +27,7 @@ export default function Navbar() {
 			<nav
 				className={`w-full lg:w-auto ${isOpen ? "block" : "hidden"} lg:flex lg:items-center space-y-4 lg:space-y-0 lg:space-x-6 mt-4 lg:mt-0`}
 			>
-				<Link href="./" className="block lg:inline-block text-white hover:underline">
+				<Link href="/" className="block lg:inline-block text-white hover:underline">
 				Home
 				</Link>
 				<Link href="/kegiatan" className="block lg:inline-block text-white hover:underline">

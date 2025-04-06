@@ -1,3 +1,4 @@
+"use client";
 import Navbar from '../../../components/Navbar';
 import Footer from '../../../components/Footer';
 import ContactHighlight from '../../../components/ContactHightlight';
@@ -62,6 +63,7 @@ export default function Page() {
                 <Image
                     src="/images/Gambar5.jpg"
                     alt="Header Lowongan Disnaker"
+                    fill
                     className="w-full h-full object-cover object-center"
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -82,8 +84,8 @@ export default function Page() {
                             key={item.id}
                             className="bg-white shadow-md rounded-2xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-2 flex flex-col justify-between"
                         >
-                            <Image
-                            src={item.ImageSampul} fill
+                            <img
+                            src={item.ImageSampul} 
                             alt={item.Judul}
                             className="w-full aspect-[4/3] object-cover"
                             />
