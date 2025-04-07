@@ -1,3 +1,4 @@
+"use client";
 import React from 'react'
 import Navbar from '../../../components/Navbar';
 import Footer from '../../../components/Footer';
@@ -51,6 +52,7 @@ export default function Page() {
                 <Image
                     src="/images/Ilustrasi.jpeg"
                     alt="Header Kegiatan Disnaker"
+                    fill
                     className="w-full h-full object-cover object-center"
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -71,10 +73,9 @@ export default function Page() {
                         key={item.id}
                         className="bg-white shadow-md rounded-2xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-2 flex flex-col justify-between"
                     >
-                        <Image
+                        <img
                             src={item.ImageSampul}
                             alt={item.Judul}
-                            fill
                             className="w-full aspect-[4/3] object-cover"
                         />
                         <div className="p-4 md:p-5 text-left">
