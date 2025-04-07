@@ -1,6 +1,7 @@
 import Navbar from "../../../components/Navbar";
 import Footer from "../../../components/Footer";
 import Image from "next/image";
+import kami from "../../../../public/images/kami.jpg"
 
 export default function ContactUsPage() {
     return (
@@ -18,31 +19,31 @@ export default function ContactUsPage() {
                         {/* Nama Depan */}
                         <div>
                             <label className="text-black block font-semibold mb-1">Nama Depan</label>
-                            <input type="text" className="w-full p-3 rounded border bg-gray-50" />
+                            <input type="text" placeholder="Dean" className="w-full p-3 rounded border bg-gray-50 placeholder:text-gray-200" />
                         </div>
 
                         {/* Nama Belakang */}
                         <div>
                             <label className="text-black block font-semibold mb-1">Nama Belakang</label>
-                            <input type="text" className="w-full p-3 rounded border bg-gray-50" />
+                            <input type="text" placeholder="Pasamba" className="w-full p-3 rounded border bg-gray-50 placeholder:text-gray-200" />
                         </div>
 
                         {/* Email */}
                         <div>
                             <label className="text-black block font-semibold mb-1">Email</label>
-                            <input type="email" className="w-full p-3 rounded border bg-gray-50" />
+                            <input type="email" placeholder="Dean@example.com" className="w-full p-3 rounded border bg-gray-50 placeholder:text-gray-200" />
                         </div>
 
                         {/* No Telepon */}
                         <div>
                             <label className="text-black block font-semibold mb-1">No Telp</label>
-                            <input type="tel" className="w-full p-3 rounded border bg-gray-50" />
+                            <input type="tel" placeholder="12345" className="w-full p-3 rounded border bg-gray-50 placeholder:text-gray-200" />
                         </div>
 
                         {/* Pesan Anda */}
                         <div className="md:col-span-2">
                             <label className="text-black block font-semibold mb-1">Pesan Anda</label>
-                            <textarea rows={5} className="w-full p-3 rounded border bg-gray-50"></textarea>
+                            <textarea rows={5} placeholder="Tuliskan Pesan Anda...." className="w-full p-3 rounded border bg-gray-50 placeholder:text-gray-200"></textarea>
                         </div>
 
                         {/* Tombol Kirim */}
@@ -74,9 +75,9 @@ export default function ContactUsPage() {
 		    </section>
 
             <section className="py-16 bg-white">
-                <div className="container mx-auto px-6 lg:px-20 flex flex-col lg:flex-row items-center">
-                    <div className="lg:w-1/2 text-left">
-                        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                <div className="container mx-auto px-6 lg:px-20 flex flex-col lg:flex-row items-center gap-10">
+                    <div className="lg:w-1/2 flex flex-col justify-start h-full">
+                        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
                             Tentang Kami
                         </h2>
                         <p className="text-lg text-gray-700 leading-relaxed">
@@ -89,10 +90,10 @@ export default function ContactUsPage() {
                     </div>
     
                     <div className="lg:w-1/2 mt-10 lg:mt-0 flex justify-center">
-                        <Image 
-                            src="/images/kami.jpg" 
+                        <Image
+                            src={kami} 
                             alt="About Us Illustration" 
-                            className="w-full max-w-md rounded-3xl lg:max-w-lg"
+                            className="h-[500px] w-auto object-cover rounded-3xl"
                         />
                     </div>
                 </div>

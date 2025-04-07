@@ -61,7 +61,7 @@ export default function Kegiatan() {
 					{kegiatan.map((item) => (
 						<SwiperSlide key={item.id}>
 							<div className="bg-white shadow-md rounded-2xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-2 m-4 flex flex-col justify-between h-full w-full max-w-xs mx-auto">
-								<Image
+								<img
 									src={item.ImageSampul}
 									alt={item.Judul}
 									className="w-full aspect-[4/3] object-cover"
