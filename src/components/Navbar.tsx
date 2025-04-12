@@ -39,9 +39,11 @@ export default function Navbar() {
 				<a href="/contact-us" className="block lg:inline-block text-white hover:underline">
 				Contact Us
 				</a>
-				<button className="bg-red-500 px-4 py-2 rounded text-white w-full lg:w-auto">
+				<a href="/login">
+				<button className="bg-red-500 px-4 py-2 rounded cursor-pointer text-white w-full lg:w-auto hover:underline">
 				Login
 				</button>
+				</a>
 			</nav>
 		</header>
 	);
