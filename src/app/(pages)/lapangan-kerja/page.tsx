@@ -1,7 +1,7 @@
 "use client";
-import Navbar from '../../../components/Navbar';
-import Footer from '../../../components/Footer';
-import ContactHighlight from '../../../components/ContactHightlight';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import ContactHighlight from '@/components/ContactHightlight';
 // import HeaderLowongan from '../../../components/lapangan-kerja/HeaderLowongan';
 // import CardLowongan from '../../../components/lapangan-kerja/CardLowongan';
 
