@@ -1,11 +1,11 @@
 import "swiper/css";
 import "swiper/css/navigation";
-import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Kegiatan from "../components/home/Kegiatan";
 import LowonganCarousel from "../components/home/LowonganCarousel";
 import InfografisSection from "../components/home/InfografisSection";
 import ContactHighlight from "../components/ContactHightlight";
+import Navbar from "@/components/Navbar";
 
 import Image from "next/image";
 import kami from "../../public/images/kami.jpg"
