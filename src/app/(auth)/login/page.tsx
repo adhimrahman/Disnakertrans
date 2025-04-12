@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "@/firebase/config";
@@ -12,6 +12,11 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isClient, setIsClient] = useState(false); // track if we're on the client
+
+  useEffect(() => {
+    setIsClient(true); // set to true after component is mounted on the client
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +47,8 @@ export default function LoginPage() {
       setError("Email atau password salah.");
     }
   };
+
+  if (!isClient) return null; // prevent server-side rendering issues
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
