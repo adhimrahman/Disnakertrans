@@ -32,9 +32,11 @@ export default function Header() {
                 <Link href="/contact-us" className="block lg:inline-block text-white hover:underline hover:font-semibold hover:cursor-pointer">
                     Contact Us
                 </Link>
-                <button className="bg-red-500 hover:bg-red-700 transition px-4 py-2 rounded-xl text-white w-full lg:w-auto hover:cursor-pointer">
-                    Login
-                </button>
+                <Link href="/login" passHref>
+                    <button className="bg-red-500 hover:bg-red-700 transition px-4 py-2 rounded-xl text-white w-full lg:w-auto hover:cursor-pointer">
+                        Login
+                    </button>
+                </Link>
             </nav>
         </header>
     );
