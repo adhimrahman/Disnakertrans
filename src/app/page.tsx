@@ -9,7 +9,7 @@ import ContactHighlight from "../components/ContactHightlight";
 
 import Image from "next/image";
 import kami from "../../public/images/kami.jpg"
-import Gambar from "../../public/images/Gambar.jpg"
+import Gambar from "../../public/images/Gambar.png"
 import Job1 from "../../public/images/Job1.png"
 import Job2 from "../../public/images/Job2.png"
 
