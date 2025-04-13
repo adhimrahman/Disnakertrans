@@ -10,6 +10,9 @@ const poppins = Poppins({
 export const metadata: Metadata = {
 	title: "Disnakertrans",
 	description: "Lorem ipsum dolor ci amet anjay",
+	icons: {
+		icon: "/pemkabGowaLogo.svg"
+	}
 };
 
 export default function RootLayout({
