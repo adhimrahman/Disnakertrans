@@ -9,7 +9,7 @@ export default function Header() {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <header className="navbar bg-[#3561A1] text-white w-full px-5 lg:px-9 py-4 lg:py-1 flex flex-wrap justify-between items-center">
+        <header className="navbar bg-steelBlue text-white w-full px-5 lg:px-9 py-4 lg:py-1 flex flex-wrap justify-between items-center">
             <div className="leftside logo sm:w-1/2 lg:w-1/4 flex items-center">
                 <Image src={Gowa} alt="Logo Pemerintahan Kab. Gowa" width={40} height={40} className="py-1"></Image>
                 <p className="pl-2 lg:pl-4 w uppercase font-semibold sm:text-xs text-sm lg:text-base">dinas ketenagakerjaan <br /> dan transmigrasi gowa</p>
