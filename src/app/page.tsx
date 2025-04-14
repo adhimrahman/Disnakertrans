@@ -18,7 +18,7 @@ export default function HomePage() {
 		<div className="min-h-screen">
 			<Navbar />
 
-			<section className="relative w-full">
+			<section className="w-full">
 				<Image
 					src={Gambar}
 					alt="Hero Section"
