@@ -40,53 +40,35 @@ export default function Kegiatan() {
 
 	return (
 		<section className="py-16 bg-gray-100">
-			<div>
-				<h2 className="text-3xl lg:text-4xl font-bold text-left ml-10 mb-10 text-black">
-					Kegiatan - Kegiatan Disnaker Gowa
-				</h2>
+			<h2 className="text-3xl lg:text-4xl font-bold text-left ml-10 mb-10 text-black capitalize">
+				kegiatan - kegiatan disnaker gowa
+			</h2>
 
-				<Swiper
-					modules={[Navigation]}
-					spaceBetween={20}
-					navigation
-					className="px-4"
-					breakpoints={{
-						0: { slidesPerView: 1 },
-						640: { slidesPerView: 1.2 },
-						768: { slidesPerView: 2 },
-						1024: { slidesPerView: 3 },
-						}}
-				>
-
-					{kegiatan.map((item) => (
-						<SwiperSlide key={item.id}>
-							<div className="bg-white shadow-md rounded-2xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-2 m-4 flex flex-col justify-between h-full w-full max-w-xs mx-auto">
-								<img
-									src={item.ImageSampul}
-									alt={item.Judul}
-									className="w-full aspect-[4/3] object-cover"
-								/>
-								<div className="p-4 md:p-5 text-left">
-									<h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1">
-										{item.Judul}
-									</h3>
-									<p className="text-gray-700 text-sm leading-relaxed">
-										{limitWords(item.Deskripsi, 12)}
-									</p>
-								</div>
-								<div className="px-4 md:px-5 py-4 bg-gray-100 flex justify-end">
-									<a
-										href={`/kegiatan/${item.id}`}
-										className="bg-blue-700 text-white px-5 py-2 rounded-md font-semibold shadow hover:bg-blue-800 transition text-sm md:text-base"
-									>
-										Selengkapnya
-									</a>
-								</div>
+			<Swiper modules={[Navigation]} spaceBetween={-25} navigation breakpoints={{
+				0: { slidesPerView: 1 }, 640: { slidesPerView: 1.2 }, 768: { slidesPerView: 2 },
+				1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 },
+			}}>
+				{kegiatan.map((item) => (
+					<SwiperSlide key={item.id}>
+						<div className="bg-white shadow-md rounded-2xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-2 m-4 flex flex-col justify-between h-full w-full max-w-xs mx-auto">
+							<Image width={360} height={360} src={item.ImageSampul} alt={item.Judul} className="w-full aspect-[4/3] object-cover" />
+							<div className="p-4 md:p-5 text-justify flex flex-col gap-1">
+								<h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1">
+									{item.Judul}
+								</h3>
+								<p className="text-gray-700 text-sm leading-relaxed pt-2">
+									{limitWords(item.Deskripsi, 15)}
+								</p>
 							</div>
-						</SwiperSlide>
-					))}
-				</Swiper>
-			</div>
+							<div className="px-4 md:px-5 py-4 flex justify-end">
+								<a className="bg-blue-700 text-white px-5 py-2 rounded-md font-semibold shadow hover:bg-blue-800 transition text-sm md:text-base tracking-wider"
+									href={`/kegiatan/${item.id}`}> Selengkapnya
+								</a>
+							</div>
+						</div>
+					</SwiperSlide>
+				))}
+			</Swiper>
 		</section>
 	);
 }
