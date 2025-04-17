@@ -30,26 +30,25 @@ export default function InfografisSection() {
     }, []);
   
     return (
-        <section className="text-white py-16" style={{ backgroundColor: "#3561A1" }}>
+        <section className="text-white py-24" style={{ backgroundColor: "#3561A1" }}>
             <div className="container mx-auto px-6 lg:px-20 text-center">
-                <h2 className="text-3xl lg:text-4xl font-bold mb-10">
+                <h2 className="text-3xl lg:text-4xl font-bold mb-10 capitalize">
                     Infografis Ketenagakerjaan Gowa
                 </h2>
 
-                {/* Grid kolom 3 */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
                     <div>
-                        <p className="text-lg font-semibold">Jumlah Tenaga Kerja</p>
+                        <p className="text-lg font-semibold capitalize">Jumlah Tenaga Kerja</p>
                         <p className="text-4xl font-bold mt-2">{tenagaKerja}</p>
                     </div>
 
                     <div>
-                        <p className="text-lg font-semibold">Jumlah Pencari Kerja</p>
+                        <p className="text-lg font-semibold capitalize">Jumlah Pencari Kerja</p>
                         <p className="text-4xl font-bold mt-2">{pencariKerja}</p>
                     </div>
 
                     <div>
-                        <p className="text-lg font-semibold">Program Pelatihan</p>
+                        <p className="text-lg font-semibold capitalize">Program Pelatihan</p>
                         <p className="text-4xl font-bold mt-2">{pelatihan}</p>
                     </div>
                 </div>
