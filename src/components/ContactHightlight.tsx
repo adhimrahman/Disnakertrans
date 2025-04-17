@@ -5,22 +5,16 @@ import Garuda from "../../public/images/Garuda.png"
 
 export default function ContactHighlight() {
     return (
-        <section className="py-16 text-white" style={{ backgroundColor: "#3561A1" }}>
-            <div className="container mx-auto px-6 lg:px-20 flex flex-col lg:flex-row items-center">
+        <section className="py-16 text-white bg-steelBlue">
+            <div className="container mx-auto px-6 lg:px-24 flex flex-col lg:flex-row items-center">
                 <div className="lg:w-1/3 flex justify-center space-x-6">
-                    <Image 
-                    src={Garuda}
-                    alt="Garuda Logo"
-                    className="w-28 h-28 object-contain" />
-                    <Image 
-                    src={Logo} 
-                    alt="Logo Gowa"
-                    className="w-28 h-28 object-contain" />
+                    <Image  src={Garuda} alt="Garuda Logo" className="w-28 h-28 object-contain" />
+                    <Image  src={Logo} alt="Logo Gowa" className="w-28 h-28 object-contain" />
                 </div>
 
                 <div className="lg:w-2/3 mt-10 lg:mt-0 text-left">
-                    <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-center">Contact Us</h2>
-                    <p className="text-lg leading-relaxed">
+                    <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-center capitalize">Contact Us</h2>
+                    <p className="text-lg leading-relaxed text-justify pt-3 pb-3">
                         Dinas KetenagaLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
                         tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
                         exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
@@ -35,7 +29,6 @@ export default function ContactHighlight() {
                         </a>
                     </div>
                 </div>
-
             </div>
         </section>
     )
