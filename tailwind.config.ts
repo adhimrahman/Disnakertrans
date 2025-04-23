@@ -9,6 +9,7 @@ const config: Config = {
         extend: {
             colors: {
                 'steelBlue': 'var(--steelBlue)',
+                'darkBlue': 'var(--darkBlue)',
             },
             height: {
                 '70': '18rem',

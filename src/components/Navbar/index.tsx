@@ -9,13 +9,13 @@ export default function Header() {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <header className="navbar fixed bg-steelBlue text-white w-full px-5 lg:px-9 py-4 lg:py-1 flex flex-wrap justify-between items-center z-50">
+        <header className="navbar fixed bg-darkBlue text-white w-full px-5 lg:px-9 py-4 lg:py-1 flex flex-wrap justify-between items-center z-50">
             <div className="leftside logo sm:w-1/2 lg:w-1/4 flex items-center">
                 <Image src={Gowa} alt="Logo Pemerintahan Kab. Gowa" width={40} height={40} className="py-1"></Image>
                 <p className="pl-2 lg:pl-4 w uppercase font-semibold sm:text-xs text-sm lg:text-base">dinas ketenagakerjaan <br /> dan transmigrasi gowa</p>
              </div>
 
-            <button className="lg:hidden ml-auto" onClick={() => setIsOpen(!isOpen)} >
+            <button className="lg:hidden ml-auto hover:cursor-pointer" onClick={() => setIsOpen(!isOpen)} >
                 {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
 
