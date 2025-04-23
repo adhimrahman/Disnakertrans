@@ -8,20 +8,20 @@ import Kegiatan from "@/components/home/Kegiatan";
 import LowonganCarousel from "@/components/home/LowonganCarousel";
 import ContactHighlight from "@/components/ContactHightlight";
 import InfografisSection from "@/components/home/InfografisSection";
+import HeroCarousel from "@/components/home/Carousel";
 
 import kami from "../../public/images/kami.jpg"
 import Job1 from "../../public/images/Job1.png"
 import Job2 from "../../public/images/Job2.png"
-import Gambar from "../../public/images/Gambar.png"
 
 export default function HomePage() {
 	return (
 		<div className="min-h-screen">
 			<Navbar />
 
-			<Image src={Gambar} alt="Hero Section" className="w-full h-[400px] object-cover object-[50%_20%]" />
+			<HeroCarousel />
 
-			<section className="mx-auto px-4 lg:px-40 py-12 flex flex-col lg:flex-row items-center justify-between bg-white">
+			<section className="mx-auto px-4 lg:px-40 py-3 flex flex-col lg:flex-row items-center justify-between bg-gray-50">
 				<div className="lg:w-1/2 text-left">
 					<h2 className="text-xl sm:text-2xl lg:text-4xl font-bold text-gray-900 capitalize">
 						selamat datang di
@@ -35,21 +35,26 @@ export default function HomePage() {
 					</button>
 				</div>
 	
-				<Image src={Job1} alt="Illustrasi Pekerja" className="lg:w-1/2 w-full max-w-xs sm:max-w-md lg:max-w-lg mt-10 lg:mt-0 flex justify-center" />
+				<Image src={Job1} alt="Illustrasi Pekerja" className="lg:w-1/2 p-2 w-full max-w-xs sm:max-w-md lg:max-w-lg mt-10 lg:mt-0 flex justify-center" />
 			</section>
 			
-			<section className=" text-white py-16 bg-steelBlue">
-				<div className="container mx-auto px-6 lg:px-20 flex flex-col lg:flex-row items-center">
-					<Image src={Job2} alt="" className="lg:w-full w-1/2 max-w-md lg:max-w-lg" />
-					<div className="lg:w-1/2 mt-10 lg:mt-0 pl-2">
-						<h2 className="text-3xl lg:text-4xl font-bold capitalize">dinas ketenagakerjaan dan transmigrasi gowa</h2>
-						<p className="text-lg mt-4 leading-relaxed text-justify">
-							Dinas KetenagaLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod 
-							tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud 
-							exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor 
-							in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+			<section className="py-20 text-white bg-darkBlue">
+				<div className="container mx-auto px-6 lg:px-20 flex flex-col-reverse lg:flex-row items-center gap-12">
+					<div className="lg:w-1/2 flex justify-center">
+						<Image src={Job2} alt="Ilustrasi Ketenagakerjaan" className="w-full max-w-md lg:max-w-lg rounded-xl shadow-xl object-contain" />
+					</div>
+					<div className="lg:w-1/2 text-center lg:text-left">
+						<h2 className="text-3xl lg:text-5xl font-bold mb-6 capitalize">
+							Dinas Ketenagakerjaan <br /> dan Transmigrasi Gowa
+						</h2>
+						<p className="text-lg leading-relaxed text-justify">
+							Dinas Ketenagakerjaan dan Transmigrasi Gowa hadir sebagai motor penggerak pembangunan SDM
+							berdaya saing tinggi di Kabupaten Gowa. Melalui program kerja, pelatihan, transmigrasi,
+							dan pendampingan dunia kerja, kami berkomitmen menciptakan lapangan kerja produktif
+							dan berkelanjutan untuk seluruh lapisan masyarakat.
 						</p>
 					</div>
+
 				</div>
 			</section>
 
@@ -59,26 +64,25 @@ export default function HomePage() {
 			
 			<InfografisSection />
 			
-            <section className="py-20 bg-white">
-                <div className="container mx-auto px-6 lg:px-20 flex flex-col lg:flex-row items-center gap-10">
-                    <div className="lg:w-1/2 flex flex-col justify-start h-full">
-                        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6 capitalize">
-                            tentang kami
-                        </h2>
-                        <p className="text-lg text-gray-700 leading-relaxed text-justify">
-                            Dinas KetenagaLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                            in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                        </p>
-                    </div>
-    
-                    <div className="lg:w-1/2 mt-10 lg:mt-0 flex justify-center">
-                        <Image src={kami}  alt="About Us Illustration" className="h-[500px] w-auto object-cover rounded-3xl" />
-                    </div>
-                </div>
-            </section>
+            <section className="py-20 bg-gray-50">
+				<div className="container mx-auto px-6 lg:px-20 flex flex-col-reverse lg:flex-row items-center gap-16">
+					<div className="lg:w-1/2 text-center lg:text-left">
+						<h2 className="text-3xl lg:text-5xl font-bold text-gray-900 mb-6 capitalize">
+							Tentang Kami
+						</h2>
+						<p className="text-lg text-gray-700 leading-relaxed text-justify">
+							Dinas Ketenagakerjaan Gowa memiliki komitmen untuk meningkatkan kualitas
+							sumber daya manusia dan menciptakan lapangan kerja yang inklusif dan berkelanjutan.
+							Melalui berbagai program pelatihan, pendampingan pencari kerja, serta kerjasama dengan
+							berbagai pihak, kami hadir untuk memberikan solusi ketenagakerjaan yang nyata bagi masyarakat.
+						</p>
+					</div>
+
+					<div className="lg:w-1/2 flex justify-center">
+						<Image src={kami} alt="Ilustrasi Tentang Kami" className="h-[460px] w-auto object-cover rounded-3xl shadow-lg hover:scale-105 transition duration-300" />
+					</div>
+				</div>
+			</section>
 			
 			<ContactHighlight />
 			

@@ -1,35 +1,39 @@
 import Image from "next/image";
-import React from 'react'
-import Logo from "../../public/images/Logo.png"
-import Garuda from "../../public/images/Garuda.png"
+import React from "react";
+import Logo from "../../public/images/Logo.png";
+import Garuda from "../../public/images/Garuda.png";
 
 export default function ContactHighlight() {
-    return (
-        <section className="py-16 text-white bg-steelBlue">
-            <div className="container mx-auto px-6 lg:px-24 flex flex-col lg:flex-row items-center">
-                <div className="lg:w-1/3 flex justify-center space-x-6">
-                    <Image  src={Garuda} alt="Garuda Logo" className="w-28 h-28 object-contain" />
-                    <Image  src={Logo} alt="Logo Gowa" className="w-28 h-28 object-contain" />
-                </div>
+	return (
+		<section className="py-20 bg-darkBlue text-white">
+			<div className="container mx-auto px-6 lg:px-24 flex flex-col lg:flex-row items-center gap-10">
+				<div className="lg:w-1/3 flex justify-center items-center gap-8">
+					<div className="bg-white/10 p-4 rounded-xl shadow-md hover:scale-105 transition hover:cursor-pointer">
+						<Image src={Garuda} alt="Garuda Logo" className="w-24 h-24 object-contain" />
+					</div>
+					<div className="bg-white/10 p-4 rounded-xl shadow-md hover:scale-105 transition hover:cursor-pointer">
+						<Image src={Logo} alt="Logo Gowa" className="w-24 h-24 object-contain" />
+					</div>
+				</div>
 
-                <div className="lg:w-2/3 mt-10 lg:mt-0 text-left">
-                    <h2 className="text-3xl lg:text-4xl font-bold mb-4 text-center capitalize">Contact Us</h2>
-                    <p className="text-lg leading-relaxed text-justify pt-3 pb-3">
-                        Dinas KetenagaLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-                        exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                        in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                    </p>
-                    <div className="mt-6 flex justify-center w-full">
-                        <a href="contact-us/">
-                        <button className="bg-red-500 cursor-pointer text-white px-6 py-3 rounded-lg text-lg font-semibold hover:bg-red-700 transition">
-                            Contact Us
-                        </button>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-    )
+				<div className="lg:w-2/3 text-center lg:text-left">
+					<h2 className="text-3xl lg:text-5xl font-bold mb-6">
+						Hubungi Kami
+					</h2>
+					<p className="text-lg leading-relaxed text-gray-200 max-w-2xl mx-auto lg:mx-0 text-justify">
+						Dinas Ketenagakerjaan Gowa siap membantu Anda. Jika Anda memiliki pertanyaan, saran,
+						atau ingin mengetahui lebih lanjut mengenai layanan kami, silakan hubungi kami melalui halaman berikut.
+					</p>
+
+					<div className="mt-8">
+						<a href="/contact-us">
+							<button className="bg-red-600 hover:bg-red-700 transition px-6 py-3 text-lg font-semibold rounded-xl shadow-lg hover:cursor-pointer">
+								Hubungi Sekarang
+							</button>
+						</a>
+					</div>
+				</div>
+			</div>
+		</section>
+	);
 }

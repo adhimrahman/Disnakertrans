@@ -7,6 +7,7 @@ import "swiper/css/navigation";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/config";
 import Image from "next/image";
+import { ArrowRight } from "lucide-react";
 
 type KegiatanItem = {
 	id: string;
@@ -39,12 +40,12 @@ export default function Kegiatan() {
 	}, []);
 
 	return (
-		<section className="py-16 bg-gray-100">
-			<h2 className="text-3xl lg:text-4xl font-bold text-left ml-10 mb-10 text-black capitalize">
-				kegiatan - kegiatan disnaker gowa
+		<section className="pt-16 pb-10 px-5 bg-gray-100">
+			<h2 className="text-4xl font-bold text-center mb-10 text-gray-800 capitalize">
+				Kegiatan Disnaker Gowa
 			</h2>
 
-			<Swiper modules={[Navigation]} spaceBetween={-25} navigation breakpoints={{
+			<Swiper modules={[Navigation]} spaceBetween={-35} navigation breakpoints={{
 				0: { slidesPerView: 1 }, 640: { slidesPerView: 1.2 }, 768: { slidesPerView: 2 },
 				1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 },
 			}}>
@@ -61,8 +62,8 @@ export default function Kegiatan() {
 								</p>
 							</div>
 							<div className="px-4 md:px-5 py-4 flex justify-end">
-								<a className="bg-blue-700 text-white px-5 py-2 rounded-md font-semibold shadow hover:bg-blue-800 transition text-sm md:text-base tracking-wider"
-									href={`/kegiatan/${item.id}`}> Selengkapnya
+								<a className="bg-blue-700 text-white px-5 py-2 rounded-md shadow hover:bg-blue-800 transition text-sm md:text-base tracking-wider flex items-center gap-1"
+									href={`/kegiatan/${item.id}`}> Selengkapnya <ArrowRight size={16} />
 								</a>
 							</div>
 						</div>
