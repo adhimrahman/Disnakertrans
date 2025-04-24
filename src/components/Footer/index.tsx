@@ -1,59 +1,71 @@
+import Link from "next/link";
 import Image from "next/image";
 import Garuda from "../../../public/images/Garuda.png"
 import Logo from "../../../public/images/Logo.png"
+import FacebookLogo from "../../../public/facebook-logo.svg";
+import InstagramLogo from "../../../public/instagram-logo.svg";
 
 export default function Footer() {
     return (
-		<footer className="bg-black text-white py-10">
+			<footer className="bg-[#1E1E1E] text-white pt-12 pb-6">
 			<div className="container mx-auto px-6 lg:px-20">
-				<div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center md:text-left">
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+				
+				{/* Left side - Logos and Info */}
+				<div className="flex flex-col items-center md:items-start text-center md:text-left">
+					<div className="flex space-x-4 justify-center md:justify-start mb-4">
+					<Image src={Garuda} alt="Garuda Logo" className="w-20 h-20 object-contain" />
+					<Image src={Logo} alt="Logo" className="w-20 h-20 object-contain" />
+					</div>
+					<p className="text-lg font-bold mb-4">
+					DINAS KETENAGAKERJAAN <br />
+					DAN TRANSMIGRASI GOWA
+					</p>
+					<div className="flex space-x-6 mt-4">
+					<a href="https://www.facebook.com/people/Disnakertrasn-Gowa/100068958707988/" target="_blank" rel="noopener noreferrer">
+						<Image src={FacebookLogo} alt="Facebook" width={28} height={28} className="hover:opacity-70 transition-opacity duration-200" />
+					</a>
+					<a href="https://www.instagram.com/disnakergowakab/" target="_blank" rel="noopener noreferrer">
+						<Image src={InstagramLogo} alt="Instagram" width={28} height={28} className="hover:opacity-70 transition-opacity duration-200" />
+					</a>
+					</div>
+				</div>
+
+				{/* Right side - Navigation & Info */}
+				<div className="grid grid-cols-2 gap-4">
+					<div className="space-y-2 text-sm text-gray-300">
+					<Link href="/" className="block hover:underline hover:font-medium">Home</Link>
+					<Link href="/kegiatan" className="block hover:underline hover:font-medium">Kegiatan</Link>
+					<Link href="/lapangan-kerja" className="block hover:underline hover:font-medium">Lowongan</Link>
+					<Link href="/contact-us" className="block hover:underline hover:font-medium">Contact Us</Link>
+					</div>
+					<div className="text-sm text-gray-300 space-y-3">
 					<div>
-					<h3 className="text-lg font-bold mb-3">Ketenagakerjaan Gowa</h3>
-					<p className="text-sm text-gray-400">
-						Dinas KetenagaLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor.
-					</p>
-					<div className="flex justify-center md:justify-start space-x-4 mt-4">
-						<a href="#" className="text-white hover:text-gray-400 text-2xl">
-						<i className="fab fa-instagram"></i>
-						</a>
-						<a href="#" className="text-white hover:text-gray-400 text-2xl">
-						<i className="fab fa-facebook"></i>
-						</a>
+						<h4 className="font-bold text-white mb-1">Tentang Kami</h4>
+						<p>
+						Dinas KetenagaLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+						Sed do eiusmod tempor incididunt ut labore. At vero eos et accusamus et iusto odio dignissimos ducimus qui fuga.
+						</p>
 					</div>
+					<div className="mt-6">
+						<h4 className="font-bold text-white">Alamat</h4>
+						<p>QCJW+VP7, Bontoala, Pallangga,<br />Gowa Regency, South Sulawesi 92114</p>
 					</div>
-		
-					<div>
-					<h3 className="text-lg font-bold mb-3">Transmigrasi Gowa</h3>
-					<p className="text-sm text-gray-400">
-						Dinas KetenagaLorem ipsum dolor sit amet, consectetur adipiscing elit.
-					</p>
-					</div>
-		
-					<div>
-					<h3 className="text-lg font-bold mb-3">Pemerintahan Gowa</h3>
-					<p className="text-sm text-gray-400">
-						Dinas KetenagaLorem ipsum dolor sit amet, consectetur adipiscing elit.
-					</p>
-					</div>
-		
-					<div className="flex flex-col items-center">
-					<div className="flex space-x-4">
-						<Image src={Garuda} alt="Garuda Logo" className="w-16 h-16 object-contain" />
-						<Image src={Logo} alt="Logo" className="w-16 h-16 object-contain" />
-					</div>
-					<p className="text-sm font-semibold mt-3 text-center">
-						DINAS KETENAGAKERJAAN <br /> DAN TRANSMIGRASI GOWA
-					</p>
 					</div>
 				</div>
 				</div>
-		
-				<div className="border-t border-gray-600 my-6"></div>
-				<div className="flex flex-col md:flex-row justify-between text-center text-gray-400 text-sm ml-6 mr-6">
+
+				{/* Divider */}
+				<div className="border-t border-white border-opacity-40 my-8 w-full"></div>
+
+				{/* Bottom bar */}
+				<div className="flex flex-col md:flex-row justify-between items-center text-center text-sm text-gray-300 px-4">
 				<p>@Copyright 2025</p>
-				<p>Universitas Hasanuddin | Teknik Informatika 2022</p>
+				<p className="mt-2 md:mt-0 font-semibold">
+					Universitas Hasanuddin &nbsp; | &nbsp; Teknik Informatika 2022
+				</p>
+				</div>
 			</div>
-		</footer>
+			</footer>
     );
 }
-  
