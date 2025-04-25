@@ -1,13 +1,12 @@
 "use client";
-import React from 'react'
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import ContactHighlight from '../../../components/ContactHightlight';
-
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/config";
+
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import ContactHighlight from "../../../components/ContactHightlight";
 
 type KegiatanItem = {
 	id: string;
@@ -16,102 +15,78 @@ type KegiatanItem = {
 	ImageSampul: string;
 };
 
-function limitWords(text: string, count: number) {
-	const words = text.split(" ");
-	return words.slice(0, count).join(" ") + (words.length > count ? "..." : "");
-}
-
 export default function Page() {
-    const [kegiatan, setKegiatan] = useState<KegiatanItem[]>([]);
-	const [visibleCount, setVisibleCount] = useState(6); // jumlah awal yang ditampilkan
+	const [kegiatan, setKegiatan] = useState<KegiatanItem[]>([]);
+	const [visibleCount, setVisibleCount] = useState(9);
 
 	useEffect(() => {
 		const fetchKegiatan = async () => {
-		const querySnapshot = await getDocs(collection(db, "Kegiatan"));
-		const data = querySnapshot.docs.map((doc) => ({
-			id: doc.id,
-			...doc.data(),
-		})) as KegiatanItem[];
-		setKegiatan(data);
+			const querySnapshot = await getDocs(collection(db, "Kegiatan"));
+			const data = querySnapshot.docs.map((doc) => ({
+				id: doc.id,
+				...doc.data(),
+			})) as KegiatanItem[];
+			setKegiatan(data);
 		};
-
 		fetchKegiatan();
 	}, []);
 
 	const handleLoadMore = () => {
-		setVisibleCount(kegiatan.length); // tampilkan semua
+		setVisibleCount(kegiatan.length);
 	};
 
 	const visibleKegiatan = kegiatan.slice(0, visibleCount);
 
-    return (
-        <>
-            <Navbar />
-            
-            <section className="relative w-full h-[300px]">
-                <Image
-                    src="/images/Ilustrasi.jpeg"
-                    alt="Header Kegiatan Disnaker"
-                    fill
-                    className="w-full h-full object-cover object-center"
-                />
-                <div className="absolute inset-0 flex items-center justify-center">
-                    <h1 className="text-white text-3xl md:text-5xl font-extrabold">
-                    Kegiatan Disnaker
-                    </h1>
-                </div>
-            </section>
+	return (
+    <>
+    <Navbar />
 
-            <section className="py-16 bg-gray-100 px-4 lg:px-20">
-                <h2 className="text-3xl lg:text-4xl font-bold text-left mb-10 text-black">
-                    Kegiatan - Kegiatan Disnaker Gowa
-                </h2>
-    
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {visibleKegiatan.map((item) => (
-                    <div
-                        key={item.id}
-                        className="bg-white shadow-md rounded-2xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-2 flex flex-col justify-between"
-                    >
-                        <img
-                            src={item.ImageSampul}
-                            alt={item.Judul}
-                            className="w-full aspect-[4/3] object-cover"
-                        />
-                        <div className="p-4 md:p-5 text-left">
-                        <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1">
-                            {item.Judul}
-                        </h3>
-                        <p className="text-gray-700 text-sm leading-relaxed">
-                            {limitWords(item.Deskripsi, 12)}
-                        </p>
-                        </div>
-                        <div className="px-4 md:px-5 py-4 bg-gray-100 flex justify-end">
-                        <a
-                            href={`/kegiatan/${item.id}`}
-                            className="bg-blue-700 text-white px-5 py-2 rounded-md font-semibold shadow hover:bg-blue-800 transition text-sm md:text-base"
-                        >
-                            Selengkapnya
+    <section className="relative w-full h-[300px] sm:h-[350px]">
+        <Image src="/images/Ilustrasi.jpeg" alt="Ilustrasi Header" fill className="object-cover object-center brightness-50" />
+        <div className="absolute inset-0 flex items-center justify-center text-center bg-gradient-to-b from-transparent to-black/50 pt-24 lg:pt-12">
+            <h1 className="text-white text-4xl md:text-5xl font-bold shadow-md capitalize">
+                Kegiatan - Kegiatan Disnaker
+            </h1>
+        </div>
+    </section>
+
+    <section className="py-20 px-6 md:px-24 bg-gradient-to-b from-white to-gray-100">
+        <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-16 capitalize">
+            Highlight Kegiatan Disnaker Gowa
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {visibleKegiatan.map((item) => (
+                <div key={item.id} className="relative group rounded-lg overflow-hidden border border-gray-200 shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                    <div className="w-full h-60 relative overflow-hidden">
+                        <Image src={item.ImageSampul} alt={item.Judul} layout="fill" className="object-cover object-center" />
+                    </div>
+
+                    <div className="p-6 bg-white">
+                        <h3 className="text-xl font-semibold text-gray-800 mb-2 capitalize">{item.Judul}</h3>
+                        <p className="text-sm text-gray-600 line-clamp-3">{item.Deskripsi}</p>
+                        <a className="mt-3 inline-block text-sm text-blue-600 hover:text-blue-800 font-medium"
+                        href={`/kegiatan/${item.id}`}>
+                            Selengkapnya →
                         </a>
-                        </div>
                     </div>
-                    ))}
                 </div>
-    
-                {visibleCount < kegiatan.length && (
-                    <div className="flex justify-center mt-10">
-                        <button
-                            onClick={handleLoadMore}
-                            className="bg-blue-700 text-white px-6 py-3 rounded-md font-semibold shadow hover:bg-blue-800 transition"
-                        >
-                            Tampilkan Semua
-                        </button>
-                    </div>
-                )}
-            </section>
+            ))}
+        </div>
 
-            <ContactHighlight />
-            <Footer />
-        </>
-    )
+        {/* Load More Button */}
+        {visibleCount < kegiatan.length && (
+            <div className="flex justify-center mt-14">
+                <button className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-semibold transition duration-300" onClick={handleLoadMore} >
+                    Tampilkan Semua
+                </button>
+            </div>
+        )}
+    </section>
+
+    <ContactHighlight />
+
+    <Footer />
+    </>
+	);
 }
