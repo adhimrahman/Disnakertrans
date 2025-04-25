@@ -1,30 +1,29 @@
 'use client';
 
-// import { PesertaLpk } from "@/models/PesertaLpk";
+import { IoTrash } from "react-icons/io5";
 import { HiOutlineArrowSmRight, HiOutlineArrowSmLeft } from "react-icons/hi";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
-import { IoTrash } from "react-icons/io5";
 import {
   collection,
   query,
   where,
-  getDocs,
+  onSnapshot,
   updateDoc,
-  Timestamp,
   doc,
-  DocumentData
+  DocumentData,
 } from "firebase/firestore";
 import { db } from "@/firebase/config";
 import { SortColumn } from "@/components/dashboard/Sort";
 import { SearchInput } from "@/components/dashboard/SearchTable";
 
-export default function AccountsPage() {  
-  const [akun, setAkun] = useState<DocumentData[]>([]);
+export default function LowonganPage() { 
+  const [lowongan, setLowongan] = useState<DocumentData[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [sortField, setSortField] = useState<"nama" |"tanggal_daftar" | "lpk" | "jurusan">("nama");
+  const [sortField, setSortField] = useState<"Judul" | "BatasLowongan" | "tanggal_unggah">("Judul");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc"); // Track the sort order
   const [searchTerm, setSearchTerm] = useState<string>("");
   const router = useRouter();
@@ -35,87 +34,65 @@ export default function AccountsPage() {
   }, []);
 
   useEffect(() => {
-    const fetchAllPeserta = async () => {
-      console.log("fetchAllPeserta triggered. sort:", sortField, sortOrder);
-      const lpkCollection = collection(db, "lpk");
-      const lpkSnapshot = await getDocs(lpkCollection);
+    // Query data untuk mengambil data yang isDelete == false
+    const req = query(
+      collection(db, "lowongan"),
+      where("isDelete", "==", false),
+    );
+    // Menerapkan real-time change dengan listener
+    const unsubscribe = onSnapshot(req, (querySnapshot) => {
+      const data = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setLowongan(data); //Update data setiap ada perubahan
+    });
 
-      const semuaPeserta = await Promise.all(
-        lpkSnapshot.docs.map(async (lpkDoc) => {
-          const lpkId = lpkDoc.id;
-          const pesertaRef = collection(db, `lpk/${lpkId}/peserta`);
-          const pesertaQuery = query(
-            pesertaRef,
-            where("isDelete", "==", false),
-          );
-
-          const pesertaSnapshot = await getDocs(pesertaQuery);
-
-          const pesertaList = pesertaSnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-
-          return pesertaList;
-        })
-      );
-
-      const gabungPeserta = semuaPeserta.flat();
-
-      gabungPeserta.sort((a, b) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any  
-        const getField = (item: any) => {
-          if (sortField === "nama") return item.nama.toLowerCase();
-          if (sortField === "jurusan") return item.jurusan.toLowerCase();
-          if (sortField === "tanggal_daftar") return item.tanggal_daftar?.toDate();
-          if (sortField === "lpk") return item.lpk
-          return "";
-        };
-      
-        const valA = getField(a);
-        const valB = getField(b);
-      
-        if (valA < valB) return sortOrder === "asc" ? -1 : 1;
-        if (valA > valB) return sortOrder === "asc" ? 1 : -1;
-        return 0;
-      });
-
-      setAkun(gabungPeserta);
-      console.log("Data peserta:", gabungPeserta);
-    };
-
-    fetchAllPeserta();
-  }, [sortField, sortOrder]);
-
-  const umur = (tanggalLahir: Timestamp) => {
-    const today = new Date();
-    const birthDate = tanggalLahir.toDate(); // Konversi dari Firestore Timestamp ke Date
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-  
-    // Koreksi jika belum ulang tahun tahun ini
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-  
-    return age;
-  };
+    return () => unsubscribe();
+  }, [])
 
   const filteredData = useMemo(() => {
     const term = searchTerm.toLowerCase();
-  
-    return akun.filter((item) => {
-      const status = item.lulus === true ? "lulus" : "belum lulus";
+    
+    const filtered = lowongan.filter((item) => {
+      const batasLowonganStr = item.BatasLowongan.toDate().toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+        }).toLowerCase();
+
+      const tanggalUploadstr = item.tanggal_unggah.toDate().toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      }).toLowerCase();
+    
       return (
-        item.nama.toLowerCase().includes(term) ||
-        item.jurusan.toLowerCase().includes(term) ||
-        item.lpk.toString().includes(term) ||
-        status.includes(term)
+        item.Judul.toLowerCase().includes(term) ||
+        batasLowonganStr.includes(term) || 
+        tanggalUploadstr.includes(term)
       );
     });
-  }, [akun, searchTerm]);
-
-  const handleSort = (field: "nama" | "jurusan" | "lpk" | "tanggal_daftar") => {
+    
+    const sorted = [...filtered].sort((a, b) => {
+      let aVal, bVal;
+    
+      if (sortField === "Judul") {
+        aVal = a.Judul.toLowerCase();
+        bVal = b.Judul.toLowerCase();
+      } else {
+        aVal = a.tanggal_unggah.toDate().getTime();
+        bVal = b.tanggal_unggah.toDate().getTime();
+      }
+    
+      if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+    
+    return sorted;
+  }, [lowongan, searchTerm, sortField, sortOrder]);
+  const handleSort = (field: "Judul" | "BatasLowongan" | "tanggal_unggah") => {
     if (sortField === field) {
       setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
     } else {
@@ -138,10 +115,10 @@ export default function AccountsPage() {
     currentPage * itemsPerPage
   );
 
-  const handelEdit = (id: string) => { router.push(`/dashboard/disnaker/contents/kegiatan/edit/${id}`) }
+  const handelEdit = (id: string) => { router.push(`/dashboard/disnaker/contents/lowongan/edit/${id}`) }
 
   const handleSingleDelete = (id: string) => {
-    const docRef = doc(db, "Kegiatan", id);
+    const docRef = doc(db, "lowongan", id);
     updateDoc(docRef, { isDelete: true });
   }
 
@@ -156,17 +133,17 @@ export default function AccountsPage() {
   };
 
   const handleSelectAll = () => {
-    if (selectedRows.length === akun.length) {
+    if (selectedRows.length === lowongan.length) {
       setSelectedRows([]);  // Deselect all
     } else {
-      setSelectedRows(akun.map((item) => item.id));  // Select all
+      setSelectedRows(lowongan.map((item) => item.id));  // Select all
     }
   };
 
   const handleDeleteSelectedRows = () => {
     // Perform delete on selected rows (soft delete in this case)
     selectedRows.forEach(async (id) => {
-      const docRef = doc(db, "Kegiatan", id);
+      const docRef = doc(db, "lowongan", id);
       await updateDoc(docRef, { isDelete: true });
     });
     setSelectedRows([]);  // Clear selected rows after delete
@@ -179,11 +156,13 @@ export default function AccountsPage() {
           type="submit"
           className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-2 px-4 w-24 rounded-lg"
           onClick={() => {router.push('/dashboard/disnaker/accounts/add')}}
-        >Tambah
+        >
+          Tambah
         </button>
         <SearchInput
           value={searchTerm}
           onChange={setSearchTerm} 
+          placeholder="Cari Lowongan..."
           className="border border-black rounded-md px-4 py-2 text-sm w-sm text-black"
         />
       </div>
@@ -209,33 +188,27 @@ export default function AccountsPage() {
               <th className="px-4 py-2 text-left border-b text-black">
                 <input
                   type="checkbox"
-                  checked={selectedRows.length > 0 && selectedRows.length === akun.length}
+                  checked={selectedRows.length > 0 && selectedRows.length === lowongan.length}
                   onChange={handleSelectAll}
                 />
               </th>
               <th className="px-4 py-2 text-left border-b text-black">No</th>
               <th className="px-4 py-2 text-left border-b text-black">
                 <div className="flex flex-row gap-x-2">
-                  <SortColumn field="nama" label="Nama" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
+                  <SortColumn field="Judul" label="Judul" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
                 </div>
               </th>
               <th className="px-4 py-2 text-left border-b text-black">
                 <div className="flex flex-row gap-x-2">
-                  <SortColumn field="lpk" label="LPK" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
+                  <SortColumn field="BatasLowongan" label="Batas Lowongan" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
                 </div>
               </th>
               <th className="px-4 py-2 text-left border-b text-black">
                 <div className="flex flex-row gap-x-2">
-                  <SortColumn field="jurusan" label="Jurusan" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
+                  <SortColumn field="tanggal_unggah" label="Tanggal Upload" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
                 </div>
               </th>
-              <th className="px-4 py-2 text-left border-b text-black">Umur</th>
-              <th className="px-4 py-2 text-left border-b text-black">Status</th>
-              <th className="px-4 py-2 text-left border-b text-black">
-                <div className="flex flex-row gap-x-2">
-                  <SortColumn field="tanggal_daftar" label="Tanggal Daftar" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
-                </div>
-              </th>
+              <th className="px-4 py-2 text-left border-b text-black">Link Unggahan</th>
               <th className="px-4 py-2 text-left border-b text-black"></th>
               <th className="px-4 py-2 text-left border-b text-black"></th>
             </tr>
@@ -247,21 +220,28 @@ export default function AccountsPage() {
                   <input
                     type="checkbox"
                     checked={selectedRows.includes(item.id)}
-                    onChange={() => handleSelectRow(item.id)}
+                    onChange={() => handleSelectRow(item.id)}  // Toggle row selection
                   />
                 </td>
                 <td className="px-4 py-2 border-b text-black">{index + 1}</td>
-                <td className="px-4 py-2 border-b text-black">{item.nama}</td>
-                <td className="px-4 py-2 border-b text-black">{item.lpk}</td>
-                <td className="px-4 py-2 border-b text-black">{item.jurusan}</td>
-                <td className="px-4 py-2 border-b text-black">{item.tanggal_lahir ? `${umur(item.tanggal_lahir)} tahun` : "-"}</td>
-                <td className="px-4 py-2 border-b text-black">{item.lulus ? "Lulus" : "Belum lulus"}</td>
-                <td className="px-4 py-2 border-b text-black">{item.tanggal_daftar instanceof Timestamp
-                  ? item.tanggal_daftar.toDate().toLocaleDateString('id-ID', {
-                      day: '2-digit',
-                      month: 'long',
-                      year: 'numeric',
-                    }): "-"}
+                <td className="px-4 py-2 border-b text-black">{item.Judul}</td>
+                <td className="px-4 py-2 border-b text-black">{item.BatasLowongan.toDate().toLocaleDateString('id-ID', {
+                  day  : '2-digit',
+                  month: 'long',
+                  year : 'numeric'
+                })}</td>
+                <td className="px-4 py-2 border-b text-black">{item.tanggal_unggah.toDate().toLocaleDateString('id-ID', {
+                  day  : '2-digit',
+                  month: 'long',
+                  year : 'numeric'
+                })}</td>
+                <td className="px-4 py-2 border-b text-black">
+                  <Link
+                    href={item.link_konten || ""}
+                    className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+                  >
+                    {item.link_konten ? 'Link' : 'None'}
+                  </Link>
                 </td>
                 <td className="px-4 py-2 border-b text-black">
                   <button
@@ -320,7 +300,7 @@ export default function AccountsPage() {
           </button>
         </div>
         {selectedRows.length > 0 && (
-          <div className="mt-4">
+          <div className="mt-6">
             <button
               onClick={handleDeleteSelectedRows}
               className="bg-red-500 hover:bg-red-700 text-white text-xs font-medium py-2 px-4 rounded-lg"
@@ -328,9 +308,8 @@ export default function AccountsPage() {
               Hapus Terpilih
             </button>
           </div>
-        )}
+        )};
       </div>
     </div>
-    
   );
 }

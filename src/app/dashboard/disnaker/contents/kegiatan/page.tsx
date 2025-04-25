@@ -1,30 +1,29 @@
 'use client';
 
-// import { PesertaLpk } from "@/models/PesertaLpk";
+import { IoTrash } from "react-icons/io5";
 import { HiOutlineArrowSmRight, HiOutlineArrowSmLeft } from "react-icons/hi";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
-import { IoTrash } from "react-icons/io5";
 import {
   collection,
   query,
   where,
-  getDocs,
+  onSnapshot,
   updateDoc,
-  Timestamp,
   doc,
-  DocumentData
+  DocumentData,
 } from "firebase/firestore";
 import { db } from "@/firebase/config";
 import { SortColumn } from "@/components/dashboard/Sort";
 import { SearchInput } from "@/components/dashboard/SearchTable";
 
-export default function AccountsPage() {  
-  const [akun, setAkun] = useState<DocumentData[]>([]);
+export default function KegiatanPage() { 
+  const [kegiatan, setKegiatan] = useState<DocumentData[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const [sortField, setSortField] = useState<"nama" |"tanggal_daftar" | "lpk" | "jurusan">("nama");
+  const [sortField, setSortField] = useState<"Judul" | "Tanggal">("Judul");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc"); // Track the sort order
   const [searchTerm, setSearchTerm] = useState<string>("");
   const router = useRouter();
@@ -35,87 +34,58 @@ export default function AccountsPage() {
   }, []);
 
   useEffect(() => {
-    const fetchAllPeserta = async () => {
-      console.log("fetchAllPeserta triggered. sort:", sortField, sortOrder);
-      const lpkCollection = collection(db, "lpk");
-      const lpkSnapshot = await getDocs(lpkCollection);
+    // Query data untuk mengambil data yang isDelete == false
+    const req = query(
+      collection(db, "Kegiatan"),
+      where("isDelete", "==", false),
+    );
+    const unsubscribe = onSnapshot(req, (querySnapshot) => {
+      const data = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setKegiatan(data);
+    });
 
-      const semuaPeserta = await Promise.all(
-        lpkSnapshot.docs.map(async (lpkDoc) => {
-          const lpkId = lpkDoc.id;
-          const pesertaRef = collection(db, `lpk/${lpkId}/peserta`);
-          const pesertaQuery = query(
-            pesertaRef,
-            where("isDelete", "==", false),
-          );
-
-          const pesertaSnapshot = await getDocs(pesertaQuery);
-
-          const pesertaList = pesertaSnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-
-          return pesertaList;
-        })
-      );
-
-      const gabungPeserta = semuaPeserta.flat();
-
-      gabungPeserta.sort((a, b) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any  
-        const getField = (item: any) => {
-          if (sortField === "nama") return item.nama.toLowerCase();
-          if (sortField === "jurusan") return item.jurusan.toLowerCase();
-          if (sortField === "tanggal_daftar") return item.tanggal_daftar?.toDate();
-          if (sortField === "lpk") return item.lpk
-          return "";
-        };
-      
-        const valA = getField(a);
-        const valB = getField(b);
-      
-        if (valA < valB) return sortOrder === "asc" ? -1 : 1;
-        if (valA > valB) return sortOrder === "asc" ? 1 : -1;
-        return 0;
-      });
-
-      setAkun(gabungPeserta);
-      console.log("Data peserta:", gabungPeserta);
-    };
-
-    fetchAllPeserta();
-  }, [sortField, sortOrder]);
-
-  const umur = (tanggalLahir: Timestamp) => {
-    const today = new Date();
-    const birthDate = tanggalLahir.toDate(); // Konversi dari Firestore Timestamp ke Date
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-  
-    // Koreksi jika belum ulang tahun tahun ini
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-  
-    return age;
-  };
+    return () => unsubscribe();
+  }, [])
 
   const filteredData = useMemo(() => {
     const term = searchTerm.toLowerCase();
   
-    return akun.filter((item) => {
-      const status = item.lulus === true ? "lulus" : "belum lulus";
+    const filtered = kegiatan.filter((item) => {
+      const tanggalStr = item.Tanggal.toDate().toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      }).toLowerCase();
+  
       return (
-        item.nama.toLowerCase().includes(term) ||
-        item.jurusan.toLowerCase().includes(term) ||
-        item.lpk.toString().includes(term) ||
-        status.includes(term)
+        item.Judul.toLowerCase().includes(term) ||
+        tanggalStr.includes(term)
       );
     });
-  }, [akun, searchTerm]);
+  
+    const sorted = [...filtered].sort((a, b) => {
+      let aVal, bVal;
+  
+      if (sortField === "Judul") {
+        aVal = a.Judul.toLowerCase();
+        bVal = b.Judul.toLowerCase();
+      } else {
+        aVal = a.Tanggal.toDate().getTime();
+        bVal = b.Tanggal.toDate().getTime();
+      }
+  
+      if (aVal < bVal) return sortOrder === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+  
+    return sorted;
+  }, [kegiatan, searchTerm, sortField, sortOrder]);
 
-  const handleSort = (field: "nama" | "jurusan" | "lpk" | "tanggal_daftar") => {
+  const handleSort = (field: "Judul" | "Tanggal") => {
     if (sortField === field) {
       setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
     } else {
@@ -139,7 +109,7 @@ export default function AccountsPage() {
   );
 
   const handelEdit = (id: string) => { router.push(`/dashboard/disnaker/contents/kegiatan/edit/${id}`) }
-
+  
   const handleSingleDelete = (id: string) => {
     const docRef = doc(db, "Kegiatan", id);
     updateDoc(docRef, { isDelete: true });
@@ -156,10 +126,10 @@ export default function AccountsPage() {
   };
 
   const handleSelectAll = () => {
-    if (selectedRows.length === akun.length) {
+    if (selectedRows.length === kegiatan.length) {
       setSelectedRows([]);  // Deselect all
     } else {
-      setSelectedRows(akun.map((item) => item.id));  // Select all
+      setSelectedRows(kegiatan.map((item) => item.id));  // Select all
     }
   };
 
@@ -173,18 +143,21 @@ export default function AccountsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-y-12">
+    <div className="flex flex-col gap-y-8">
       <div className='flex flex-row gap-x-2 justify-between w-full'>
         <button
           type="submit"
           className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-2 px-4 w-24 rounded-lg"
           onClick={() => {router.push('/dashboard/disnaker/accounts/add')}}
-        >Tambah
+        >
+          Tambah
         </button>
         <SearchInput
           value={searchTerm}
           onChange={setSearchTerm} 
+          placeholder="Cari Kegiatan..."
           className="border border-black rounded-md px-4 py-2 text-sm w-sm text-black"
+
         />
       </div>
       <div className="flex flex-row gap-x-2 items-center">
@@ -204,40 +177,29 @@ export default function AccountsPage() {
       </div>
       <div>
         <table className="min-w-full table-auto shadow-sm rounded-md">
-          <thead className="bg-gray-100 text-sm">
+          <thead className="bg-gray-100 text-sm justify-start text-left">
             <tr>
-              <th className="px-4 py-2 text-left border-b text-black">
+              <th className="px-4 py-2 border-b text-black">
                 <input
                   type="checkbox"
-                  checked={selectedRows.length > 0 && selectedRows.length === akun.length}
+                  checked={selectedRows.length > 0 && selectedRows.length === kegiatan.length}
                   onChange={handleSelectAll}
                 />
               </th>
-              <th className="px-4 py-2 text-left border-b text-black">No</th>
-              <th className="px-4 py-2 text-left border-b text-black">
+              <th className="px-4 py-2 border-b text-black">No</th>
+              <th className="px-4 py-2 border-b text-black">
                 <div className="flex flex-row gap-x-2">
-                  <SortColumn field="nama" label="Nama" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
+                  <SortColumn field="Judul" label="Nama Kegiatan" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
                 </div>
               </th>
-              <th className="px-4 py-2 text-left border-b text-black">
+              <th className="px-4 py-2 border-b text-black">
                 <div className="flex flex-row gap-x-2">
-                  <SortColumn field="lpk" label="LPK" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
+                  <SortColumn field="Tanggal" label="Tanggal Unggahan" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
                 </div>
               </th>
-              <th className="px-4 py-2 text-left border-b text-black">
-                <div className="flex flex-row gap-x-2">
-                  <SortColumn field="jurusan" label="Jurusan" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
-                </div>
-              </th>
-              <th className="px-4 py-2 text-left border-b text-black">Umur</th>
-              <th className="px-4 py-2 text-left border-b text-black">Status</th>
-              <th className="px-4 py-2 text-left border-b text-black">
-                <div className="flex flex-row gap-x-2">
-                  <SortColumn field="tanggal_daftar" label="Tanggal Daftar" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
-                </div>
-              </th>
-              <th className="px-4 py-2 text-left border-b text-black"></th>
-              <th className="px-4 py-2 text-left border-b text-black"></th>
+              <th className="px-4 py-2 border-b text-black">Link Unggahan</th>
+              <th className="px-4 py-2 border-b text-black"></th>
+              <th className="px-4 py-2 border-b text-black"></th>
             </tr>
           </thead>
           <tbody>
@@ -251,17 +213,19 @@ export default function AccountsPage() {
                   />
                 </td>
                 <td className="px-4 py-2 border-b text-black">{index + 1}</td>
-                <td className="px-4 py-2 border-b text-black">{item.nama}</td>
-                <td className="px-4 py-2 border-b text-black">{item.lpk}</td>
-                <td className="px-4 py-2 border-b text-black">{item.jurusan}</td>
-                <td className="px-4 py-2 border-b text-black">{item.tanggal_lahir ? `${umur(item.tanggal_lahir)} tahun` : "-"}</td>
-                <td className="px-4 py-2 border-b text-black">{item.lulus ? "Lulus" : "Belum lulus"}</td>
-                <td className="px-4 py-2 border-b text-black">{item.tanggal_daftar instanceof Timestamp
-                  ? item.tanggal_daftar.toDate().toLocaleDateString('id-ID', {
-                      day: '2-digit',
-                      month: 'long',
-                      year: 'numeric',
-                    }): "-"}
+                <td className="px-4 py-2 border-b text-black">{item.Judul}</td>
+                <td className="px-4 py-2 border-b text-black">{item.Tanggal.toDate().toLocaleDateString('id-ID', {
+                  day  : '2-digit',
+                  month: 'long',
+                  year : 'numeric',
+                })}</td>
+                <td className="px-4 py-2 border-b text-black">
+                  <Link
+                    href={item.link || ""}
+                    className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+                  >
+                    {item.link ? 'Link' : 'None'}
+                  </Link>
                 </td>
                 <td className="px-4 py-2 border-b text-black">
                   <button
@@ -331,6 +295,5 @@ export default function AccountsPage() {
         )}
       </div>
     </div>
-    
   );
 }

@@ -5,8 +5,8 @@ import Link from 'next/link';
 
 export default function ContentsForm() {
   return (
-    <div className="flex flex-row justify-center h-36 w-full gap-x-36 mt-48 min-h-screen">
-      <Link href="/dashboard/disnaker/contents/content-activity">
+    <div className="flex flex-row justify-center w-full gap-x-36 items-center">
+      <Link href="/dashboard/disnaker/contents/kegiatan">
         <Card
           className="w-72 h-96"
           title="Kegiatan Disnaker"
@@ -14,7 +14,7 @@ export default function ContentsForm() {
           icon={<BsFillFileEarmarkArrowUpFill />}
         />
       </Link>
-      <Link href="/dashboard/disnaker/contents/content-jobvacancy">
+      <Link href="/dashboard/disnaker/contents/lowongan">
         <Card
           className="w-72 h-96"
           title="Lowongan Perkerjaan"

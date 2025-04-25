@@ -1,5 +1,6 @@
 import Form from 'next/form';
 
+
 export default function ContentsJobVacancyForm() {
   return (
     <Form action="" className="flex flex-col gap-y-6 p-6">

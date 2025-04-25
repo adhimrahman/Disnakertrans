@@ -1,0 +1,288 @@
+'use client';
+
+import { collection, getDocs, setDoc, doc, Timestamp } from 'firebase/firestore';
+import { db } from '@/firebase/config';
+import Form from 'next/form';
+import React, { useState } from 'react';
+import { TextField, Button } from '@mui/material';
+import { PesertaLpk } from '@/models/PesertaLpk';
+
+export default function ContentsJobVacancyForm() {
+  const lpkRef = collection(db, "lpk");
+  const id = lpkRef.id;
+  const docRef = collection(db, `lpk/${id}/peserta`);
+  const [formData, setFormData] = useState<PesertaLpk>({
+    id: "",
+    nama: "",
+    lpk: 0,
+    jurusan: "",
+    jenis_kelamin: false,
+    tanggal_lahir: Timestamp.now(),
+    kontak: { alamat_tinggal: "", email: "", nomor_hp: "" },
+    tanggal_daftar: Timestamp.now(),
+    lulus: false,
+    isDelete: false
+  });
+
+  const [errors, setErrors] = useState<Partial<PesertaLpk>>({});
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [tanggalLahirStr, setTanggalLahirStr] = useState<string>("");
+  const [tanggalDaftarStr, setTanggalDaftarStr] = useState<string>("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: name === "lpk" ? Number(value) : value,
+    });
+    setErrors({
+      ...errors,
+      [name]: "",
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+
+    e.preventDefault();
+    setIsSubmitting(true);
+    setIsUploading(true);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const newErrors: any = {};
+    
+    // Perform form validation here
+    if (!formData.nama) newErrors.nama = "nama harus diisi";
+    if (!formData.jurusan) newErrors.jurusan = "jurusan harus diisi";
+    if (!formData.tanggal_lahir) newErrors.tanggal_lahir = "tanggal lahir perusahaan harus diisi";
+    if (!formData.kontak?.alamat_tinggal) newErrors.kontak = { ...(newErrors.kontak || {}), alamat_tinggal: "alamat_tinggal harus diisi" };
+    if (!formData.kontak?.email) newErrors.kontak = { ...(newErrors.kontak || {}), email: "email harus diisi" };
+    if (!formData.kontak?.nomor_hp) newErrors.kontak = { ...(newErrors.kontak || {}), nomor_hp: "nomor hp harus diisi" };
+    if (!formData.tanggal_daftar) newErrors.tanggal_daftar = "tanggal pendaftaran harus diisi";
+    
+    setErrors(newErrors);
+    
+    if (Object.keys(newErrors).length === 0) {
+      try {
+        // const imageUrl = await handleImageUpload();
+        const akunPesertaSnapshot = await getDocs(docRef);
+        let new_id = 1;
+        if (!akunPesertaSnapshot.empty) {
+          const maxId = akunPesertaSnapshot.docs.reduce((max, doc) => {
+            const idNumber = parseInt(doc.id.replace("peserta_0", ""), 10);
+            return idNumber > max ? idNumber : max;
+          }, 0);
+          new_id = maxId + 1;
+        }
+
+        const formattedBirthDate = Timestamp.fromDate(new Date(tanggalLahirStr));
+        const formattedRegisterDate = Timestamp.fromDate(new Date(tanggalDaftarStr));
+        const data = {
+          ...formData,
+          id: `peserta-${new_id}`,
+          lpk: formData.lpk,
+          tanggal_lahir: formattedBirthDate,
+          tanggal_daftar: formattedRegisterDate,
+          isDelete: false
+        };
+
+        const docId = `peserta-${new_id}`;
+        const newDocRef = doc(collection(db, `lpk/${formData.lpk}/peserta`), docId);
+        await setDoc(newDocRef, data);
+        alert("akun Berhasil Ditambahkan");
+        console.log("Form data:", formData);
+      } catch (e: unknown) {
+        // Cek apakah error adalah instance dari Error
+        if (e instanceof Error) {
+          console.error("Error adding document:", e.message);
+        } else {
+          // Tangani error lainnya yang bukan instance dari Error
+          console.error("Unknown error occurred", e);
+        }
+      } finally {
+        setIsSubmitting(false);
+        setIsUploading(false);
+      }
+    } else {
+      console.error("Form validation failed. Errors:", newErrors);
+    }
+  }
+
+  return (
+    <Form action="" onSubmit={handleSubmit} className="flex flex-col gap-y-6 p-6">
+      <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Nama peserta</p>
+      <TextField
+        placeholder='Tuliskan peserta disini'
+        name="nama"
+        value={formData.nama}
+        onChange={handleChange}
+        error={!!errors.nama}
+        helperText={errors.nama}
+        className='w-lg text-sm'
+        required
+      />
+      <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Nomor LPK</p>
+      <TextField
+        placeholder='Tuliskan Nomor LPK disini'
+        name="lpk"
+        value={formData.lpk}
+        onChange={handleChange}
+        error={!!errors.lpk}
+        helperText={errors.lpk}
+        className='w-lg text-sm'
+        required
+      />
+      <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Jurusan peserta</p>
+      <TextField
+        placeholder='Tuliskan jurusan disini'
+        name="jurusan"
+        value={formData.jurusan}
+        onChange={handleChange}
+        error={!!errors.jurusan}
+        helperText={errors.jurusan}
+        className='w-lg'
+        required
+      />
+      <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Jenis kelamin peserta</p>
+      <div className='flex flex-row gap-x-4 justify-between w-lg'>
+        <div className="flex flex-row gap-x-2">
+          <label className='text-black'>
+            <input
+              type="radio"
+              name="jenis_kelamin"
+              checked={formData.jenis_kelamin === true}
+              onChange={() => setFormData({ ...formData, jenis_kelamin: true })}
+            />
+              Pria
+          </label>
+          <label className='text-black'>
+            <input
+              type="radio"
+              name="jenis_kelamin"
+              checked={formData.jenis_kelamin === false}
+              onChange={() => setFormData({ ...formData, jenis_kelamin: false })}
+            />
+              Wanita
+          </label>
+        </div>
+      </div>
+      <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Tanggal lahir peserta</p>
+      <input
+        type="date"
+        name="tanggal_lahir"
+        value={tanggalLahirStr}
+        onChange={(e) => setTanggalLahirStr(e.target.value)}
+        className="w-34 p-1 border-2 border-black rounded-md text-black"
+      />
+      <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Kontak peserta</p>
+      <div className="flex flex-col gap-y-4">
+        <div className="flex flex-col gap-y-1">
+          <label htmlFor="alamat_tinggal" className="text-sm font-medium text-black">Alamat Tinggal</label>
+          <TextField
+            name="alamat_tinggal"
+            placeholder="Tuliskan alamat tinggal peserta disini"
+            value={formData.kontak.alamat_tinggal}
+            onChange={(e) => {
+              setFormData({
+                ...formData,
+                kontak: {
+                  ...formData.kontak,
+                  alamat_tinggal: (e.target.value),
+                },
+              })
+            }}
+            error={!!errors.kontak?.alamat_tinggal}
+            helperText={errors.kontak?.alamat_tinggal}
+            className="w-lg"
+            required
+          />
+        </div>
+
+        <div className="flex flex-col gap-y-1">
+          <label htmlFor="email" className="text-sm font-medium text-black">Kontak Email</label>
+          <TextField
+            name="email"
+            placeholder="Tuliskan email peserta disini"
+            value={formData.kontak.email}
+            onChange={(e) => {
+              setFormData({
+                ...formData,
+                kontak: {
+                  ...formData.kontak,
+                  email: (e.target.value),
+                },
+              })
+            }}
+            error={!!errors.kontak?.email}
+            helperText={errors.kontak?.email}
+            className="w-lg"
+            required
+          />
+        </div>
+
+        <div className="flex flex-col gap-y-1">
+          <label htmlFor="nomor_hp" className="text-sm font-medium text-black">Kontak Nomor HP</label>
+          <TextField
+            name="nomor_hp"
+            placeholder="Tuliskan nomor hp peserta disini"
+            value={formData.kontak.nomor_hp}
+            onChange={(e) => {
+              setFormData({
+                ...formData,
+                kontak: {
+                  ...formData.kontak,
+                  nomor_hp: (e.target.value),
+                },
+              })
+            }}
+            error={!!errors.kontak?.nomor_hp}
+            helperText={errors.kontak?.nomor_hp}
+            className="w-lg"
+            required
+          />
+        </div>
+      </div>
+      <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Kelulusan Peserta</p>
+      <div className='flex flex-row gap-x-4 justify-between w-lg'>
+        <div className="flex flex-row gap-x-2">
+          <label className='text-black'>
+            <input
+              type="radio"
+              name="lulus"
+              checked={formData.lulus === true}
+              onChange={() => setFormData({ ...formData, lulus: true })}
+            />
+            Telah Lulus
+          </label>
+          <label className='text-black'>
+            <input
+              type="radio"
+              name="lulus"
+              checked={formData.lulus === false}
+              onChange={() => setFormData({ ...formData, lulus: false })}
+            />
+              Belum Lulus
+          </label>
+        </div>
+      </div>
+      <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Tanggal pendaftaran peserta</p>
+      <input
+        type="date"
+        name="tanggal_daftar"
+        value={tanggalDaftarStr}
+        onChange={(e) => setTanggalDaftarStr(e.target.value)}
+        className="w-34 p-1 border-2 border-black rounded-md text-black"
+      />
+      <div className='flex flex-row gap-x-4 justify-between w-sm mt-12'>
+      <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          disabled={isSubmitting || isUploading}
+        >
+          {isSubmitting ? 'Submitting...' : 'Submit'}
+        </Button>
+      </div>
+    </Form>
+  );
+}
