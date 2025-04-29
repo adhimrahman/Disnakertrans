@@ -1,13 +1,18 @@
 'use client';
 
+// import { PesertaLpk } from "@/models/PesertaLpk";
 import { HiOutlineArrowSmRight, HiOutlineArrowSmLeft } from "react-icons/hi";
+import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect, useMemo } from "react";
+import { IoTrash } from "react-icons/io5";
 import {
   collection,
   query,
   where,
   getDocs,
+  updateDoc,
   Timestamp,
+  doc,
   DocumentData
 } from "firebase/firestore";
 import { db } from "@/firebase/config";
@@ -20,10 +25,12 @@ export default function AccountsPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [sortField, setSortField] = useState<"nama" |"tanggal_daftar" | "lpk" | "jurusan">("tanggal_daftar");
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
+  const [sortField, setSortField] = useState<"nama" |"tanggal_daftar" | "lpk" | "jurusan">("nama");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc"); // Track the sort order
   const [searchTerm, setSearchTerm] = useState<string>("");
-
+  const router = useRouter();
+  const { lpkId } = useParams();
 
   useEffect(() => {
     const savedItemsPerPage = localStorage.getItem("itemsPerPage");
@@ -32,34 +39,26 @@ export default function AccountsPage() {
 
   useEffect(() => {
     setLoading(true);
+
     const fetchAllPeserta = async () => {
+      if (!lpkId) return;
       console.log("fetchAllPeserta triggered. sort:", sortField, sortOrder);
-      const lpkCollection = collection(db, "lpk");
-      const lpkSnapshot = await getDocs(lpkCollection);
-
-      const semuaPeserta = await Promise.all(
-        lpkSnapshot.docs.map(async (lpkDoc) => {
-          const lpkId = lpkDoc.id;
-          const pesertaRef = collection(db, `lpk/${lpkId}/peserta`);
-          const pesertaQuery = query(
-            pesertaRef,
-            where("isDelete", "==", false),
-          );
-
-          const pesertaSnapshot = await getDocs(pesertaQuery);
-
-          const pesertaList = pesertaSnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setLoading(false);
-          return pesertaList;
-        })
+      const pesertaRef = collection(db, `lpk/${lpkId}/peserta`);
+      const req = query(
+        pesertaRef,
+        where("isDelete", "==", false),
       );
 
-      const gabungPeserta = semuaPeserta.flat();
+      const pesertaSnapshot = await getDocs(req);
 
-      gabungPeserta.sort((a, b) => {
+      const pesertaList = pesertaSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+
+
+      pesertaList.sort((a, b) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any  
         const getField = (item: any) => {
           if (sortField === "nama") return item.nama.toLowerCase();
@@ -77,12 +76,13 @@ export default function AccountsPage() {
         return 0;
       });
 
-      setAkun(gabungPeserta);
-      console.log("Data peserta:", gabungPeserta);
+      setAkun(pesertaList);
+      setLoading(false);
+      console.log("Data peserta:", pesertaList);
     };
 
     fetchAllPeserta();
-  }, [sortField, sortOrder]);
+  }, [lpkId, sortField, sortOrder]);
 
   const umur = (tanggalLahir: Timestamp) => {
     const today = new Date();
@@ -135,13 +135,53 @@ export default function AccountsPage() {
     currentPage * itemsPerPage
   );
 
+  const handelEdit = (id: string) => { router.push(`/dashboard/disnaker/lpk/${lpkId}/akun/edit/${id}`) }
+
+  const handleSingleDelete = (id: string) => {
+    const docRef = doc(db, `lpk/${lpkId}/peserta`, id);
+    updateDoc(docRef, { isDelete: true });
+  }
+
+  const handleSelectRow = (id: string) => {
+    setSelectedRows((prevSelectedRows) => {
+      if (prevSelectedRows.includes(id)) {
+        return prevSelectedRows.filter((rowId) => rowId !== id);  // Deselect row
+      } else {
+        return [...prevSelectedRows, id];  // Select row
+      }
+    });
+  };
+
+  const handleSelectAll = () => {
+    if (selectedRows.length === akun.length) {
+      setSelectedRows([]);  // Deselect all
+    } else {
+      setSelectedRows(akun.map((item) => item.id));  // Select all
+    }
+  };
+
+  const handleDeleteSelectedRows = () => {
+    // Perform delete on selected rows (soft delete in this case)
+    selectedRows.forEach(async (id) => {
+      const docRef = doc(db, `lpk/${lpkId}/peserta`, id);
+      await updateDoc(docRef, { isDelete: true });
+    });
+    setSelectedRows([]);  // Clear selected rows after delete
+  };
+
   return (
     <div className="flex flex-col gap-y-12">
-      <div className='flex flex-row gap-x-2 justify-end w-full hover:ring-black focus:ring-2 focus:ring-blue-500'>
+      <div className='flex flex-row gap-x-2 justify-between w-full'>
+        <button
+          type="submit"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-2 px-4 w-24 rounded-lg"
+          onClick={() => {router.push(`/dashboard/disnaker/lpk/${lpkId}/akun/add`)}}
+        >Tambah
+        </button>
         <SearchInput
           value={searchTerm}
           onChange={setSearchTerm} 
-          className="border border-gray-400 rounded-md px-4 py-2 text-sm w-sm text-black "
+          className="border border-black rounded-md px-4 py-2 text-sm w-sm text-black"
         />
       </div>
       <div className="flex flex-row gap-x-2 items-center">
@@ -169,6 +209,13 @@ export default function AccountsPage() {
             <table className="min-w-full table-auto shadow-md rounded-xl">
               <thead className="bg-white text-sm">
                 <tr>
+                  <th className="px-4 py-2 text-left border-b text-black">
+                    <input
+                      type="checkbox"
+                      checked={selectedRows.length > 0 && selectedRows.length === akun.length}
+                      onChange={handleSelectAll}
+                    />
+                  </th>
                   <th className="px-4 py-2 text-left border-b text-black">No</th>
                   <th className="px-4 py-2 text-left border-b text-black">
                     <div className="flex flex-row gap-x-2">
@@ -192,30 +239,59 @@ export default function AccountsPage() {
                       <SortColumn field="tanggal_daftar" label="Tanggal Daftar" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
                     </div>
                   </th>
+                  <th className="px-4 py-2 text-left border-b text-black"></th>
+                  <th className="px-4 py-2 text-left border-b text-black"></th>
                 </tr>
               </thead>
               <tbody className="bg-white">
-                {akun.length > 0 ? (
+                {currentItems.length > 0 ? (
                   currentItems.map((item, index) => (
-                    <tr key={item.id} className="hover:bg-gray-50 text-sm">
-                      <td className="px-4 py-2 border-t text-black">{(currentPage - 1) * itemsPerPage + (index + 1)}</td>
-                      <td className="px-4 py-2 border-t text-black">{item.nama}</td>
-                      <td className="px-4 py-2 border-t text-black">{item.lpk}</td>
-                      <td className="px-4 py-2 border-t text-black">{item.jurusan}</td>
-                      <td className="px-4 py-2 border-t text-black">{item.tanggal_lahir ? `${umur(item.tanggal_lahir)} tahun` : "-"}</td>
-                      <td className="px-4 py-2 border-t text-black">{item.lulus ? "Lulus" : "Belum lulus"}</td>
-                      <td className="px-4 py-2 border-t text-black">{item.tanggal_daftar instanceof Timestamp
-                        ? item.tanggal_daftar.toDate().toLocaleDateString('id-ID', {
+                  <tr key={item.id} className="hover:bg-gray-50 text-sm">
+                    <td className="px-4 py-2 border-b text-black">
+                      <input
+                        type="checkbox"
+                        checked={selectedRows.includes(item.id)}
+                        onChange={() => handleSelectRow(item.id)}
+                      />
+                    </td>
+                    <td className="px-4 py-2 border-b text-black">{(currentPage - 1) * itemsPerPage + (index + 1)}</td>
+                    <td className="px-4 py-2 border-b text-black">{item.nama}</td>
+                    <td className="px-4 py-2 border-b text-black">{item.lpk}</td>
+                    <td className="px-4 py-2 border-b text-black">{item.jurusan}</td>
+                    <td className="px-4 py-2 border-b text-black">{item.tanggal_lahir ? `${umur(item.tanggal_lahir)} tahun` : "-"}</td>
+                    <td className="px-4 py-2 border-b text-black">{item.lulus ? "Lulus" : "Belum lulus"}</td>
+                    <td className="px-4 py-2 border-b text-black">{item.tanggal_daftar instanceof Timestamp
+                      ? item.tanggal_daftar.toDate().toLocaleDateString('id-ID', {
                           day: '2-digit',
                           month: 'long',
                           year: 'numeric',
-                        }) : "-"}
-                      </td>
-                    </tr>
+                        }): "-"}
+                    </td>
+                    <td className="px-4 py-2 border-b text-black">
+                      <button
+                        type="button"
+                        className="bg-gray-200 hover:bg-gray-300 text-black font-base py-1 px-4 w-16 rounded-lg"
+                        onClick={() => {handelEdit(item.id)}}
+                      >
+                        Edit
+                      </button>
+                    </td>
+                    <td className="px-4 py-2 border-b text-black">
+                      <button
+                        type="reset"
+                        className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 w-12 rounded-lg text-center"
+                        onClick={() => {handleSingleDelete(item.id)}}
+                      >
+                        <IoTrash className="w-4 h-4"/>
+                      </button>
+                    </td>
+                  </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={8} className="px-4 py-2 border-b text-black text-center">Tidak ada peserta LPK</td>
+                    <td colSpan={10} className="px-4 py-8 text-center bg-white text-black text-sm">
+                      Tidak ada data peserta
+                    </td>
                   </tr>
                 )}
               </tbody>
@@ -229,7 +305,7 @@ export default function AccountsPage() {
               >
                 <HiOutlineArrowSmLeft />
               </button>
-
+    
               {/* Page Numbers */}
               {Array.from({ length: totalPages }, (_, index) => (
                 <button
@@ -244,7 +320,7 @@ export default function AccountsPage() {
                   {index + 1}
                 </button>
               ))}
-
+    
               {/* Next Button */}
               <button
                 onClick={() => setCurrentPage(currentPage + 1)}
@@ -254,9 +330,20 @@ export default function AccountsPage() {
                 <HiOutlineArrowSmRight />
               </button>
             </div>
+            {selectedRows.length > 0 && (
+              <div className="mt-4">
+                <button
+                  onClick={handleDeleteSelectedRows}
+                  className="bg-red-500 hover:bg-red-700 text-white text-xs font-medium py-2 px-4 rounded-lg"
+                >
+                  Hapus Terpilih
+                </button>
+              </div>
+            )}
           </>
         )}
       </div>
     </div>
+    
   );
 }

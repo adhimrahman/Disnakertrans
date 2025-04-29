@@ -12,7 +12,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen w-screen">
       <Sidebar />
-      <div className="ml-72 flex flex-col flex-1 bg-gray-50">
+      <div className="ml-60 flex flex-col flex-1 bg-gray-100">
         <Searchbar />
         <main className="p-20 w-full">{children}</main>
       </div>

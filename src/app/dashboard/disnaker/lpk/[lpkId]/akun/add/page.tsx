@@ -1,18 +1,17 @@
 'use client';
 
-import { collection, getDocs, setDoc, doc, Timestamp } from 'firebase/firestore';
+import { collection, Timestamp, addDoc } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import Form from 'next/form';
 import React, { useState } from 'react';
 import { TextField, Button } from '@mui/material';
 import { PesertaLpk } from '@/models/PesertaLpk';
+import { useParams } from 'next/navigation';
 
 export default function ContentsJobVacancyForm() {
-  const lpkRef = collection(db, "lpk");
-  const id = lpkRef.id;
-  const docRef = collection(db, `lpk/${id}/peserta`);
+  const { lpkId } = useParams();
+  const docRef = collection(db, `lpk/${lpkId}/peserta`);
   const [formData, setFormData] = useState<PesertaLpk>({
-    id: "",
     nama: "",
     lpk: 0,
     jurusan: "",
@@ -53,6 +52,7 @@ export default function ContentsJobVacancyForm() {
     
     // Perform form validation here
     if (!formData.nama) newErrors.nama = "nama harus diisi";
+    if (!formData.lpk) newErrors.lpk = 'Nomor LPK harus diisi';
     if (!formData.jurusan) newErrors.jurusan = "jurusan harus diisi";
     if (!formData.tanggal_lahir) newErrors.tanggal_lahir = "tanggal lahir perusahaan harus diisi";
     if (!formData.kontak?.alamat_tinggal) newErrors.kontak = { ...(newErrors.kontak || {}), alamat_tinggal: "alamat_tinggal harus diisi" };
@@ -65,30 +65,13 @@ export default function ContentsJobVacancyForm() {
     if (Object.keys(newErrors).length === 0) {
       try {
         // const imageUrl = await handleImageUpload();
-        const akunPesertaSnapshot = await getDocs(docRef);
-        let new_id = 1;
-        if (!akunPesertaSnapshot.empty) {
-          const maxId = akunPesertaSnapshot.docs.reduce((max, doc) => {
-            const idNumber = parseInt(doc.id.replace("peserta_0", ""), 10);
-            return idNumber > max ? idNumber : max;
-          }, 0);
-          new_id = maxId + 1;
-        }
-
-        const formattedBirthDate = Timestamp.fromDate(new Date(tanggalLahirStr));
-        const formattedRegisterDate = Timestamp.fromDate(new Date(tanggalDaftarStr));
-        const data = {
+        await addDoc(docRef, {
           ...formData,
-          id: `peserta-${new_id}`,
-          lpk: formData.lpk,
-          tanggal_lahir: formattedBirthDate,
-          tanggal_daftar: formattedRegisterDate,
+          tanggal_lahir: Timestamp.fromDate(new Date(tanggalLahirStr)),
+          tanggal_daftar: Timestamp.fromDate(new Date(tanggalDaftarStr)),
           isDelete: false
-        };
+        })
 
-        const docId = `peserta-${new_id}`;
-        const newDocRef = doc(collection(db, `lpk/${formData.lpk}/peserta`), docId);
-        await setDoc(newDocRef, data);
         alert("akun Berhasil Ditambahkan");
         console.log("Form data:", formData);
       } catch (e: unknown) {
@@ -172,7 +155,7 @@ export default function ContentsJobVacancyForm() {
         name="tanggal_lahir"
         value={tanggalLahirStr}
         onChange={(e) => setTanggalLahirStr(e.target.value)}
-        className="w-34 p-1 border-2 border-black rounded-md text-black"
+        className="w-34 p-1 border-1 border-black rounded-md text-black text-sm"
       />
       <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Kontak peserta</p>
       <div className="flex flex-col gap-y-4">
@@ -203,7 +186,7 @@ export default function ContentsJobVacancyForm() {
           <TextField
             name="email"
             placeholder="Tuliskan email peserta disini"
-            value={formData.kontak.email}
+            value={formData.kontak?.email}
             onChange={(e) => {
               setFormData({
                 ...formData,
@@ -271,7 +254,7 @@ export default function ContentsJobVacancyForm() {
         name="tanggal_daftar"
         value={tanggalDaftarStr}
         onChange={(e) => setTanggalDaftarStr(e.target.value)}
-        className="w-34 p-1 border-2 border-black rounded-md text-black"
+        className="w-34 p-1 border-1 border-black rounded-md text-black text-sm"
       />
       <div className='flex flex-row gap-x-4 justify-between w-sm mt-12'>
       <Button

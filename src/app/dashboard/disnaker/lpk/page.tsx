@@ -1,61 +1,86 @@
 "use client"
 
-import { useState } from "react"
-import { Pagination } from "@/components/dashboard/Pagination"
+// import { useState } from "react"
 import { BsBriefcaseFill } from "react-icons/bs";
 import Card from "@/components/dashboard/Card"
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { collection, where, query, DocumentData, getDocs, orderBy } from "firebase/firestore";
+import { db } from "@/firebase/config";
+import { HiOutlineArrowSmLeft, HiOutlineArrowSmRight } from "react-icons/hi";
 
-export default function PaginationDemo() {
-  const [currentPage, setCurrentPage] = useState(1)
-  const totalItems = 22
-  const itemsPerPage = 9
+export default function LpkPage() {
+  const [lpk, setLpk] = useState<DocumentData[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const router = useRouter();
 
-  // Generate sample data
-  const generateItems = () => {
-    return Array.from({ length: totalItems }, (_, i) => ({
-      id: i + 1,
-      title: `Item ${i + 1}`,
-      description: `This is a description for item ${i + 1}. Hover to see the blue ring effect.`,
-    }))
-  }
+  const itemsPerPage = 9;
 
-  const allItems = generateItems()
+  useEffect(() => {
+    const req = query(
+      collection(db, "lpk"),
+      where("isDelete", "==", false),
+      orderBy("nama", "asc")
+    );
 
-  // Calculate the current items to display
-  const indexOfLastItem = currentPage * itemsPerPage
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage
-  const currentItems = allItems.slice(indexOfFirstItem, indexOfLastItem)
+    const fetch = async () => {
+      const data = await getDocs(req);
+      setLpk(data.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      })));
+    };
+
+    fetch();
+  }, []);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const totalPages = Math.ceil(lpk.length / itemsPerPage);
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="mb-8 text-2xl font-bold">Card Items with Hover Effect</h1>
-
-      <div className="mb-6">
-        <p className="text-sm text-muted-foreground">
-          Showing {indexOfFirstItem + 1}-{Math.min(indexOfLastItem, totalItems)} of {totalItems} items
-        </p>
+    <>
+      <div className="grid grid-cols-3 grid-rows-3 gap-12">
+        {lpk.slice(startIndex, endIndex).map((item) => {
+          return (
+            <Card
+              key={item.id}
+              title={item.nama}
+              body={item.alamat}
+              icon={<BsBriefcaseFill className="text-black "/>}
+              onClick={() => router.push(`/dashboard/disnaker/lpk/${item.id}`)}
+            />
+          );
+        })}
       </div>
-
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {currentItems.map((item) => (
-          <Card
-            key={item.id}
-            title={item.title}
-            body={item.description}
-            icon={<BsBriefcaseFill />}
-          />
+      <div className="flex justify-center mt-8 gap-2">
+        <button
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="px-3 py-2 text-sm font-base text-black border rounded-md hover:bg-gray-300 disabled:opacity-50"
+        >
+          <HiOutlineArrowSmLeft />
+        </button>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+        <button
+          key={pageNum}
+          onClick={() => setCurrentPage(pageNum)}
+          className={`px-3 py-2 text-sm border rounded ${
+            currentPage === pageNum
+              ? 'bg-blue-500 text-white'
+              : 'text-black hover:bg-gray-300'
+            } border rounded-md`}
+        >{pageNum}
+        </button>
         ))}
+        <button
+          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="px-3 py-2 text-sm font-base text-black border rounded-md hover:bg-gray-300 disabled:opacity-50"
+        >
+          <HiOutlineArrowSmRight />
+        </button>
       </div>
-
-      <div className="mt-8 flex items-center justify-center">
-        <Pagination
-          totalItems={totalItems}
-          itemsPerPage={itemsPerPage}
-          currentPage={currentPage}
-          onPageChange={setCurrentPage}
-          siblingsCount={1}
-        />
-      </div>
-    </div>
-  )
-}
+    </>
+  );
+};

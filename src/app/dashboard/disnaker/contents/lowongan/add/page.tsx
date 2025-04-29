@@ -10,7 +10,7 @@ import { GoPlus } from "react-icons/go";
 import { Lowongan } from '@/models/Lowongan';
 // import { CloudinaryResult } from '@/models/CloudinaryResults';
 
-export default function ContentsJobVacancyForm() {
+export default function AddLowonganKerjaPage() {
   const docRef = collection(db, "lowongan");
   const [formData, setFormData] = useState<Lowongan>({
     Judul: "",
@@ -34,8 +34,8 @@ export default function ContentsJobVacancyForm() {
 
   const [errors, setErrors] = useState<Partial<Lowongan>>({});
   const [newSyarat, setNewSyarat] = useState<string>("");
-  const [isUploading, setIsUploading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -84,7 +84,6 @@ export default function ContentsJobVacancyForm() {
       };
     });
   };
-  
 
   const handleSubmit = async (e: React.FormEvent) => {
 
@@ -99,7 +98,9 @@ export default function ContentsJobVacancyForm() {
     if (!formData.Judul) newErrors.Judul = "Judul harus diisi";
     if (!formData.nama_lowongan) newErrors.nama_lowongan = "Nama lowongan harus diisi";
     if (!formData.Deskripsi) newErrors.Deskripsi = "Deskripsi harus diisi";
-    if (!formData.BatasLowongan) newErrors.BatasLowongan = "Batas lowongan harus diisi";
+    if (!formData.BatasLowongan) {
+      newErrors.BatasLowongan = "Batas lowongan harus diisi"
+    };
     if (!formData.Perusahaan) newErrors.Perusahaan = "Nama perusahaan harus diisi";
     if (!formData.Alamat) newErrors.Alamat = "Alamat perusahaan harus diisi";
     if (!formData.LinkLowongan) newErrors.LinkLowongan = "Link lowongan harus diisi";
@@ -108,63 +109,78 @@ export default function ContentsJobVacancyForm() {
     if (!formData.Range?.min) newErrors.Range = { ...(newErrors.Range || {}), min: "Gaji minimum harus diisi" };
     if (!formData.Range?.max) newErrors.Range = { ...(newErrors.Range || {}), max: "Gaji maksimum harus diisi" };
     
+    let batasLowonganTimestamp: Timestamp | null = null;
+    if (formData.BatasLowongan instanceof Timestamp) {
+      batasLowonganTimestamp = formData.BatasLowongan;
+    }
+    // else if (formData.BatasLowongan instanceof Date) {
+    //   // Kalau Date, ubah ke Timestamp
+    //   batasLowonganTimestamp = Timestamp.fromDate(formData.BatasLowongan);
+    // }
+    else if (typeof formData.BatasLowongan === "string") {
+      const parsedDate = new Date(formData.BatasLowongan);
+      if (!isNaN(parsedDate.getTime())) { // cek kalau string valid
+        batasLowonganTimestamp = Timestamp.fromDate(parsedDate);
+      } else {
+        newErrors.BatasLowongan = "Format tanggal batas lowongan tidak valid";
+      }
+    }
+
     setErrors(newErrors);
     
-    if (Object.keys(newErrors).length === 0) {
-      try {
-        // const imageUrl = await handleImageUpload();
-        const lowonganSnapshot = await getDocs(docRef);
-        let new_id = 1;
-        if (!lowonganSnapshot.empty) {
-          const maxId = lowonganSnapshot.docs.reduce((max, doc) => {
-            const idNumber = parseInt(doc.id.replace("lowongan_0", ""), 10);
-            return idNumber > max ? idNumber : max;
-          }, 0);
-          new_id = maxId + 1;
-        }
-
-        let batasLowonganTimestamp;
-        if (formData.BatasLowongan instanceof Date) {
-          batasLowonganTimestamp = Timestamp.fromDate(formData.BatasLowongan);
-        } else if (typeof formData.BatasLowongan === "string") {
-          batasLowonganTimestamp = Timestamp.fromDate(new Date(formData.BatasLowongan));
-        } else {
-          newErrors.BatasLowongan = "Batas lowongan tidak valid";
-        } // Jika string, konversi ke Date, lalu ke Timestamp
-
-        const data = {
-          ...formData,
-          BatasLowongan: batasLowonganTimestamp,
-          ImageSampul: null,
-          tanggal_unggah: Timestamp.now(),
-          isDelete: false
-        };
-
-        const docId = `lowongan_${new_id}`;
-        const newDocRef = doc(docRef, docId);
-        await setDoc(newDocRef, data);
-        alert("Konten Lowongan Berhasil Ditambahkan");
-        console.log("Form data:", formData);
-      } catch (e: unknown) {
-        // Cek apakah error adalah instance dari Error
-        if (e instanceof Error) {
-          console.error("Error adding document:", e.message);
-        } else {
-          // Tangani error lainnya yang bukan instance dari Error
-          console.error("Unknown error occurred", e);
-        }
-      } finally {
-        setIsSubmitting(false);
-        setIsUploading(false);
-      }
-    } else {
+    if (Object.keys(newErrors).length > 0) {
       console.error("Form validation failed. Errors:", newErrors);
+      setIsSubmitting(false);
+      setIsUploading(false);
+      return; // STOP lanjut submit kalau ada error
     }
-  }
+      
+    try {
+      // const imageUrl = await handleImageUpload();
+      const lowonganSnapshot = await getDocs(docRef);
+      let new_id = 1;
+  /**
+   * Handles changes to the tipe pekerjaan field.
+   * @param e - The change event.
+   */
+      if (!lowonganSnapshot.empty) {
+        const maxId = lowonganSnapshot.docs.reduce((max, doc) => {
+          const idNumber = parseInt(doc.id.replace("lowongan_", ""), 10);
+          return idNumber > max ? idNumber : max;
+        }, 0);
+        new_id = maxId + 1;
+      }
+
+      const data = {
+        ...formData,
+        BatasLowongan: batasLowonganTimestamp,
+        ImageSampul: null,
+        tanggal_unggah: Timestamp.now(),
+        isDelete: false
+      };
+
+      const docId = `lowongan_${new_id}`;
+      const newDocRef = doc(docRef, docId);
+      await setDoc(newDocRef, data);
+      alert("Konten Lowongan Berhasil Ditambahkan");
+      console.log("Form data:", formData);
+    } catch (e) {
+      // Cek apakah error adalah instance dari Error
+      if (e instanceof Error) {
+        console.error("Error adding document:", e.message);
+      } else {
+        // Tangani error lainnya yang bukan instance dari Error
+        console.error("Unknown error occurred", e);
+      }
+    } finally {
+      setIsSubmitting(false);
+      setIsUploading(false);
+    }
+  };  
 
   return (
-    <Form action="" onSubmit={handleSubmit} className="flex flex-col gap-y-6 p-6">
-      <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Judul Konten</p>
+    <Form action="" onSubmit={handleSubmit} className="flex flex-col gap-y-6 p-6 w-lg">
+      <p className='text-base text-black font-medium inline border-b-3 border-blue-500'>Judul Konten</p>
       <TextField
         placeholder='Tuliskan judul konten lowongan disini'
         name="Judul"
@@ -172,8 +188,7 @@ export default function ContentsJobVacancyForm() {
         onChange={handleChange}
         error={!!errors.Judul}
         helperText={errors.Judul}
-        className='w-lg'
-        required
+        fullWidth
       />
       <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Nama Pekerjaan</p>
       <TextField
@@ -183,8 +198,8 @@ export default function ContentsJobVacancyForm() {
         onChange={handleChange}
         error={!!errors.nama_lowongan}
         helperText={errors.nama_lowongan}
-        className='w-lg'
-        required
+        fullWidth
+        
       />
       <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Gambar Sampul</p>
       {/* <Button
@@ -207,8 +222,7 @@ export default function ContentsJobVacancyForm() {
         onChange={handleChange}
         error={!!errors.Deskripsi}
         helperText={errors.Deskripsi}
-        className='w-lg'
-        required
+        fullWidth
       />
       <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Batas Lowongan</p>
       <input
@@ -226,6 +240,7 @@ export default function ContentsJobVacancyForm() {
             BatasLowongan: newDate,
           });
         }}
+        className='w-40 rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-black focus:ring-2 focus:ring-blue-500 text-black text-sm font-base p-2 shadow-xl'
       />
       <h2 className='text-base font-medium text-black inline border-b-3 border-blue-500 w-lg'>Range Gaji</h2>
       <div className='flex flex-row gap-x-5 justify-between w-sm'>
@@ -248,6 +263,7 @@ export default function ContentsJobVacancyForm() {
             error={!!errors.Range?.max}
             helperText={errors.Range?.max}
             required
+            fullWidth
           />
         </div>
         <p className='text-lg font-semibold text-black items-center'>--</p>
@@ -325,8 +341,7 @@ export default function ContentsJobVacancyForm() {
         onChange={handleChange}
         error={!!errors.Perusahaan}
         helperText={errors.Perusahaan}
-        className='w-lg'
-        required
+        fullWidth
       />
       <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Alamat Perusahaan</p>
       <TextField
@@ -336,8 +351,7 @@ export default function ContentsJobVacancyForm() {
         onChange={handleChange}
         error={!!errors.Alamat}
         helperText={errors.Alamat}
-        className='w-lg'
-        required
+        fullWidth
       />
       <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Link resmi lowongan pekerjaan</p>
       <TextField
@@ -348,8 +362,7 @@ export default function ContentsJobVacancyForm() {
         onChange={handleChange}
         error={!!errors.LinkLowongan}
         helperText={errors.LinkLowongan}
-        className='w-lg'
-        required
+        fullWidth
       />
       <div className='flex flex-row gap-x-4 justify-between w-sm mt-12'>
       <Button

@@ -1,17 +1,16 @@
 import { Timestamp } from "@firebase/firestore";
 export interface PesertaLpk {
-  id: string;
   nama: string;
   lpk: number,
   jurusan: string;
   jenis_kelamin: boolean;
-  tanggal_lahir: Timestamp;
-  kontak?: {
+  tanggal_lahir: Timestamp | null;
+  kontak: {
     alamat_tinggal: string;
     email: string;
     nomor_hp: string;
   },
   lulus: boolean;
-  tanggal_daftar: Timestamp;
+  tanggal_daftar: Timestamp | null;
   isDelete: boolean
 }

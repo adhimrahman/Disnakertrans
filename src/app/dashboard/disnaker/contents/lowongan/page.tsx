@@ -9,7 +9,7 @@ import {
   collection,
   query,
   where,
-  onSnapshot,
+  onSnapshot, 
   updateDoc,
   doc,
   DocumentData,
@@ -17,9 +17,11 @@ import {
 import { db } from "@/firebase/config";
 import { SortColumn } from "@/components/dashboard/Sort";
 import { SearchInput } from "@/components/dashboard/SearchTable";
+import { PulseLoader } from "react-spinners";
 
 export default function LowonganPage() { 
   const [lowongan, setLowongan] = useState<DocumentData[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
@@ -34,6 +36,7 @@ export default function LowonganPage() {
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     // Query data untuk mengambil data yang isDelete == false
     const req = query(
       collection(db, "lowongan"),
@@ -46,6 +49,7 @@ export default function LowonganPage() {
         ...doc.data(),
       }));
       setLowongan(data); //Update data setiap ada perubahan
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -155,7 +159,7 @@ export default function LowonganPage() {
         <button
           type="submit"
           className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-2 px-4 w-24 rounded-lg"
-          onClick={() => {router.push('/dashboard/disnaker/accounts/add')}}
+          onClick={() => {router.push('/dashboard/disnaker/contents/lowongan/add')}}
         >
           Tambah
         </button>
@@ -182,133 +186,149 @@ export default function LowonganPage() {
         <p className="text-black text-sm font-base">entries</p>
       </div>
       <div>
-        <table className="min-w-full table-auto shadow-sm rounded-md">
-          <thead className="bg-gray-100 text-sm">
-            <tr>
-              <th className="px-4 py-2 text-left border-b text-black">
-                <input
-                  type="checkbox"
-                  checked={selectedRows.length > 0 && selectedRows.length === lowongan.length}
-                  onChange={handleSelectAll}
-                />
-              </th>
-              <th className="px-4 py-2 text-left border-b text-black">No</th>
-              <th className="px-4 py-2 text-left border-b text-black">
-                <div className="flex flex-row gap-x-2">
-                  <SortColumn field="Judul" label="Judul" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
-                </div>
-              </th>
-              <th className="px-4 py-2 text-left border-b text-black">
-                <div className="flex flex-row gap-x-2">
-                  <SortColumn field="BatasLowongan" label="Batas Lowongan" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
-                </div>
-              </th>
-              <th className="px-4 py-2 text-left border-b text-black">
-                <div className="flex flex-row gap-x-2">
-                  <SortColumn field="tanggal_unggah" label="Tanggal Upload" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
-                </div>
-              </th>
-              <th className="px-4 py-2 text-left border-b text-black">Link Unggahan</th>
-              <th className="px-4 py-2 text-left border-b text-black"></th>
-              <th className="px-4 py-2 text-left border-b text-black"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentItems.map((item, index) => (
-              <tr key={item.id} className="hover:bg-gray-50 text-sm">
-                <td className="px-4 py-2 border-b text-black">
-                  <input
-                    type="checkbox"
-                    checked={selectedRows.includes(item.id)}
-                    onChange={() => handleSelectRow(item.id)}  // Toggle row selection
-                  />
-                </td>
-                <td className="px-4 py-2 border-b text-black">{index + 1}</td>
-                <td className="px-4 py-2 border-b text-black">{item.Judul}</td>
-                <td className="px-4 py-2 border-b text-black">{item.BatasLowongan.toDate().toLocaleDateString('id-ID', {
-                  day  : '2-digit',
-                  month: 'long',
-                  year : 'numeric'
-                })}</td>
-                <td className="px-4 py-2 border-b text-black">{item.tanggal_unggah.toDate().toLocaleDateString('id-ID', {
-                  day  : '2-digit',
-                  month: 'long',
-                  year : 'numeric'
-                })}</td>
-                <td className="px-4 py-2 border-b text-black">
-                  <Link
-                    href={item.link_konten || ""}
-                    className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
-                  >
-                    {item.link_konten ? 'Link' : 'None'}
-                  </Link>
-                </td>
-                <td className="px-4 py-2 border-b text-black">
-                  <button
-                    type="reset"
-                    className="bg-gray-200 hover:bg-gray-300 text-black font-base py-1 px-4 w-16 rounded-lg"
-                    onClick={() => {handelEdit(item.id)}}
-                  >
-                    Edit
-                  </button>
-                </td>
-                <td className="px-4 py-2 border-b text-black">
-                  <button
-                    type="reset"
-                    className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 w-12 rounded-lg text-center"
-                    onClick={() => {handleSingleDelete(item.id)}}
-                  >
-                    <IoTrash className="w-4 h-4"/>
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className="flex items-center space-x-2 mt-8 justify-end">
-          {/* Previous Button */}
-          <button
-            onClick={() => setCurrentPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className="px-3 py-2 text-sm font-base text-black border rounded-md hover:bg-gray-300 disabled:opacity-50"
-          >
-            <HiOutlineArrowSmLeft />
-          </button>
-
-          {/* Page Numbers */}
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index + 1}
-              onClick={() => setCurrentPage(index + 1)}
-              className={`px-3 py-2 text-sm font-base ${
-                currentPage === index + 1
-                  ? 'bg-blue-500 text-white'
-                  : 'text-black hover:bg-gray-300'
-              } border rounded-md`}
-            >
-              {index + 1}
-            </button>
-          ))}
-
-          {/* Next Button */}
-          <button
-            onClick={() => setCurrentPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className="px-3 py-2 text-sm font-base text-black border rounded-md hover:bg-gray-300 disabled:opacity-50"
-          >
-            <HiOutlineArrowSmRight />
-          </button>
-        </div>
-        {selectedRows.length > 0 && (
-          <div className="mt-6">
-            <button
-              onClick={handleDeleteSelectedRows}
-              className="bg-red-500 hover:bg-red-700 text-white text-xs font-medium py-2 px-4 rounded-lg"
-            >
-              Hapus Terpilih
-            </button>
+        {loading ? (
+          <div className="flex justify-center items-center py-10">
+            <PulseLoader color="#3B82F6" />
           </div>
-        )};
+        ) : (
+          <>
+            <table className="min-w-full table-auto shadow-sm rounded-md">
+                <thead className="bg-white text-sm">
+                  <tr>
+                    <th className="px-4 py-2 text-left border-b text-black">
+                      <input
+                        type="checkbox"
+                        checked={selectedRows.length > 0 && selectedRows.length === lowongan.length}
+                        onChange={handleSelectAll}
+                      />
+                    </th>
+                    <th className="px-4 py-2 text-left border-b text-black">No</th>
+                    <th className="px-4 py-2 text-left border-b text-black">
+                      <div className="flex flex-row gap-x-2">
+                        <SortColumn field="Judul" label="Judul" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
+                      </div>
+                    </th>
+                    <th className="px-4 py-2 text-left border-b text-black">
+                      <div className="flex flex-row gap-x-2">
+                        <SortColumn field="BatasLowongan" label="Batas Lowongan" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
+                      </div>
+                    </th>
+                    <th className="px-4 py-2 text-left border-b text-black">
+                      <div className="flex flex-row gap-x-2">
+                        <SortColumn field="tanggal_unggah" label="Tanggal Upload" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
+                      </div>
+                    </th>
+                    <th className="px-4 py-2 text-left border-b text-black">Link Unggahan</th>
+                    <th className="px-4 py-2 text-left border-b text-black"></th>
+                    <th className="px-4 py-2 text-left border-b text-black"></th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white">
+                  {currentItems.length > 0 && lowongan.length > 0 ? (
+                    currentItems.map((item, index) => (
+                      <tr key={item.id} className="hover:bg-gray-50 text-sm">
+                        <td className="px-4 py-2 border-b text-black">
+                          <input
+                            type="checkbox"
+                            checked={selectedRows.includes(item.id)}
+                            onChange={() => handleSelectRow(item.id)}  // Toggle row selection
+                          />
+                        </td>
+                        <td className="px-4 py-2 border-b text-black">{(currentPage - 1) * itemsPerPage + (index + 1)}</td>
+                        <td className="px-4 py-2 border-b text-black">{item.Judul}</td>
+                        <td className="px-4 py-2 border-b text-black">{item.BatasLowongan.toDate().toLocaleDateString('id-ID', {
+                          day: '2-digit',
+                          month: 'long',
+                          year: 'numeric'
+                        })}</td>
+                        <td className="px-4 py-2 border-b text-black">{item.tanggal_unggah.toDate().toLocaleDateString('id-ID', {
+                          day: '2-digit',
+                          month: 'long',
+                          year: 'numeric'
+                        })}</td>
+                        <td className="px-4 py-2 border-b text-black">
+                          <Link
+                            href={item.link_konten || ""}
+                            className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+                          >
+                            {item.link_konten ? 'Link' : 'None'}
+                          </Link>
+                        </td>
+                        <td className="px-4 py-2 border-b text-black">
+                          <button
+                            type="reset"
+                            className="bg-gray-200 hover:bg-gray-300 text-black font-base py-1 px-4 w-16 rounded-lg"
+                            onClick={() => { handelEdit(item.id) }}
+                          >
+                            Edit
+                          </button>
+                        </td>
+                        <td className="px-4 py-2 border-b text-black">
+                          <button
+                            type="reset"
+                            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 w-12 rounded-lg text-center"
+                            onClick={() => { handleSingleDelete(item.id) }}
+                          >
+                            <IoTrash className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={8} className="px-4 py-2 text-center border-b text-black">
+                        Tidak ada data lowongan
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+            </table>
+            <div className="flex items-center space-x-2 mt-8 justify-end">
+                {/* Previous Button */}
+                <button
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-3 py-2 text-sm font-base text-black border rounded-md hover:bg-gray-300 disabled:opacity-50"
+                >
+                  <HiOutlineArrowSmLeft />
+                </button>
+      
+                {/* Page Numbers */}
+                {Array.from({ length: totalPages }, (_, index) => (
+                  <button
+                    key={index + 1}
+                    onClick={() => setCurrentPage(index + 1)}
+                    className={`px-3 py-2 text-sm font-base ${
+                      currentPage === index + 1
+                        ? 'bg-blue-500 text-white'
+                        : 'text-black hover:bg-gray-300'
+                    } border rounded-md`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+      
+                {/* Next Button */}
+                <button
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-2 text-sm font-base text-black border rounded-md hover:bg-gray-300 disabled:opacity-50"
+                >
+                  <HiOutlineArrowSmRight />
+                </button>
+            </div>
+            {selectedRows.length > 0 && (
+                <div className="mt-6">
+                  <button
+                    onClick={handleDeleteSelectedRows}
+                    className="bg-red-500 hover:bg-red-700 text-white text-xs font-medium py-2 px-4 rounded-lg"
+                  >
+                    Hapus Terpilih
+                  </button>
+                </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   );

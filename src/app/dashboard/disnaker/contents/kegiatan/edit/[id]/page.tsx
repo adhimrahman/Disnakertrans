@@ -1,67 +1,147 @@
-import Form from 'next/form';
+'use client';
 
-export default function ContentsActivityForm() {
+import { doc, getDoc, Timestamp, updateDoc } from 'firebase/firestore';
+import Form from 'next/form';
+import { useState, useEffect } from 'react';
+import { db } from '@/firebase/config';
+import { useParams } from 'next/navigation';
+import { TextField, Button } from '@mui/material';
+import { Kegiatan } from '@/models/Kegiatan';
+
+export default function EditKontenKegiatanPage() {
+    const [formData, setFormData] = useState<Kegiatan>({
+      Judul: "",
+      Deskripsi: "",
+      ImageDesc: "",
+      ImageSampul: "",
+      Tanggal: null,
+      link: null,
+      isDelete: false
+    });
+  
+  const [errors, setErrors] = useState<Partial<Kegiatan>>({});
+  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const { id } = useParams();
+  
+  useEffect(() => {
+    async function fetchKegiatan() {
+      if (!id) return;
+      const docRef = doc(db, "Kegiatan", id as string);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setFormData({
+          Judul: data.Judul || '',
+          Deskripsi: data.Deskripsi || '',
+          ImageSampul: data.ImageSampul || null,
+          ImageDesc: data.ImageDesc || null,
+          Tanggal: data.Tanggal || Timestamp.now(),
+          link: data.link || "",
+          isDelete: false
+        });
+      }
+    }
+    fetchKegiatan();
+  }, [id]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setIsUploading(true);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const newErrors: any = {};
+    
+    // Perform form validation here
+    if (!formData.Judul) newErrors.Judul = "Judul harus diisi";
+    if (!formData.ImageSampul) newErrors.ImageSampul = "Gambar Sampul kegiatan harus diisi";
+    if (!formData.ImageDesc) newErrors.ImageDesc = "Dokumentasi kegiatan harus diisi";
+    if (!formData.Deskripsi) newErrors.Deskripsi = "Deskripsi harus diisi";
+    if (!formData.link) newErrors.link = "Link lowongan harus diisi";
+
+    setErrors(newErrors);
+
+    try {
+      const docRef = doc(db, "Kegiatan", id as string);
+      await updateDoc(docRef, {
+        ...formData,
+      });
+
+      alert("Konten Kegiatan berhasil diupdate!");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   return (
-    <Form action="" className="flex flex-col gap-y-6 p-6">
-      <div className='flex flex-col gap-y-2'>
-        <p className='text-black text-xl font-medium'>Nama Kegiatan</p>
-        <input
-          title="Nama Kegiatan"
-          type="text"
-          name="activity-name"
-          placeholder="Contoh: Kegiatan Pengabdian Masyarakat"
-          className="rounded-lg ring-2 ring-gray-300 text-black text-lg font-medium w-lg p-2 shadow-xl"
-        />
-      </div>
-      <div className='flex flex-col gap-y-2'>
-        <p className='text-black text-xl font-medium'>Sampul Kegiatan</p>
-        <input
-          type="file"
-          name="activity-image-cover"
-          className="rounded-md ring-1 ring-black text-black text-xs font-medium w-44 p-2 shadow-xl"
-        />
-      </div>
-      <div className='flex flex-col gap-y-2'>
-        <p className='text-black text-xl font-medium'>Deskripsi Kegiatan</p>
-        <input
-          type="text"
-          name="activity-description"
-          placeholder="Isi Deskripsi Kegiatan Di Sini"
-          className="rounded-md ring-2 ring-gray-300 text-black text-lg font-medium w-lg p-2 shadow-xl"
-        />
-      </div>
-      <div className='flex flex-col gap-y-2'>
-        <p className='text-black text-xl font-medium'>Tanggal Upload</p>
-        <input
-          type="date"
-          name="uploaded-time"
-          placeholder="Isi Tanggal Diupload-nya konten "
-          className="rounded-md ring-1 ring-black text-black text-lg font-medium w-44 p-2 shadow-xl"
-        />
-      </div>
-      <div className='flex flex-col gap-y-2'>
-        <p className='text-black text-xl font-medium'>Dokumentasi Kegiatan</p>
-        <input
-          type="file"
-          name="activity-documentation"
-          placeholder="Upload Dokumentasi Kegiatan Di Sini"
-          className="rounded-md border border-black text-black text-xs font-medium w-44 p-2 shadow-xl"
-        />
-      </div>
-      <div className='flex flex-row gap-x-4 justify-between w-sm mt-12'>
-        <button
-          type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-28 rounded-lg"
-        >
-          Simpan
-        </button>
-        <button
-          type="reset"
-          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 w-28 rounded-lg"
-        >
-          Reset
-        </button>
-      </div>
-    </Form>
-  );
-}
+    <Form action="" onSubmit={handleSubmit} className="flex flex-col gap-y-6 p-6 w-lg">
+    <p className='text-base text-black font-medium inline border-b-3 border-blue-500'>Judul Konten</p>
+    <TextField
+      placeholder='Tuliskan judul konten kegiatan disini'
+      name="Judul"
+      value={formData.Judul}
+      onChange={handleChange}
+      error={!!errors.Judul}
+      helperText={errors.Judul}
+      fullWidth
+    />
+    <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Deskripsi Kegiatan</p>
+    <TextField
+      placeholder='Tuliskan deskripsi pekerjaan disini'
+      name="Deskripsi"
+      value={formData.Deskripsi}
+      onChange={handleChange}
+      error={!!errors.Deskripsi}
+      helperText={errors.Deskripsi}
+      fullWidth
+    />
+    <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Gambar Sampul</p>
+    {/* <Button
+      variant="contained"
+      color="primary"
+      onClick={() => handleImageUpload()}
+      disabled={isUploading}
+      className='w-42'
+    >
+      {isUploading ? 'Uploading...' : 'Upload Image'}
+    </Button> */}
+    <p className="mt-4 text-sm text-black">
+      {formData.ImageSampul ? "Image Uploaded!" : "No Image Uploaded"}
+    </p>
+    <p className='text-base text-black font-medium inline border-b-3 border-blue-500 w-lg'>Gambar Kegiatan</p>
+    {/* <Button
+      variant="contained"
+      color="primary"
+      onClick={() => handleImageUpload()}
+      disabled={isUploading}
+      className='w-42'
+    >
+      {isUploading ? 'Uploading...' : 'Upload Image'}
+    </Button> */}
+    <p className="mt-4 text-sm text-black">
+      {formData.ImageSampul ? "Image Uploaded!" : "No Image Uploaded"}
+    </p>
+    <div className='flex flex-row gap-x-4 justify-between w-sm mt-12'>
+    <Button
+        type="submit"
+        variant="contained"
+        color="primary"
+        disabled={isSubmitting || isUploading}
+      >
+        {isSubmitting ? 'Submitting...' : 'Submit'}
+      </Button>
+    </div>
+  </Form>
+  );  
+};
