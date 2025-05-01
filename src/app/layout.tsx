@@ -26,7 +26,7 @@ export default function RootLayout({
 			<head>
         <Script src="https://upload-widget.cloudinary.com/global/all.js"></Script>
       </head>
-			<body className={`${poppins.className} antialiased`}>
+			<body className={poppins.className}>
 				{children}
 			</body>
 		</html>
