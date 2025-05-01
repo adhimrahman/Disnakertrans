@@ -17,9 +17,9 @@ export default function Sidebar() {
   };
 
   const Menus: MenuItem[] = [
-    { title: "Dashboard", icon: <BsHouseDoor />, to: "/dashboard/disnaker/main", spacing: true },
+    { title: "Dashboard", icon: <BsHouseDoor />, to: "/dashboard/disnaker/", spacing: true },
     { title: "Content Pages", icon: <BsBook />, to: "/dashboard/disnaker/contents", spacing: true},
-    { title: "Accounts", icon: <BsFillPeopleFill />, to: "/dashboard/disnaker/accounts", spacing: true },
+    { title: "Accounts", icon: <BsFillPeopleFill />, to: "/dashboard/disnaker/accounts", spacing: true }, 
     { title: "LPK", icon: <BsFolder2Open />, to: "/dashboard/disnaker/lpk", spacing: true },
   ];
 
