@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BsHouseDoor, BsBook, BsFillPeopleFill, BsFolder2Open } from "react-icons/bs";
 import { IoLogOutOutline } from "react-icons/io5";
 import { usePathname, useRouter } from "next/navigation";
@@ -6,8 +6,15 @@ import Image from "next/image";
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const router   = useRouter();
+  const router = useRouter();
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) return null;
 
   type MenuItem = {
     title: string;
@@ -18,20 +25,19 @@ export default function Sidebar() {
 
   const Menus: MenuItem[] = [
     { title: "Dashboard", icon: <BsHouseDoor />, to: "/dashboard/disnaker/", spacing: true },
-    { title: "Content Pages", icon: <BsBook />, to: "/dashboard/disnaker/contents", spacing: true},
-    { title: "Accounts", icon: <BsFillPeopleFill />, to: "/dashboard/disnaker/accounts", spacing: true }, 
+    { title: "Content Pages", icon: <BsBook />, to: "/dashboard/disnaker/contents", spacing: true },
+    { title: "Accounts", icon: <BsFillPeopleFill />, to: "/dashboard/disnaker/accounts", spacing: true },
     { title: "LPK", icon: <BsFolder2Open />, to: "/dashboard/disnaker/lpk", spacing: true },
   ];
 
   return (
     <div className="flex">
-      <div className="bg-blue-500 min-h-screen p-5 pt-8 w-60 flex flex-col justify-between top-0 left-0 fixed">
+      <div className="bg-[#1c398e] min-h-screen p-5 pt-8 w-60 flex flex-col justify-between top-0 left-0 fixed">
         <div>
           <div className="flex flex-row items-center">
-            <Image src="/images/logo_disnaker_2.png" alt="Logo Disnaker" width={60} height={60} />
-            <div className="flex flex-col ml-6">
-              <h3 className="text-white text-2xl font-bold">Disnaker</h3>
-              <h3 className="text-white text-2xl font-bold">GOWA</h3>
+            <Image src="/images/logo_disnaker_2.png" alt="Logo Disnaker" width={38} height={38} />
+            <div className="flex flex-col ml-5">
+              <h4 className="text-white font-bold">Disnaker Gowa</h4>
             </div>
           </div>
           {/* Menu Utama */}
@@ -43,14 +49,20 @@ export default function Sidebar() {
                   setSelectedIndex(index);
                   router.push(menu.to);
                 }}
-                className={`text-white text-sm flex items-center gap-x-4 cursor-pointer p-2 rounded-md duration-200 ${
-                  pathname === menu.to || selectedIndex === index
-                    ? "text-blue-500 bg-white bg-opacity-10 font-medium"
-                    : "hover:bg-white hover:bg-opacity-20 hover:text-blue-500"
-                } ${menu.spacing ? "mt-9" : "mt-2"}`}
+                className={`text-sm flex items-center gap-x-4 cursor-pointer p-2 rounded-md duration-200 
+                  ${menu.spacing ? "mt-9" : "mt-2"} 
+                  ${pathname === menu.to || selectedIndex === index 
+                    ? "bg-white bg-opacity-10 font-medium" 
+                    : "text-white hover:bg-white hover:bg-opacity-20 hover:text-blue-500"}`}
               >
-                <span className="text-2xl block float-left text-inherit">{menu.icon}</span>
-                <span className="text-base font-medium flex-1 duration-200 text-inherit">
+                <span className={`text-2xl block float-left ${
+                  pathname === menu.to || selectedIndex === index ? "text-blue-500" : ""
+                }`}>
+                  {menu.icon}
+                </span>
+                <span className={`text-base font-medium flex-1 duration-200 ${
+                  pathname === menu.to || selectedIndex === index ? "text-blue-500" : ""
+                }`}>
                   {menu.title}
                 </span>
               </li>
@@ -65,11 +77,7 @@ export default function Sidebar() {
               setSelectedIndex(Menus.length);
               console.log("Logout Successful");
             }}
-            className={`text-white text-sm flex items-center gap-x-4 cursor-pointer p-2 mt-9 rounded-md duration-200 ${
-              selectedIndex === Menus.length
-                ? "bg-white bg-opacity-30 text-black"
-                : "hover:bg-white hover:bg-opacity-20 hover:text-black"
-            }`}
+            className="text-white text-sm flex items-center gap-x-4 cursor-pointer p-2 mt-9 rounded-md duration-200 hover:bg-white hover:bg-opacity-20 hover:text-blue-500"
           >
             <span className="text-2xl block float-left">
               <IoLogOutOutline />
@@ -82,4 +90,4 @@ export default function Sidebar() {
       </div>
     </div>
   );
-};
+}
