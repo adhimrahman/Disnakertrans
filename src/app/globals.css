@@ -3,11 +3,16 @@
 :root {
 	--background: #ffffff;
 	--foreground: #171717;
+	--steelBlue: #3561A1;
+	--darkBlue: #1c398e;
+	--swiper-navigation-size: 44px !important;
 }
 
 @theme inline {
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
+	--color-steelBlue: var(--steelBlue);
+	--color-darkBlue: var(--darkBlue);
 	--font-sans: var(--font-geist-sans);
 	--font-mono: var(--font-geist-mono);
 }
@@ -23,4 +28,10 @@ body {
 	background: var(--background);
 	color: var(--foreground);
 	font-family: Arial, Helvetica, sans-serif;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+	color: #1d4ed8;
+	padding: 20px;
 }

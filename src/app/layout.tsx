@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins } from 'next/font/google';
 import "./globals.css";
-import Script from "next/script";
 
 const poppins = Poppins({
 	subsets: ["latin"],
@@ -23,9 +22,6 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<head>
-        <Script src="https://upload-widget.cloudinary.com/global/all.js"></Script>
-      </head>
 			<body className={poppins.className}>
 				{children}
 			</body>
