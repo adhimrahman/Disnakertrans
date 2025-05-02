@@ -56,6 +56,7 @@ export default function Footer() {
 				</div>
 
 				{/* Divider */}
+			</div>
 				<div className="border-t border-white border-opacity-40 my-8 w-full"></div>
 
 				{/* Bottom bar */}
@@ -65,7 +66,6 @@ export default function Footer() {
 					Universitas Hasanuddin &nbsp; | &nbsp; Teknik Informatika 2022
 				</p>
 				</div>
-			</div>
 			</footer>
     );
 }
