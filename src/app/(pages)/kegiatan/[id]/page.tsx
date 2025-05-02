@@ -14,7 +14,7 @@ type KegiatanItem = {
 	id: string;
 	Judul: string;
 	Tanggal: Timestamp;
-	ImageSampul: string;
+	ImageSampul: string | null;
 	Deskripsi: string;
 	ImageDesc?: string;
 };
@@ -95,7 +95,11 @@ export default function KegiatanDetail() {
 					</p>
 
 					<div className="relative w-full h-64 md:h-[420px] mb-8 rounded-xl overflow-hidden shadow-sm">
+					{data.ImageSampul ? ( 
 						<Image src={data.ImageSampul} alt={data.Judul} fill className="object-cover" />
+					) : (
+						<div className="w-full h-full bg-gray-200" />
+					)}
 					</div>
 
 					<article className="prose prose-lg prose-slate text-gray-900 max-w-none text-justify mb-10">
@@ -112,7 +116,11 @@ export default function KegiatanDetail() {
 						{kegiatanSebelumnya && (
 							<a href={`/kegiatan/${kegiatanSebelumnya.id}`} className="flex gap-4 group hover:bg-gray-200 p-4 rounded-lg transition-all">
 								<div className="relative w-32 h-20 flex-shrink-0 rounded-md overflow-hidden">
+								{kegiatanSebelumnya.ImageSampul ? (
 									<Image src={kegiatanSebelumnya.ImageSampul} alt={kegiatanSebelumnya.Judul} fill className="object-cover" />
+								) : (
+									<div className="w-full h-full bg-gray-200" />
+								)}
 								</div>
 								<div className="flex flex-col">
 									<span className="text-xs text-gray-500">← Artikel Sebelumnya</span>
@@ -129,7 +137,11 @@ export default function KegiatanDetail() {
 						{kegiatanBerikutnya && (
 							<a href={`/kegiatan/${kegiatanBerikutnya.id}`} className="flex gap-4 group hover:bg-gray-200 p-4 rounded-lg transition-all text-right md:flex-row-reverse md:text-right">
 								<div className="relative w-32 h-20 flex-shrink-0 rounded-md overflow-hidden">
+								{kegiatanBerikutnya.ImageSampul ? (
 									<Image src={kegiatanBerikutnya.ImageSampul} alt={kegiatanBerikutnya.Judul} fill className="object-cover" />
+								) : (
+									<div className="w-full h-full bg-gray-200" />
+								)}
 								</div>
 								<div className="flex flex-col">
 									<span className="text-xs text-gray-500">Artikel Berikutnya →</span>
@@ -153,7 +165,9 @@ export default function KegiatanDetail() {
 							<a className="block rounded-xl overflow-hidden shadow hover:shadow-md transition bg-white border border-gray-200 hover:scale-105"
 							key={item.id} href={`/kegiatan/${item.id}`} >
 								<div className="relative w-full h-36">
+								{item.ImageSampul ? ( 
 									<Image src={item.ImageSampul} alt={item.Judul} fill className="object-cover" />
+								) : ( <div className="w-full h-full bg-gray-200" /> )}
 								</div>
 								<div className="p-4">
 									<h3 className="text-base font-semibold text-gray-800 line-clamp-2 capitalize">

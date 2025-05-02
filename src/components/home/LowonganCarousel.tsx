@@ -17,7 +17,7 @@ type LowonganItem = {
 	Tipe: string[];
 	Range: { min: number; max: number };
 	Alamat: string;
-	ImageSampul: string;
+	ImageSampul: string | null;
 };
 
 function formatRupiah(value: number) {
@@ -60,8 +60,10 @@ export default function LowonganCarousel() {
 				<SwiperSlide key={item.id}>
 					<div className="bg-white shadow-md rounded-2xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-2 m-4 flex flex-col justify-between h-full w-full max-w-xs mx-auto">
 						<div className="relative w-full h-48">
-							<Image src={item.ImageSampul} alt={item.Judul} fill className="object-cover w-full h-full" />
-						</div>
+						{item.ImageSampul ? (
+							<Image src={item.ImageSampul} alt={item.Judul} fill className="object-cover w-full h-full" /> ) :(
+						<div className="w-full h-full bg-gray-200" /> )}
+					</div>
 
 						<div className="flex flex-col p-5 gap-2 flex-grow">
 							{/* Judul & Perusahaan */}

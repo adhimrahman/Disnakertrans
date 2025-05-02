@@ -59,7 +59,10 @@ export default function Page() {
             {visibleKegiatan.map((item) => (
                 <div key={item.id} className="relative group rounded-lg overflow-hidden border border-gray-200 shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                     <div className="w-full h-60 relative overflow-hidden">
+                        {item.ImageSampul ? ( 
                         <Image src={item.ImageSampul} alt={item.Judul} layout="fill" className="object-cover object-center" />
+                        ) : (
+                    <div className="w-full h-full bg-gray-200" /> )}
                     </div>
 
                     <div className="p-6 bg-white">
