@@ -32,7 +32,7 @@ export default function Sidebar() {
 
   return (
     <div className="flex">
-      <div className="bg-[#1c398e] min-h-screen p-5 pt-8 w-60 flex flex-col justify-between top-0 left-0 fixed">
+      <div className="bg-[#1c398e] min-h-screen p-5 pt-8 w-64 flex flex-col justify-between top-0 left-0 fixed">
         <div>
           <div className="flex flex-row items-center">
             <Image src="/images/logo_disnaker_2.png" alt="Logo Disnaker" width={38} height={38} />
