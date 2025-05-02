@@ -35,8 +35,8 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="w-full max-w-5xl bg-white shadow-md rounded-xl flex overflow-hidden">
+    <div className="min-h-screen bg-gray-700 flex items-center justify-center">
+      <div className="w-full max-w-5xl bg-white shadow-md rounded-xl flex overflow-hidden  py-11 px-10">
         {/* Left side: Image (optional) */}
         <div className="hidden md:flex w-1/2 relative">
           <img

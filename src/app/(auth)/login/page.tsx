@@ -59,8 +59,8 @@ export default function LoginPage() {
   if (!isClient) return null; // prevent server-side rendering issues
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="w-full max-w-5xl bg-white shadow-md rounded-xl flex overflow-hidden">
+    <div className="min-h-screen bg-gray-700 flex items-center justify-center">
+      <div className="w-full max-w-5xl bg-white shadow-md rounded-xl flex overflow-hidden py-11 px-10">
         <div className="hidden md:flex w-1/2 relative">
           <Image src="/images/Login.jpg" alt="Login Illustration" fill className="object-cover" />
         </div>
