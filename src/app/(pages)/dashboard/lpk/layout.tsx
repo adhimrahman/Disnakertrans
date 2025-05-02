@@ -16,9 +16,6 @@ export default function DashboardLayout({
 
       {/* Konten Utama */}
       <div className="flex flex-col flex-1 bg-gray-100 h-full overflow-y-auto">
-        {/* Searchbar tetap di atas */}
-
-        {/* Main content */}
         <main className="p-8 flex-1">{children}</main>
       </div>
     </div>
