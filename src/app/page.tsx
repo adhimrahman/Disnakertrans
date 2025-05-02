@@ -1,6 +1,7 @@
 import "swiper/css";
 import "swiper/css/navigation";
 import Image from "next/image";
+import Link from "next/link";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -29,10 +30,12 @@ export default function HomePage() {
 					<h1 className="text-2xl sm:text-3xl lg:text-5xl font-extrabold text-black mt-2 uppercase">
 						portal informasi disnaker kabupaten gowa
 					</h1>
+					<Link href='/login' passHref>
 					<button className="bg-red-500 text-white px-6 py-3 rounded-lg text-base sm:text-lg font-semibold hover:bg-red-700 mt-6
 					transition hover:cursor-pointer capitalize">
 						Login
 					</button>
+					</Link>
 				</div>
 	
 				<Image src={Job1} alt="Illustrasi Pekerja" className="lg:w-1/2 p-2 w-full max-w-xs sm:max-w-md lg:max-w-lg mt-10 lg:mt-0 flex justify-center" />
