@@ -36,8 +36,8 @@ export default function Sidebar() {
         <div>
           <div className="flex flex-row items-center">
             <Image src="/images/logo_disnaker_2.png" alt="Logo Disnaker" width={38} height={38} />
-            <div className="flex flex-col ml-5">
-              <h4 className="text-white font-bold">Disnaker Gowa</h4>
+            <div className="flex flex-col ml-3">
+              <h4 className="text-white text-[15px] font-bold">Disnakertrans Gowa</h4>
             </div>
           </div>
           {/* Menu Utama */}
