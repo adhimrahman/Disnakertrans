@@ -5,8 +5,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import Image from "next/image";
 
-import Job1 from "../../../public/images/Job1.png";
-import Job2 from "../../../public/images/Job2.png";
+import Gambar6 from "../../../public/images/Gambar6.jpg";
+import Gambar7 from "../../../public/images/Gambar7.jpg";
 import Gambar from "../../../public/images/Gambar.png";
 
 export default function HeroCarousel() {
@@ -19,10 +19,10 @@ export default function HeroCarousel() {
                 <Image src={Gambar} alt="Hero Gowa" className="w-full h-[450px] object-cover object-[50%_20%]" />
             </SwiperSlide>
             <SwiperSlide>
-                <Image src={Job1} alt="Pekerja Slide" className="w-full h-[450px] object-cover object-[50%_20%]" />
+                <Image src={Gambar6} alt="Pekerja Slide" className="w-full h-[450px] object-cover object-[50%_20%]" />
             </SwiperSlide>
             <SwiperSlide>
-                <Image src={Job2} alt="Job Info Slide" className="w-full h-[450px] object-cover object-[50%_20%]" />
+                <Image src={Gambar7} alt="Job Info Slide" className="w-full h-[450px] object-cover object-[50%_20%]" />
             </SwiperSlide>
         </Swiper>
     );
