@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactHighlight from "@/components/ContactHightlight";
 import Image from "next/image";
+import Link from "next/link";
 
 type LowonganItem = {
     id: string;
@@ -44,7 +45,7 @@ function formatTanggal(timestamp: Timestamp) {
         minute: "2-digit",
         timeZone: "Asia/Makassar",
         timeZoneName: "short",
-    }) .replace("Waktu Indonesia Tengah", "WITA");
+    }).replace("Waktu Indonesia Tengah", "WITA");
 }
 
 export default function LowonganDetail() {
@@ -54,17 +55,17 @@ export default function LowonganDetail() {
 
     useEffect(() => {
         const fetchData = async () => {
-        if (!id) return;
-        const docRef = doc(db, "lowongan", id as string);
-        const docSnap = await getDoc(docRef);
+            if (!id) return;
+            const docRef = doc(db, "lowongan", id as string);
+            const docSnap = await getDoc(docRef);
 
-        if (docSnap.exists()) {
-            const docData = docSnap.data() as LowonganItem;
-            console.log("📦 Data Lowongan:", docData);
-            setData({ ...docData, id: docSnap.id });
-        } else {
-            console.warn("⚠️ Lowongan tidak ditemukan!");
-        }
+            if (docSnap.exists()) {
+                const docData = docSnap.data() as LowonganItem;
+                console.log("📦 Data Lowongan:", docData);
+                setData({ ...docData, id: docSnap.id });
+            } else {
+                console.warn("⚠️ Lowongan tidak ditemukan!");
+            }
         };
 
         fetchData();
@@ -76,63 +77,68 @@ export default function LowonganDetail() {
         <div className="bg-white min-h-screen flex flex-col">
             <Navbar />
 
-            <main className="container mx-auto px-4 py-10 max-w-4xl">
-                {/* Judul dan Deadline */}
-                <div className="flex justify-between flex-wrap gap-4 mb-4">
-                <h1 className="text-2xl md:text-3xl font-bold text-black">
-                    {data.Judul.toUpperCase()}
-                </h1>
-                <div className="text-sm text-gray-600 self-center">
-                    Tenggat:{" "}
-                    <span className="font-medium">{formatTanggal(data.BatasLowongan)}</span>
-                </div>
+            <div className="container mx-auto max-w-6xl px-4 pt-28">
+                <nav className="text-sm text-gray-600 mb-6" aria-label="Breadcrumb">
+                    <ol className="list-reset flex">
+                        <li><Link href="/" className="hover:underline text-blue-600 capitalize">Beranda</Link></li>
+                        <li><span className="mx-2">/</span></li>
+                        <li><Link href="/lowongan" className="hover:underline text-blue-600 capitalize">Lowongan</Link></li>
+                        <li><span className="mx-2">/</span></li>
+                        <li className="text-gray-800 line-clamp-1 capitalize" title={data.Judul}>
+                            {data.Judul}
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+
+            <main className="container mx-auto max-w-6xl px-4 pt-2 pb-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="md:col-span-2">
+                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2 capitalize">
+                        {data.Judul.toUpperCase()}
+                    </h1>
+
+                    <p className="text-sm text-gray-500 mb-6">
+                        🏢 {data.Perusahaan} | {formatRupiah(data.Range.min)} - {formatRupiah(data.Range.max)} | Tenggat: {formatTanggal(data.BatasLowongan)}
+                    </p>
+
+                    <div className="relative w-full h-64 md:h-[420px] mb-8 rounded-xl overflow-hidden shadow-sm">
+                        <Image src={data.ImageSampul} alt={data.Judul} fill className="object-cover" />
+                    </div>
+
+                    <article className="prose prose-lg prose-slate text-gray-900 max-w-none text-justify mb-10">
+                        <h2 className="font-bold text-xl">Deskripsi</h2>
+                        <p>{data.Deskripsi}</p>
+                    </article>
+
+                    {data.Syarat && data.Syarat.length > 0 && (
+                        <article className="prose prose-lg prose-slate text-gray-900 max-w-none text-justify mb-10">
+                            <h2 className="font-bold text-xl">Persyaratan</h2>
+                            <ul className="list-disc list-inside">
+                                {data.Syarat.map((syarat, index) => (
+                                    <li key={index}>{syarat}</li>
+                                ))}
+                            </ul>
+                        </article>
+                    )}
+
+                    {data.LinkLowongan && (
+                        <div className="mt-4">
+                            <a
+                                href={data.LinkLowongan}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-700 underline"
+                            >
+                                Akses Informasi Selengkapnya…..
+                            </a>
+                        </div>
+                    )}
                 </div>
 
-                {/* Perusahaan & Range */}
-                <p className="text-gray-500 mb-2">
-                {data.Perusahaan} | {formatRupiah(data.Range.min)} - {formatRupiah(data.Range.max)}
-                </p>
-
-                {/* Gambar */}
-                <img
-                src={data.ImageSampul} 
-                alt={data.Judul}
-                className="w-full rounded-lg mb-6"
-                />
-
-                {/* Deskripsi */}
-                <div className="mb-8">
-                <h2 className="text-xl font-bold text-black mb-3">Deskripsi</h2>
-                <p className="text-gray-800 leading-relaxed text-justify whitespace-pre-line">
-                    {data.Deskripsi}
-                </p>
-                </div>
-
-                {/* Syarat */}
-                {data.Syarat && data.Syarat.length > 0 && (
-                <div className="mb-8">
-                    <h2 className="text-xl font-bold text-black mb-3">Persyaratan</h2>
-                    <ul className="list-disc list-inside text-gray-800 leading-relaxed space-y-1">
-                    {data.Syarat.map((syarat, index) => (
-                        <li key={index}>{syarat}</li>
-                    ))}
-                    </ul>
-                </div>
-                )}
-
-                {/* Link */}
-                {data.LinkLowongan && (
-                <div className="mt-4">
-                    <a
-                    href={data.LinkLowongan}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-700 underline"
-                    >
-                    Akses Informasi Selengkapnya…..
-                    </a>
-                </div>
-                )}
+                <aside className="md:col-span-1 pl-12 pt-22">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-4 underline">Lowongan Lainnya</h2>
+                    {/* Sidebar content: You can fetch and display other job vacancies here */}
+                </aside>
             </main>
 
             <ContactHighlight />
