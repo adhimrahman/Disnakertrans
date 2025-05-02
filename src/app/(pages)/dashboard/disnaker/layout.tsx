@@ -1,8 +1,7 @@
-// src/app/disnaker/dashboard/layout.tsx
 'use client';
 
+import Sidebar from '@/components/dashboard/Sidebar';
 import Searchbar from '@/components/dashboard/Searchbar';
-import Sidebar from '@/components/dashboard/Sidebar'; // adjust this path if needed
 
 export default function DashboardLayout({
   children,
@@ -10,11 +9,19 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen w-screen">
-      <Sidebar />
-      <div className="ml-60 flex flex-col flex-1 bg-gray-100">
+    <div className="flex h-screen overflow-hidden">
+      {/* Sidebar tetap */}
+      <div className="w-64 flex-shrink-0">
+        <Sidebar />
+      </div>
+
+      {/* Konten Utama */}
+      <div className="flex flex-col flex-1 bg-gray-100 h-full overflow-y-auto">
+        {/* Searchbar tetap di atas */}
         <Searchbar />
-        <main className="p-20 w-full">{children}</main>
+
+        {/* Main content */}
+        <main className="p-8 flex-1">{children}</main>
       </div>
     </div>
   );
