@@ -40,7 +40,7 @@ export default function LpkPage() {
 
   return (
     <>
-      <div className="grid grid-cols-3 grid-rows-3 gap-12">
+      <div className="grid grid-cols-3 grid-rows-3 gap-12 ml-10">
         {lpk.slice(startIndex, endIndex).map((item) => {
           return (
             <Card

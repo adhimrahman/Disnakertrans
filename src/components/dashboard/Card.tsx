@@ -22,8 +22,8 @@ export default function Card({
   return (
     <div
       className={`
-        h-[450px] cursor-pointer bg-white rounded-xl shadow-2xl overflow-hidden 
-        transform transition-transform duration-300 hover:scale-105
+        w-80  h-[450px] cursor-pointer bg-white rounded-xl shadow-2xl overflow-hidden 
+        transform transition-transform duration-300 hover:scale-105 align-middle justify-center
         ${className}
       `}
       onClick={onClick}

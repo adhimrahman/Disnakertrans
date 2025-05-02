@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export default function ContentsForm() {
   return (
-    <div className="flex flex-row justify-center w-full gap-x-36 items-center">
+    <div className="flex flex-row justify-center w-full gap-x-36 items-center mt-20">
       <Link href="/dashboard/disnaker/contents/kegiatan">
         <Card
           className="w-72 h-96 align-middle"
