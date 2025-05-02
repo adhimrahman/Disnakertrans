@@ -30,6 +30,14 @@ export default function Sidebar() {
     { title: "LPK", icon: <BsFolder2Open />, to: "/dashboard/disnaker/lpk", spacing: true },
   ];
 
+  const handleLogout = () => {
+    // Simulasi logout, Anda bisa menggantinya dengan logika autentikasi nyata seperti Firebase atau Supabase
+    alert("Anda berhasil logout");
+
+    // Arahkan ke halaman beranda setelah logout
+    router.push("/");
+  };
+
   return (
     <div className="flex">
       <div className="bg-[#1c398e] min-h-screen p-5 pt-8 w-64 flex flex-col justify-between top-0 left-0 fixed">
@@ -73,10 +81,7 @@ export default function Sidebar() {
         {/* Menu Logout */}
         <div>
           <li
-            onClick={() => {
-              setSelectedIndex(Menus.length);
-              console.log("Logout Successful");
-            }}
+            onClick={handleLogout} // Menambahkan fungsi logout pada tombol ini
             className="text-white text-sm flex items-center gap-x-4 cursor-pointer p-2 mt-9 rounded-md duration-200 hover:bg-white hover:bg-opacity-20 hover:text-blue-500"
           >
             <span className="text-2xl block float-left">
