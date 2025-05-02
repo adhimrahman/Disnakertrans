@@ -1,12 +1,4 @@
-import ProtectedRoute from "@/components/ProtectedRoute";
-
-export default function DisnakerDashboard() {
-	return (
-		<ProtectedRoute>
-			<div>
-				<h1>Dashboard Disnaker</h1>
-				<p>Selamat datang di Dashboard Disnaker!</p>
-			</div>
-		</ProtectedRoute>
-	);
+// src/app/dashboard/disnaker/main/page.tsx
+export default function MainPage() {
+  return <h1 className="text-black">Main Dashboard Content</h1>;
 }
