@@ -11,7 +11,7 @@ export default function ContentsForm() {
   
   return (
     <div className="flex flex-row justify-center w-full gap-x-36 items-center">
-      <Link href={`/dashboard/disnaker/lpk/${lpkId}/akun`}>
+      <Link href={`/dashboard/lpk/${lpkId}/laporan/peserta`}>
         <Card
           className="w-72 h-80 mt-20"
           title="Peserta LPK"
@@ -19,7 +19,7 @@ export default function ContentsForm() {
           icon={<BsFillFileEarmarkArrowUpFill />}
         />
       </Link>
-      <Link href={`/dashboard/disnaker/lpk/${lpkId}/laporan`}>
+      <Link href={`/dashboard/lpk/${lpkId}/laporan/laporanLpk`}>
         <Card
           className="w-72 h-80 mt-20"
           title="Laporan LPK"

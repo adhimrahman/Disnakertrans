@@ -1,6 +1,4 @@
-'use client';
-
-import Sidebar from '@/components/dashboard/Sidebar';
+import SidebarLPK from '@/components/dashboard/SidebarLPK';
 
 export default function DashboardLayout({
   children,
@@ -11,7 +9,7 @@ export default function DashboardLayout({
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar tetap */}
       <div className="w-64 flex-shrink-0">
-        <Sidebar />
+        <SidebarLPK />
       </div>
 
       {/* Konten Utama */}

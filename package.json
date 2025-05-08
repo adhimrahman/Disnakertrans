@@ -13,6 +13,7 @@
 		"@emotion/styled": "^11.14.0",
 		"@mui/material": "^5.14.0",
 		"cloudinary": "^2.6.0",
+		"dayjs": "^1.11.13",
 		"firebase": "^11.6.0",
 		"formidable": "^3.5.2",
 		"lucide-react": "^0.487.0",
@@ -22,7 +23,7 @@
 		"react-icons": "^5.0.0",
 		"react-modal": "^3.16.3",
 		"react-spinners": "^0.17.0",
-		"spinner": "^0.3.4",
+		"spinner": "^0.2.4",
 		"spinners": "^1.2.2",
 		"swiper": "^11.2.6"
 	},
