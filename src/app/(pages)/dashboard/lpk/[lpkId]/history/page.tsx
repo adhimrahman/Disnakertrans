@@ -76,7 +76,7 @@ export default function LpkDetailPage() {
               title={formatBulanTahun(report.waktu_pelatihan)}
               body=""
               icon={<BsBriefcaseFill className="text-black" />}
-              onClick={() => router.push(`/dashboard/disnaker/lpk/${id}/laporan/${report.id}`)}
+              onClick={() => router.push(`/dashboard/lpk/${id}/history/laporan`)}
             />
           ))}
         </div>
