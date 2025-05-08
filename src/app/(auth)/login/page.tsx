@@ -40,9 +40,14 @@ export default function LoginPage() {
             router.push("/dashboard/disnaker");
           }, 3000); // Delay navigation by 3 seconds
         } else if (userData.role === "lpk") {
+          const lpkId = userData.lpkId; // Ambil lpkId dari data pengguna
+          if (!lpkId) {
+            setError("ID LPK tidak ditemukan.");
+            return;
+          }
           setShowSuccess(true); // Show success message after successful login
           setTimeout(() => {
-            router.push("/dashboard/lpk");
+            router.push(`/dashboard/lpk/${lpkId}`);
           }, 5000); // Delay navigation by 5 seconds
         } else {
           setError("Role tidak valid.");
