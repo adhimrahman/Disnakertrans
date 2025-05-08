@@ -1,4 +1,5 @@
 import SidebarLPK from '@/components/dashboard/SidebarLPK';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function DashboardLayout({
   children,
@@ -12,10 +13,12 @@ export default function DashboardLayout({
         <SidebarLPK />
       </div>
 
+      <ProtectedRoute>
       {/* Konten Utama */}
       <div className="flex flex-col flex-1 bg-gray-100 h-full overflow-y-auto">
         <main className="p-8 flex-1">{children}</main>
       </div>
+      </ProtectedRoute>
     </div>
   );
 }

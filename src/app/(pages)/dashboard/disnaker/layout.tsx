@@ -1,6 +1,7 @@
 'use client';
 
 import Sidebar from '@/components/dashboard/Sidebar';
+import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function DashboardLayout({
   children,
@@ -14,6 +15,7 @@ export default function DashboardLayout({
         <Sidebar />
       </div>
 
+      <ProtectedRoute >
       {/* Konten Utama */}
       <div className="flex flex-col flex-1 bg-gray-100 h-full overflow-y-auto">
         {/* Searchbar tetap di atas */}
@@ -21,6 +23,7 @@ export default function DashboardLayout({
         {/* Main content */}
         <main className="p-8 flex-1">{children}</main>
       </div>
+      </ProtectedRoute >
     </div>
   );
 }
