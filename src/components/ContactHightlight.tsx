@@ -2,6 +2,7 @@ import Image from "next/image";
 import React from "react";
 import Logo from "../../public/images/Logo.png";
 import Garuda from "../../public/images/Garuda.png";
+import Link from "next/link";
 
 export default function ContactHighlight() {
 	return (
@@ -26,11 +27,11 @@ export default function ContactHighlight() {
 					</p>
 
 					<div className="mt-8">
-						<a href="/contact-us">
+						<Link href="/contact-us">
 							<button className="bg-red-600 hover:bg-red-700 transition px-6 py-3 text-lg font-semibold rounded-xl shadow-lg hover:cursor-pointer">
 								Hubungi Sekarang
 							</button>
-						</a>
+						</Link>
 					</div>
 				</div>
 			</div>

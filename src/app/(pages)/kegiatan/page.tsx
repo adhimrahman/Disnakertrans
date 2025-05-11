@@ -6,7 +6,7 @@ import { db } from "@/firebase/config";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ContactHighlight from "../../../components/ContactHightlight";
+import ContactHighlight from "@/components/ContactHightlight";
 
 type KegiatanItem = {
 	id: string;
@@ -36,6 +36,7 @@ export default function Page() {
 	};
 
 	const visibleKegiatan = kegiatan.slice(0, visibleCount);
+    const isLoading = kegiatan.length === 0;
 
 	return (
     <>
@@ -56,25 +57,39 @@ export default function Page() {
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {visibleKegiatan.map((item) => (
-                <div key={item.id} className="relative group rounded-lg overflow-hidden border border-gray-200 shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                    <div className="w-full h-60 relative overflow-hidden">
-                        {item.ImageSampul ? ( 
-                        <Image src={item.ImageSampul} alt={item.Judul} layout="fill" className="object-cover object-center" />
-                        ) : (
-                    <div className="w-full h-full bg-gray-200" /> )}
+            {isLoading ? (
+                Array.from({ length: 9 }).map((_, index) => (
+                    <div key={index} className="relative rounded-lg overflow-hidden border border-gray-200 shadow-md animate-pulse bg-white">
+                        <div className="w-full h-60 bg-gray-300" />
+                        <div className="py-13 px-6">
+                            <div className="h-5 bg-gray-300 rounded w-3/4 mb-2" />
+                            <div className="h-4 bg-gray-200 rounded w-full mb-2" />
+                            <div className="h-4 bg-gray-200 rounded w-5/6" />
+                        </div>
                     </div>
-
-                    <div className="p-6 bg-white">
-                        <h3 className="text-xl font-semibold text-gray-800 mb-2 capitalize">{item.Judul}</h3>
-                        <p className="text-sm text-gray-600 line-clamp-3">{item.Deskripsi}</p>
-                        <a className="mt-3 inline-block text-sm text-blue-600 hover:text-blue-800 font-medium"
-                        href={`/kegiatan/${item.id}`}>
-                            Selengkapnya →
-                        </a>
+                ))
+            ) : (
+                visibleKegiatan.map((item) => (
+                    <div key={item.id} className="relative group rounded-lg overflow-hidden border border-gray-200 shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                        <div className="w-full h-60 relative overflow-hidden">
+                            {item.ImageSampul ? ( 
+                                <Image src={item.ImageSampul} alt={item.Judul} layout="fill" className="object-cover object-center" />
+                            ) : (
+                                <div className="w-full h-full bg-gray-200" />
+                            )}
+                        </div>
+    
+                        <div className="p-6 bg-white">
+                            <h3 className="text-xl font-semibold text-gray-800 mb-2 capitalize">{item.Judul}</h3>
+                            <p className="text-sm text-gray-600 line-clamp-3">{item.Deskripsi}</p>
+                            <a className="mt-3 inline-block text-sm text-blue-600 hover:text-blue-800 font-medium"
+                            href={`/kegiatan/${item.id}`}>
+                                Selengkapnya →
+                            </a>
+                        </div>
                     </div>
-                </div>
-            ))}
+                ))
+            )}
         </div>
 
         {/* Load More Button */}
