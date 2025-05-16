@@ -25,6 +25,7 @@ import { id } from 'date-fns/locale'; // Indonesian locale
 import { Kegiatan } from '@/models/Kegiatan';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { useRouter } from 'next/navigation';
 // npm install @mui/x-date-pickers @date-io/date-fns date-fns
 
 export default function AddKontenKegiatanPage() {
@@ -43,6 +44,7 @@ export default function AddKontenKegiatanPage() {
   const [errors, setErrors] = useState<Partial<Kegiatan & {TanggalError: string}>>({});
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -76,10 +78,10 @@ export default function AddKontenKegiatanPage() {
     const formDataImg = new FormData();
     formDataImg.append('file', file);
     formDataImg.append('upload_preset', 'kegiatan_upload'); // <- Ganti dengan Upload Preset Anda
-    formDataImg.append('cloud_name', 'mycloud123'); // <- Ganti dengan Cloud Name Anda
+    formDataImg.append('cloud_name', 'dsqgrzcgb'); // <- Ganti dengan Cloud Name Anda
 
     try {
-      const res = await fetch('https://api.cloudinary.com/v1_1/mycloud123/image/upload', {
+      const res = await fetch('https://api.cloudinary.com/v1_1/dsqgrzcgb/image/upload', {
         method: 'POST',
         body: formDataImg,
       });
@@ -141,6 +143,7 @@ export default function AddKontenKegiatanPage() {
       await setDoc(doc(docRef, String(new_id)), data);
       alert("Konten Kegiatan Berhasil Ditambahkan");
       console.log("Form data:", data);
+      router.push('/dashboard/disnaker/contents/kegiatan');
     } catch (e) {
       console.error("Error adding document:", e);
     } finally {
