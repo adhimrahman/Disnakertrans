@@ -8,6 +8,8 @@ import { TextField, Button, Card, Container, Divider, CircularProgress, Typograp
 import { IoTrash } from "react-icons/io5";
 import { GoPlus } from "react-icons/go";
 import { Lowongan } from '@/models/Lowongan';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { useRouter } from 'next/navigation';
 
 export default function AddLowonganKerjaPage() {
   const docRef = collection(db, "lowongan");
@@ -35,6 +37,7 @@ export default function AddLowonganKerjaPage() {
   const [newSyarat, setNewSyarat] = useState<string>("");
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -47,6 +50,40 @@ export default function AddLowonganKerjaPage() {
       [name]: "",
     });
   };
+
+    const handleImageUpload = async (
+      e: React.ChangeEvent<HTMLInputElement>,
+      field: 'ImageSampul'
+    ) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+  
+      setIsUploading(true);
+  
+      const formDataImg = new FormData();
+      formDataImg.append('file', file);
+      formDataImg.append('upload_preset', 'kegiatan_upload'); // <- Ganti dengan Upload Preset Anda
+      formDataImg.append('cloud_name', 'dsqgrzcgb'); // <- Ganti dengan Cloud Name Anda
+  
+      try {
+        const res = await fetch('https://api.cloudinary.com/v1_1/dsqgrzcgb/image/upload', {
+          method: 'POST',
+          body: formDataImg,
+        });
+  
+        const data = await res.json();
+        if (data.secure_url) {
+          setFormData((prev) => ({
+            ...prev,
+            [field]: data.secure_url,
+          }));
+        }
+      } catch (error) {
+        console.error("Upload error:", error);
+      } finally {
+        setIsUploading(false);
+      }
+    };
 
   const handleSyaratChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewSyarat(e.target.value);
@@ -143,7 +180,7 @@ export default function AddLowonganKerjaPage() {
       const data = {
         ...formData,
         BatasLowongan: batasLowonganTimestamp,
-        ImageSampul: null,
+        // ImageSampul: null,
         tanggal_unggah: Timestamp.now(),
         isDelete: false
       };
@@ -153,6 +190,7 @@ export default function AddLowonganKerjaPage() {
       await setDoc(newDocRef, data);
       alert("Konten Lowongan Berhasil Ditambahkan");
       console.log("Form data:", formData);
+      router.push("/dashboard/disnaker/contents/lowongan");
     } catch (e) {
       if (e instanceof Error) {
         console.error("Error adding document:", e.message);
@@ -207,9 +245,9 @@ export default function AddLowonganKerjaPage() {
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}>Gambar Sampul</Typography>
               <Box sx={{ border: '1px dashed', borderColor: errors.ImageSampul ? 'error.main' : 'divider', p: 3, borderRadius: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'background.paper' }}>
-                <Button variant="outlined" component="label" sx={{ textTransform: 'none', px: 3, py: 1.5, borderRadius: 1.5, mb: 2 }}>
+                <Button variant="outlined" component="label" startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', px: 3, py: 1.5, borderRadius: 1.5, mb: 2 }}>
                   Pilih File
-                  <input type="file" accept="image/*" hidden />
+                  <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'ImageSampul')} hidden />
                 </Button>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: formData.ImageSampul ? 'success.main' : 'text.secondary' }}>
                   {formData.ImageSampul ? (
