@@ -148,36 +148,59 @@ export default function KegiatanPage() {
   };
 
   return (
-    <div className="flex flex-col gap-y-8">
-      <div className='flex flex-row gap-x-2 justify-between w-full'>
-        <button
-          type="submit"
-          className="bg-blue-500 cursor-pointer hover:bg-blue-700 text-white font-normal py-2 px-4 w-24 rounded-lg"
-          onClick={() => {router.push('/dashboard/disnaker/contents/kegiatan/add')}}
-        >
-          Tambah
-        </button>
-        <SearchInput
-          value={searchTerm}
-          onChange={setSearchTerm} 
-          placeholder="Cari Kegiatan..."
-          className="border border-black rounded-md px-4 py-2 text-sm w-sm text-black"
-        />
-      </div>
-      <div className="flex flex-row gap-x-2 items-center">
-        <p className="text-black text-sm font-base">Menampilkan: </p>
-        <select
-          value={itemsPerPage}
-          onChange={handleItemsPerPageChange}
-          className="border border-gray-300 rounded-md px-4 py-2 text-sm w-14 text-black"
-        >
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={30}>30</option>
-          <option value={40}>40</option>
-          <option value={50}>50</option>
-        </select>
-        <p className="text-black text-sm font-base">entries</p>
+    <div className="flex flex-col gap-y-8">      <div className="bg-white p-4 rounded-lg shadow-sm mb-5">
+        <div className="flex flex-col sm:flex-row justify-between gap-3 mb-4">
+          <div className="flex-1">
+            <h2 className="text-xl font-semibold text-gray-800">Manajemen Kegiatan</h2>
+            <p className="text-sm text-gray-500 mt-1">Kelola data kegiatan Disnaker</p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button
+              type="button"
+              className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+              onClick={() => {router.push('/dashboard/disnaker/contents/kegiatan/add')}}
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+              </svg>
+              Tambah Kegiatan
+            </button>
+            <SearchInput
+              value={searchTerm}
+              onChange={setSearchTerm} 
+              placeholder="Cari Kegiatan..."
+              className="border border-gray-300 rounded-md px-4 py-2 text-sm min-w-[250px] text-gray-800 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+            />
+          </div>
+        </div>
+        
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <div className="flex items-center gap-x-2">
+            <label htmlFor="itemsPerPage" className="text-sm font-medium text-gray-700">
+              Tampilkan:
+            </label>
+            <select
+              id="itemsPerPage"
+              value={itemsPerPage}
+              onChange={handleItemsPerPageChange}
+              className="border border-gray-300 rounded-md px-3 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value={10}>10</option>
+              <option value={20}>20</option>
+              <option value={30}>30</option>
+              <option value={40}>40</option>
+              <option value={50}>50</option>
+            </select>
+            <span className="text-sm text-gray-600">entries</span>
+          </div>
+          
+          {selectedRows.length > 0 && (
+            <div className="flex items-center text-sm text-gray-600 ml-auto">
+              <span className="font-medium">{selectedRows.length}</span>
+              <span className="ml-1">item terpilih</span>
+            </div>
+          )}
+        </div>
       </div>
       <div>
         {loading ? (
@@ -185,131 +208,199 @@ export default function KegiatanPage() {
             <PulseLoader color="#3B82F6" />
           </div>
         ) : (
-          <>
-            <table className="min-w-full table-auto shadow-sm rounded-md">
-                <thead className="bg-white text-sm justify-start text-left">
+          <>            <div className="overflow-hidden bg-white rounded-lg shadow-md">
+              <table className="min-w-full table-auto">
+                <thead className="bg-gray-100 text-sm font-medium">
                   <tr>
-                    <th className="px-4 py-2 border-b text-black">
-                      <input
-                        type="checkbox"
-                        checked={selectedRows.length > 0 && selectedRows.length === kegiatan.length}
-                        onChange={handleSelectAll}
-                      />
+                    <th className="px-4 py-3 text-left text-gray-600">
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          checked={selectedRows.length > 0 && selectedRows.length === kegiatan.length}
+                          onChange={handleSelectAll}
+                        />
+                      </div>
                     </th>
-                    <th className="px-4 py-2 border-b text-black">No</th>
-                    <th className="px-4 py-2 border-b text-black">
-                      <div className="flex flex-row gap-x-2">
+                    <th className="px-4 py-3 text-left text-gray-600">No</th>
+                    <th className="px-4 py-3 text-left text-gray-600 min-w-[250px]">
+                      <div className="flex flex-row items-center gap-x-2">
                         <SortColumn field="Judul" label="Nama Kegiatan" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
                       </div>
                     </th>
-                    <th className="px-4 py-2 border-b text-black">
-                      <div className="flex flex-row gap-x-2">
+                    <th className="px-4 py-3 text-left text-gray-600">
+                      <div className="flex flex-row items-center gap-x-2">
                         <SortColumn field="Tanggal" label="Tanggal Unggahan" currentField={sortField} currentOrder={sortOrder} onSort={handleSort}/>
                       </div>
                     </th>
-                    <th className="px-4 py-2 border-b text-black">Link Unggahan</th>
-                    <th className="px-4 py-2 border-b text-black"></th>
-                    <th className="px-4 py-2 border-b text-black"></th>
+                    <th className="px-4 py-3 text-left text-gray-600">Link Unggahan</th>
+                    <th className="px-4 py-3 text-left text-gray-600">Aksi</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white">
+                <tbody className="divide-y divide-gray-200">
                   { currentItems.length > 0 && kegiatan.length > 0 ? (
                     currentItems.map((item, index) => (
-                      <tr key={item.id} className="hover:bg-gray-50 text-sm">
-                        <td className="px-4 py-2 border-b text-black">
+                      <tr key={item.id} className="hover:bg-blue-50 transition-colors duration-150 ease-in-out">
+                        <td className="px-4 py-3 text-sm text-gray-800">
                           <input
                             type="checkbox"
+                            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                             checked={selectedRows.includes(item.id)}
                             onChange={() => handleSelectRow(item.id)}
                           />
                         </td>
-                        <td className="px-4 py-2 border-b text-black">{(currentPage - 1) * itemsPerPage + (index + 1)}</td>
-                        <td className="px-4 py-2 border-b text-black">{item.Judul}</td>
-                        <td className="px-4 py-2 border-b text-black">{item.Tanggal.toDate().toLocaleDateString('id-ID', {
-                          day  : '2-digit',
-                          month: 'long',
-                          year : 'numeric',
-                        })}
+                        <td className="px-4 py-3 text-sm text-gray-800 font-medium">
+                          {(currentPage - 1) * itemsPerPage + (index + 1)}
                         </td>
-                        <td className="px-4 py-2 border-b text-black">
-                          <Link
-                            href={item.link || ""}
-                            className="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
-                          >
-                            {item.link ? 'Link' : 'None'}
-                          </Link>
+                        <td className="px-4 py-3 text-sm text-gray-800 font-medium">
+                          {item.Judul}
                         </td>
-                        <td className="px-4 py-2 border-b text-black">
-                          <button
-                            type="reset"
-                            className="bg-gray-200 cursor-pointer hover:bg-gray-300 text-black font-base py-1 px-4 w-16 rounded-lg"
-                            onClick={() => {handelEdit(item.id)}}
-                          >
-                            Edit
-                          </button>
+                        <td className="px-4 py-3 text-sm text-gray-800">
+                          {item.Tanggal.toDate().toLocaleDateString('id-ID', {
+                            day  : '2-digit',
+                            month: 'long',
+                            year : 'numeric',
+                          })}
                         </td>
-                        <td className="px-4 py-2 border-b text-black">
-                          <button
-                            type="reset"
-                            className="bg-red-500 cursor-pointer hover:bg-red-600 text-white font-bold py-2 px-4 w-12 rounded-lg text-center"
-                            onClick={() => {handleSingleDelete(item.id)}}
-                          >
-                            <IoTrash className="w-4 h-4"/>
-                          </button>
+                        <td className="px-4 py-3 text-sm">
+                          {item.link ? (
+                            <Link
+                              href={item.link || ""}
+                              className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                            >
+                              <span className="underline">Link</span>
+                              <svg className="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"></path>
+                                <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"></path>
+                              </svg>
+                            </Link>
+                          ) : (
+                            <span className="text-gray-500">Tidak ada</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-sm">
+                          <div className="flex space-x-2">
+                            <button
+                              type="button"
+                              onClick={() => {handelEdit(item.id)}}
+                              className="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 ease-in-out"
+                            >
+                              <svg className="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+                              </svg>
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {handleSingleDelete(item.id)}}
+                              className="inline-flex items-center px-3 py-1.5 bg-red-50 border border-red-300 rounded-md font-medium text-red-700 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150 ease-in-out"
+                            >
+                              <IoTrash className="w-4 h-4 mr-1"/>
+                              Hapus
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={7} className="px-4 py-2 border-b text-black text-center">Tidak ada data konten kegiatan</td>
+                      <td colSpan={7} className="px-4 py-6 text-sm text-center text-gray-500 bg-gray-50">
+                        <div className="flex flex-col items-center justify-center py-5">
+                          <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                          </svg>
+                          <p className="mt-2 font-medium">Tidak ada data konten kegiatan</p>
+                          <p className="text-xs text-gray-400 mt-1">Silakan tambahkan data kegiatan baru</p>
+                        </div>
+                      </td>
                     </tr>
                   )}
                 </tbody>
-            </table>
-            <div className="flex items-center space-x-2 mt-8 justify-end">
+              </table>
+            </div>            
+            <div className="flex items-center justify-between mt-5 mb-2">
+              <div className="text-sm text-gray-600">
+                Menampilkan {currentItems.length} dari {filteredData.length} data
+              </div>
+              
+              <div className="flex items-center space-x-2">
                 {/* Previous Button */}
                 <button
                   onClick={() => setCurrentPage(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-2 text-sm font-base cursor-pointer text-black border rounded-md hover:bg-gray-300 disabled:opacity-50"
+                  className="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <HiOutlineArrowSmLeft />
+                  <HiOutlineArrowSmLeft className="h-4 w-4" />
                 </button>
       
                 {/* Page Numbers */}
-                {Array.from({ length: totalPages }, (_, index) => (
-                  <button
-                    key={index + 1}
-                    onClick={() => setCurrentPage(index + 1)}
-                    className={`px-3 py-2 cursor-pointer text-sm font-base ${
-                      currentPage === index + 1
-                        ? 'bg-blue-500 text-white'
-                        : 'text-black hover:bg-gray-300'
-                    } border rounded-md`}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
+                <div className="hidden sm:flex space-x-1">
+                  {Array.from({ length: totalPages }, (_, index) => {
+                    // Show first page, last page, and pages around current page
+                    const pageNum = index + 1;
+                    const isCurrentPage = currentPage === pageNum;
+                    const isFirstPage = pageNum === 1;
+                    const isLastPage = pageNum === totalPages;
+                    const isWithinRange = Math.abs(pageNum - currentPage) <= 1;
+                    
+                    if (isFirstPage || isLastPage || isWithinRange) {
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`px-3 py-2 text-sm font-medium rounded-md ${
+                            isCurrentPage
+                              ? 'bg-blue-600 text-white'
+                              : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    } else if ((pageNum === currentPage - 2 && currentPage > 3) || 
+                              (pageNum === currentPage + 2 && currentPage < totalPages - 2)) {
+                      return (
+                        <span key={pageNum} className="px-2 py-2 text-gray-500">
+                          ...
+                        </span>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+                
+                {/* Simplified Mobile View */}
+                <div className="sm:hidden text-sm font-medium text-gray-700">
+                  <span>{currentPage} dari {totalPages}</span>
+                </div>
       
                 {/* Next Button */}
                 <button
                   onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-2 text-sm cursor-pointer font-base text-black border rounded-md hover:bg-gray-300 disabled:opacity-50"
+                  className="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 bg-white border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <HiOutlineArrowSmRight />
+                  <HiOutlineArrowSmRight className="h-4 w-4" />
                 </button>
+              </div>
             </div>
+            
             {selectedRows.length > 0 && (
-                <div className="mt-4">
+              <div className="fixed bottom-5 inset-x-0 flex justify-center">
+                <div className="bg-blue-900 text-white px-6 py-3 rounded-lg shadow-lg flex items-center space-x-3">
+                  <span className="font-medium">{selectedRows.length} item terpilih</span>
                   <button
                     onClick={handleDeleteSelectedRows}
-                    className="bg-red-500 hover:bg-red-700 text-white text-xs font-medium py-2 px-4 rounded-lg"
+                    className="inline-flex items-center px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors duration-150 ease-in-out"
                   >
+                    <IoTrash className="w-4 h-4 mr-1.5" />
                     Hapus Terpilih
                   </button>
                 </div>
-            )}  
+              </div>
+            )}
           </> 
         )}
       </div>

@@ -20,6 +20,7 @@
 		"dayjs": "^1.11.13",
 		"firebase": "^11.6.0",
 		"formidable": "^3.5.2",
+		"framer-motion": "^12.12.1",
 		"icons-material": "^0.0.1-security",
 		"immutable": "^5.1.2",
 		"lucide-react": "^0.487.0",
