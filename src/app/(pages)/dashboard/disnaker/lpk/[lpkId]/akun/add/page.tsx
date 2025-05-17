@@ -17,6 +17,7 @@ import {
   FormControlLabel,
 } from '@mui/material';
 import { PesertaLpk } from '@/models/PesertaLpk';
+import { useRouter } from 'next/navigation';
 
 export default function ContentsJobVacancyForm() {
   const { lpkId } = useParams();
@@ -38,6 +39,7 @@ export default function ContentsJobVacancyForm() {
   const [tanggalDaftarStr, setTanggalDaftarStr] = useState<string>('');
   const [errors, setErrors] = useState<Partial<PesertaLpk>>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -76,6 +78,7 @@ export default function ContentsJobVacancyForm() {
         isDelete: false,
       });
       alert('Peserta berhasil ditambahkan');
+      router.push(`/dashboard/disnaker/lpk/${lpkId}/akun`);
     } catch (err) {
       console.error('Error:', err);
     } finally {

@@ -24,6 +24,8 @@ import {
 } from '@mui/icons-material';
 import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore';
 import { db } from '@/firebase/config';
+import { id, is, ta } from 'date-fns/locale';
+import { isDataView } from 'util/types';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({
@@ -50,7 +52,8 @@ export default function DashboardPage() {
         const totalAkun = usersSnapshot.size;
 
         // Mendapatkan jumlah LPK (filter by role/type jika ada)
-        const lpkSnapshot = await getDocs(query(collection(db, 'Users'), where('role', '==', 'lpk')));
+        const lpkSnapshot = await getDocs(query(collection(db, 'lpk'))); //where('role', '==', 'lpk')));
+
         const totalLPK = lpkSnapshot.size;
 
         // Mendapatkan jumlah kegiatan
@@ -69,23 +72,75 @@ export default function DashboardPage() {
         });
 
         // Mendapatkan jumlah lowongan
-        const lowonganSnapshot = await getDocs(collection(db, 'Lowongan'));
+        const lowonganSnapshot = await getDocs(collection(db, 'lowongan'));
         const totalLowongan = lowonganSnapshot.size;
         
         // Menghitung lowongan per bulan
         const lowonganByMonth = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         lowonganSnapshot.forEach((doc) => {
           const data = doc.data();
-          if (data.TanggalPost && data.TanggalPost instanceof Timestamp) {
-            const date = data.TanggalPost.toDate();
-            const month = date.getMonth();
-            lowonganByMonth[month]++;
+          // Debug log untuk melihat struktur data
+          console.log('Data Lowongan:', {
+            id: doc.id,
+            tanggal_unggah: data.tanggal_unggah,
+            isTimestamp: data.tanggal_unggah instanceof Timestamp,
+            isDelete : data.isDelete,
+          });
+
+          // Perbaikan pengecekan tanggal
+          if (!data.isDelete || data.isDelete === undefined) {
+            try {
+              let date;
+              if (data.tanggal_unggah instanceof Timestamp) {
+                date = data.tanggal_unggah.toDate();
+              } else if (data.tanggal_unggah?.seconds) {
+                // Jika tanggal tersimpan dalam format { seconds, nanoseconds }
+                date = new Timestamp(
+                  data.tanggal_unggah.seconds,
+                  data.tanggal_unggah.nanoseconds || 0
+                ).toDate();
+              }
+
+              console.log(`[CHECK] ID: ${doc.id}, tanggal_unggah:`, data.tanggal_unggah);
+
+              if (date) {
+                const month = date.getMonth();
+                lowonganByMonth[month]++;
+                console.log(`Berhasil menambahkan lowongan untuk bulan ${month + 1}`);
+              }
+            } catch (error) {
+              console.error('Error processing date for document:', doc.id, error);
+            }
           }
         });
 
-        // Mendapatkan jumlah laporan
-        const laporanSnapshot = await getDocs(collection(db, 'Laporan'));
-        const totalLaporan = laporanSnapshot.size;
+        console.log('Lowongan by month:', lowonganByMonth);
+
+        // Mendapatkan jumlah laporan dari semua LPK
+        let totalLaporan = 0;
+
+        // 1. Ambil semua dokumen LPK
+        const allLpkDataSnapshot = await getDocs(collection(db, 'lpk'));
+
+        // 2. Iterasi setiap LPK untuk mengambil laporannya
+        const laporanPromises = lpkSnapshot.docs.map(async (lpkDoc) => {
+          const lpkId = lpkDoc.id;
+          
+          // Periksa apakah collection laporan ada untuk LPK ini
+          try {
+            const laporanSnapshot = await getDocs(collection(db, `lpk/${lpkId}/laporan`));
+            return laporanSnapshot.size;
+          } catch (error) {
+            console.log(`Tidak ada laporan untuk LPK ${lpkId} atau error:`, error);
+            return 0;
+          }
+        });
+
+        // 3. Tunggu semua promises selesai dan jumlahkan
+        const laporanCounts = await Promise.all(laporanPromises);
+        totalLaporan = laporanCounts.reduce((sum, count) => sum + count, 0);
+
+        console.log(`Total laporan dari semua LPK: ${totalLaporan}`);
 
         setStats({
           totalAkun,
