@@ -6,6 +6,8 @@ import { IoLogOutOutline } from 'react-icons/io5';
 import { HiMenu, HiX } from 'react-icons/hi';
 import { usePathname, useRouter, useParams } from 'next/navigation';
 import Image from "next/image";
+import { signOut } from "firebase/auth";
+import { auth } from "@/firebase/config";
 
 export default function SidebarLPK() {
   const pathname = usePathname();
@@ -40,10 +42,24 @@ export default function SidebarLPK() {
     { title: "Laporan", icon: <BsFileText />, to: `/dashboard/lpk/${lpkId}/laporan`, spacing: true },
     { title: "History", icon: <BsClockHistory />, to: `/dashboard/lpk/${lpkId}/history`, spacing: true },
   ];
-
-  const handleLogout = () => {
-    alert('Anda berhasil logout');
-    router.push('/');
+  const handleLogout = async () => {
+    try {
+      // Logout dari Firebase Auth
+      await signOut(auth);
+      
+      // Hapus data user dari storage
+      localStorage.removeItem("user");
+      sessionStorage.removeItem("user");
+      
+      // Tampilkan pesan berhasil logout
+      alert("Anda berhasil logout");
+      
+      // Arahkan ke halaman beranda setelah logout
+      router.push("/");
+    } catch (error) {
+      console.error("Error during logout:", error);
+      alert("Terjadi kesalahan saat logout");
+    }
   };
 
   return (
