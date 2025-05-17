@@ -173,29 +173,28 @@ export default function DashboardPage() {
   const currentDate = new Date();
   const currentMonth = currentDate.toLocaleString('id-ID', { month: 'long' });
   const currentYear = currentDate.getFullYear();
-
   return (
-    <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+    <Container maxWidth="xl" sx={{ mt: { xs: 2, sm: 4 }, mb: { xs: 2, sm: 4 }, px: { xs: 2, sm: 3 } }}>
       {/* Header */}
       <Paper
         elevation={0}
         sx={{
-          p: 3,
+          p: { xs: 2, sm: 3 },
           display: 'flex',
           flexDirection: 'column',
-          mb: 4,
+          mb: { xs: 3, sm: 4 },
           borderRadius: 2,
           background: 'linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)',
           color: 'white'
         }}
       >
-        <Typography component="h1" variant="h4" fontWeight="bold" gutterBottom>
+        <Typography component="h1" variant="h4" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } }}>
           Dashboard Disnaker
         </Typography>
-        <Typography variant="subtitle1">
+        <Typography variant="subtitle1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
           Selamat datang di dashboard Disnaker. Lihat statistik dan aktivitas terbaru di sini.
         </Typography>
-        <Typography variant="body2" sx={{ mt: 1 }}>
+        <Typography variant="body2" sx={{ mt: 1, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
           {currentDate.toLocaleDateString('id-ID', { 
             weekday: 'long', 
             year: 'numeric', 
@@ -210,10 +209,10 @@ export default function DashboardPage() {
           <CircularProgress />
         </Box>
       ) : (
-        <>
+        <>          
           {/* Statistik Kartu */}
-          <Grid container spacing={3} mb={4}>
-            <Grid item xs={12} sm={6} md={4} lg={2.4}>
+          <Grid container spacing={{ xs: 2, sm: 3 }} mb={{ xs: 3, sm: 4 }}>
+            <Grid item xs={6} sm={6} md={4} lg={2.4}>
               <Card 
                 sx={{ 
                   height: '100%', 
@@ -227,30 +226,35 @@ export default function DashboardPage() {
                   }
                 }}
               >
-                <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
+                <CardContent sx={{ 
+                  flexGrow: 1, 
+                  textAlign: 'center',
+                  px: { xs: 1, sm: 2 },
+                  py: { xs: 2, sm: 3 }
+                }}>
                   <Avatar
                     sx={{
                       bgcolor: '#e3f2fd',
-                      width: 60,
-                      height: 60,
+                      width: { xs: 40, sm: 60 },
+                      height: { xs: 40, sm: 60 },
                       mx: 'auto',
-                      mb: 2,
+                      mb: { xs: 1, sm: 2 },
                       color: '#1976d2'
                     }}
                   >
-                    <PeopleIcon fontSize="large" />
+                    <PeopleIcon sx={{ fontSize: { xs: '1.25rem', sm: '2rem' } }} />
                   </Avatar>
-                  <Typography variant="h4" component="div" fontWeight="bold">
+                  <Typography variant="h4" component="div" fontWeight="bold" sx={{ fontSize: { xs: '1.25rem', sm: '2rem' } }}>
                     {formatNumber(stats.totalAkun)}
                   </Typography>
-                  <Typography color="text.secondary" variant="subtitle1">
+                  <Typography color="text.secondary" variant="subtitle1" sx={{ fontSize: { xs: '0.75rem', sm: '1rem' } }}>
                     Total Akun
                   </Typography>
                 </CardContent>
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4} lg={2.4}>
+            <Grid item xs={6} sm={6} md={4} lg={2.4}>
               <Card 
                 sx={{ 
                   height: '100%', 
@@ -264,30 +268,35 @@ export default function DashboardPage() {
                   }
                 }}
               >
-                <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
+                <CardContent sx={{ 
+                  flexGrow: 1, 
+                  textAlign: 'center',
+                  px: { xs: 1, sm: 2 },
+                  py: { xs: 2, sm: 3 }
+                }}>
                   <Avatar
                     sx={{
                       bgcolor: '#e8f5e9',
-                      width: 60,
-                      height: 60,
+                      width: { xs: 40, sm: 60 },
+                      height: { xs: 40, sm: 60 },
                       mx: 'auto',
-                      mb: 2,
+                      mb: { xs: 1, sm: 2 },
                       color: '#43a047'
                     }}
                   >
-                    <SchoolIcon fontSize="large" />
+                    <SchoolIcon sx={{ fontSize: { xs: '1.25rem', sm: '2rem' } }} />
                   </Avatar>
-                  <Typography variant="h4" component="div" fontWeight="bold">
+                  <Typography variant="h4" component="div" fontWeight="bold" sx={{ fontSize: { xs: '1.25rem', sm: '2rem' } }}>
                     {formatNumber(stats.totalLPK)}
                   </Typography>
-                  <Typography color="text.secondary" variant="subtitle1">
+                  <Typography color="text.secondary" variant="subtitle1" sx={{ fontSize: { xs: '0.75rem', sm: '1rem' } }}>
                     Total LPK
                   </Typography>
                 </CardContent>
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4} lg={2.4}>
+            <Grid item xs={6} sm={6} md={4} lg={2.4}>
               <Card 
                 sx={{ 
                   height: '100%', 
@@ -301,30 +310,35 @@ export default function DashboardPage() {
                   }
                 }}
               >
-                <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
+                <CardContent sx={{ 
+                  flexGrow: 1, 
+                  textAlign: 'center',
+                  px: { xs: 1, sm: 2 },
+                  py: { xs: 2, sm: 3 }
+                }}>
                   <Avatar
                     sx={{
                       bgcolor: '#fff3e0',
-                      width: 60,
-                      height: 60,
+                      width: { xs: 40, sm: 60 },
+                      height: { xs: 40, sm: 60 },
                       mx: 'auto',
-                      mb: 2,
+                      mb: { xs: 1, sm: 2 },
                       color: '#ff9800'
                     }}
                   >
-                    <EventIcon fontSize="large" />
+                    <EventIcon sx={{ fontSize: { xs: '1.25rem', sm: '2rem' } }} />
                   </Avatar>
-                  <Typography variant="h4" component="div" fontWeight="bold">
+                  <Typography variant="h4" component="div" fontWeight="bold" sx={{ fontSize: { xs: '1.25rem', sm: '2rem' } }}>
                     {formatNumber(stats.totalKegiatan)}
                   </Typography>
-                  <Typography color="text.secondary" variant="subtitle1">
+                  <Typography color="text.secondary" variant="subtitle1" sx={{ fontSize: { xs: '0.75rem', sm: '1rem' } }}>
                     Total Kegiatan
                   </Typography>
                 </CardContent>
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4} lg={2.4}>
+            <Grid item xs={6} sm={6} md={4} lg={2.4}>
               <Card 
                 sx={{ 
                   height: '100%', 
@@ -338,30 +352,35 @@ export default function DashboardPage() {
                   }
                 }}
               >
-                <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
+                <CardContent sx={{ 
+                  flexGrow: 1, 
+                  textAlign: 'center',
+                  px: { xs: 1, sm: 2 },
+                  py: { xs: 2, sm: 3 }
+                }}>
                   <Avatar
                     sx={{
                       bgcolor: '#f3e5f5',
-                      width: 60,
-                      height: 60,
+                      width: { xs: 40, sm: 60 },
+                      height: { xs: 40, sm: 60 },
                       mx: 'auto',
-                      mb: 2,
+                      mb: { xs: 1, sm: 2 },
                       color: '#9c27b0'
                     }}
                   >
-                    <WorkIcon fontSize="large" />
+                    <WorkIcon sx={{ fontSize: { xs: '1.25rem', sm: '2rem' } }} />
                   </Avatar>
-                  <Typography variant="h4" component="div" fontWeight="bold">
+                  <Typography variant="h4" component="div" fontWeight="bold" sx={{ fontSize: { xs: '1.25rem', sm: '2rem' } }}>
                     {formatNumber(stats.totalLowongan)}
                   </Typography>
-                  <Typography color="text.secondary" variant="subtitle1">
+                  <Typography color="text.secondary" variant="subtitle1" sx={{ fontSize: { xs: '0.75rem', sm: '1rem' } }}>
                     Total Lowongan
                   </Typography>
                 </CardContent>
               </Card>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4} lg={2.4}>
+            <Grid item xs={6} sm={6} md={4} lg={2.4}>
               <Card 
                 sx={{ 
                   height: '100%', 
@@ -375,23 +394,28 @@ export default function DashboardPage() {
                   }
                 }}
               >
-                <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
+                <CardContent sx={{ 
+                  flexGrow: 1, 
+                  textAlign: 'center',
+                  px: { xs: 1, sm: 2 },
+                  py: { xs: 2, sm: 3 }
+                }}>
                   <Avatar
                     sx={{
                       bgcolor: '#ffe0e0',
-                      width: 60,
-                      height: 60,
+                      width: { xs: 40, sm: 60 },
+                      height: { xs: 40, sm: 60 },
                       mx: 'auto',
-                      mb: 2,
+                      mb: { xs: 1, sm: 2 },
                       color: '#e53935'
                     }}
                   >
-                    <AssignmentIcon fontSize="large" />
+                    <AssignmentIcon sx={{ fontSize: { xs: '1.25rem', sm: '2rem' } }} />
                   </Avatar>
-                  <Typography variant="h4" component="div" fontWeight="bold">
+                  <Typography variant="h4" component="div" fontWeight="bold" sx={{ fontSize: { xs: '1.25rem', sm: '2rem' } }}>
                     {formatNumber(stats.totalLaporan)}
                   </Typography>
-                  <Typography color="text.secondary" variant="subtitle1">
+                  <Typography color="text.secondary" variant="subtitle1" sx={{ fontSize: { xs: '0.75rem', sm: '1rem' } }}>
                     Total Laporan
                   </Typography>
                 </CardContent>
@@ -400,27 +424,33 @@ export default function DashboardPage() {
           </Grid>
           
           {/* Aktivitas Bulanan */}
-          <Typography variant="h5" color='black' sx={{ mb: 2, fontWeight: 'bold' }}>
+          <Typography variant="h5" color='black' sx={{ 
+            mb: { xs: 1.5, sm: 2 }, 
+            fontWeight: 'bold',
+            fontSize: { xs: '1.25rem', sm: '1.5rem' }
+          }}>
             Aktivitas Bulanan ({currentMonth} {currentYear})
           </Typography>
-          <Grid container spacing={3}>
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
             <Grid item xs={12} md={6}>
               <Card sx={{ 
                 borderRadius: 2,
                 boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
               }}>
-                <CardContent>
-                  <Typography variant="h6" component="div" gutterBottom>
+                <CardContent sx={{ px: { xs: 2, sm: 3 }, py: { xs: 2, sm: 3 } }}>
+                  <Typography variant="h6" component="div" gutterBottom sx={{ 
+                    fontSize: { xs: '1rem', sm: '1.25rem' } 
+                  }}>
                     Kegiatan Bulanan
                   </Typography>
-                  <Box sx={{ mt: 3, mb: 1 }}>
+                  <Box sx={{ mt: { xs: 2, sm: 3 }, mb: 1 }}>
                     {chartData.kegiatanByMonth.map((value, index) => (
                       <Box key={index} sx={{ mb: 2 }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                          <Typography variant="body2">
+                          <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                             {new Date(0, index).toLocaleString('id-ID', { month: 'long' })}
                           </Typography>
-                          <Typography variant="body2" fontWeight="bold">
+                          <Typography variant="body2" fontWeight="bold" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                             {value}
                           </Typography>
                         </Box>
@@ -428,7 +458,7 @@ export default function DashboardPage() {
                           variant="determinate" 
                           value={Math.min((value / 10) * 100, 100)} 
                           sx={{ 
-                            height: 8, 
+                            height: { xs: 6, sm: 8 }, 
                             borderRadius: 5,
                             bgcolor: '#e3f2fd',
                             '& .MuiLinearProgress-bar': {
@@ -448,18 +478,20 @@ export default function DashboardPage() {
                 borderRadius: 2,
                 boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
               }}>
-                <CardContent>
-                  <Typography variant="h6" component="div" gutterBottom>
+                <CardContent sx={{ px: { xs: 2, sm: 3 }, py: { xs: 2, sm: 3 } }}>
+                  <Typography variant="h6" component="div" gutterBottom sx={{ 
+                    fontSize: { xs: '1rem', sm: '1.25rem' } 
+                  }}>
                     Lowongan Kerja Bulanan
                   </Typography>
-                  <Box sx={{ mt: 3, mb: 1 }}>
+                  <Box sx={{ mt: { xs: 2, sm: 3 }, mb: 1 }}>
                     {chartData.lowonganByMonth.map((value, index) => (
                       <Box key={index} sx={{ mb: 2 }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                          <Typography variant="body2">
+                          <Typography variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                             {new Date(0, index).toLocaleString('id-ID', { month: 'long' })}
                           </Typography>
-                          <Typography variant="body2" fontWeight="bold">
+                          <Typography variant="body2" fontWeight="bold" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                             {value}
                           </Typography>
                         </Box>
@@ -467,7 +499,7 @@ export default function DashboardPage() {
                           variant="determinate" 
                           value={Math.min((value / 10) * 100, 100)} 
                           sx={{ 
-                            height: 8, 
+                            height: { xs: 6, sm: 8 }, 
                             borderRadius: 5,
                             bgcolor: '#fff3e0',
                             '& .MuiLinearProgress-bar': {
@@ -484,33 +516,33 @@ export default function DashboardPage() {
           </Grid>
 
           {/* Ringkasan Kinerja */}
-          <Box mt={4}>
+          <Box mt={{ xs: 3, sm: 4 }}>
             <Paper sx={{ 
-              p: 3, 
+              p: { xs: 2, sm: 3 }, 
               borderRadius: 2,
               background: 'linear-gradient(to right, #f5f5f5, #ffffff)',
               boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
             }}>
-              <Box display="flex" alignItems="center" mb={2}>
-                <BarChartIcon sx={{ mr: 1, color: '#1976d2' }} />
-                <Typography variant="h5" fontWeight="bold">
+              <Box display="flex" alignItems="center" mb={{ xs: 1.5, sm: 2 }}>
+                <BarChartIcon sx={{ mr: 1, color: '#1976d2', fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />
+                <Typography variant="h5" fontWeight="bold" sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>
                   Ringkasan Kinerja
                 </Typography>
               </Box>
-              <Divider sx={{ mb: 2 }} />
+              <Divider sx={{ mb: { xs: 1.5, sm: 2 } }} />
               
-              <Typography variant="body1" paragraph>
+              <Typography variant="body1" paragraph sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, mb: { xs: 1, sm: 1.5 } }}>
                 Dashboard menampilkan total <strong>{formatNumber(stats.totalAkun)}</strong> akun pengguna, 
                 termasuk <strong>{formatNumber(stats.totalLPK)}</strong> Lembaga Pelatihan Kerja (LPK) terdaftar.
               </Typography>
               
-              <Typography variant="body1" paragraph>
+              <Typography variant="body1" paragraph sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, mb: { xs: 1, sm: 1.5 } }}>
                 Saat ini terdapat <strong>{formatNumber(stats.totalKegiatan)}</strong> kegiatan dan 
                 <strong> {formatNumber(stats.totalLowongan)}</strong> lowongan kerja yang tersedia.
                 Laporan yang telah dikumpulkan berjumlah <strong>{formatNumber(stats.totalLaporan)}</strong>.
               </Typography>
               
-              <Typography variant="body1">
+              <Typography variant="body1" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
                 Aktivitas bulanan menunjukkan tren kegiatan dan lowongan kerja yang dapat digunakan untuk 
                 analisis dan perencanaan program Disnaker kedepannya.
               </Typography>

@@ -8,16 +8,15 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Sidebar tetap */}
-      <div className="w-64 flex-shrink-0">
-        <SidebarLPK />
-      </div>
+      {/* Sidebar component */}
+      <SidebarLPK />
 
       <ProtectedRoute>
-      {/* Konten Utama */}
-      <div className="flex flex-col flex-1 bg-gray-100 h-full overflow-y-auto">
-        <main className="p-8 flex-1">{children}</main>
-      </div>
+        {/* Konten Utama */}
+        <div className="flex flex-col flex-1 bg-gray-100 h-full overflow-y-auto w-full lg:ml-64">
+          {/* Main content with padding adjustment for mobile */}
+          <main className="p-4 sm:p-6 lg:p-8 flex-1 pt-16 lg:pt-6">{children}</main>
+        </div>
       </ProtectedRoute>
     </div>
   );
