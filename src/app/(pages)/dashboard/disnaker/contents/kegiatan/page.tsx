@@ -152,7 +152,7 @@ export default function KegiatanPage() {
       <div className='flex flex-row gap-x-2 justify-between w-full'>
         <button
           type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-normal py-2 px-4 w-24 rounded-lg"
+          className="bg-blue-500 cursor-pointer hover:bg-blue-700 text-white font-normal py-2 px-4 w-24 rounded-lg"
           onClick={() => {router.push('/dashboard/disnaker/contents/kegiatan/add')}}
         >
           Tambah
@@ -242,7 +242,7 @@ export default function KegiatanPage() {
                         <td className="px-4 py-2 border-b text-black">
                           <button
                             type="reset"
-                            className="bg-gray-200 hover:bg-gray-300 text-black font-base py-1 px-4 w-16 rounded-lg"
+                            className="bg-gray-200 cursor-pointer hover:bg-gray-300 text-black font-base py-1 px-4 w-16 rounded-lg"
                             onClick={() => {handelEdit(item.id)}}
                           >
                             Edit
@@ -251,7 +251,7 @@ export default function KegiatanPage() {
                         <td className="px-4 py-2 border-b text-black">
                           <button
                             type="reset"
-                            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 w-12 rounded-lg text-center"
+                            className="bg-red-500 cursor-pointer hover:bg-red-600 text-white font-bold py-2 px-4 w-12 rounded-lg text-center"
                             onClick={() => {handleSingleDelete(item.id)}}
                           >
                             <IoTrash className="w-4 h-4"/>
@@ -271,7 +271,7 @@ export default function KegiatanPage() {
                 <button
                   onClick={() => setCurrentPage(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-2 text-sm font-base text-black border rounded-md hover:bg-gray-300 disabled:opacity-50"
+                  className="px-3 py-2 text-sm font-base cursor-pointer text-black border rounded-md hover:bg-gray-300 disabled:opacity-50"
                 >
                   <HiOutlineArrowSmLeft />
                 </button>
@@ -281,7 +281,7 @@ export default function KegiatanPage() {
                   <button
                     key={index + 1}
                     onClick={() => setCurrentPage(index + 1)}
-                    className={`px-3 py-2 text-sm font-base ${
+                    className={`px-3 py-2 cursor-pointer text-sm font-base ${
                       currentPage === index + 1
                         ? 'bg-blue-500 text-white'
                         : 'text-black hover:bg-gray-300'
@@ -295,7 +295,7 @@ export default function KegiatanPage() {
                 <button
                   onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="px-3 py-2 text-sm font-base text-black border rounded-md hover:bg-gray-300 disabled:opacity-50"
+                  className="px-3 py-2 text-sm cursor-pointer font-base text-black border rounded-md hover:bg-gray-300 disabled:opacity-50"
                 >
                   <HiOutlineArrowSmRight />
                 </button>
