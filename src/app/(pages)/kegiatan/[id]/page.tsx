@@ -33,6 +33,10 @@ function formatTanggal(timestamp: Timestamp | undefined) {
 	}).replace("Waktu Indonesia Tengah", "WITA");
 }
 
+function limitChars(text: string, maxLength: number) {
+	return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+}
+
 export default function KegiatanDetail() {
 	const { id } = useParams();
 	const [data, setData] = useState<KegiatanItem | null>(null);
@@ -111,7 +115,8 @@ export default function KegiatanDetail() {
 						<li><Link href="/kegiatan" className="hover:underline text-blue-600 capitalize">Kegiatan</Link></li>
 						<li><span className="mx-2">/</span></li>
 						<li className="text-gray-800 line-clamp-1 capitalize" title={data?.Judul ?? "Judul Kegiatan Dibutuhkan"}>
-							{data?.Judul ?? "Judul Kegiatan"}
+							{/* {data?.Judul ?? "Judul Kegiatan"} */}
+							{limitChars(data?.Judul ?? "Judul Kegiatan", 25)}
 						</li>
 					</ol>
 				</nav>
@@ -119,11 +124,11 @@ export default function KegiatanDetail() {
 
 			<main className="container mx-auto max-w-6xl px-4 pt-2 pb-10 grid grid-cols-1 md:grid-cols-3 gap-8">
 				<div className="md:col-span-2">
-					<h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2 capitalize">
+					<h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2 capitalize break-words">
 						{data?.Judul ?? "Judul Kegiatan"}
 					</h1>
 
-					<p className="text-sm text-gray-500 mb-6">
+					<p className="text-sm text-gray-500 mb-6 py-2">
 						📅 {formatTanggal(data?.Tanggal)}
 					</p>
 
@@ -191,7 +196,7 @@ export default function KegiatanDetail() {
 				</div>
 
 				{/* Sidebar: Saran Kegiatan */}
-				<aside className="md:col-span-1 pl-12 pt-22">
+				<aside className="md:col-span-1 pl-0 lg:pl-12 lg:pt-26">
 					<h2 className="text-xl font-semibold text-gray-800 mb-4 underline">Kegiatan Lainnya</h2>
 					<div className="space-y-6">
 						{semuaKegiatan.filter((item) => item.id !== id).slice(0, 3).map((item) => (

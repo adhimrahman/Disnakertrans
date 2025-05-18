@@ -1,8 +1,9 @@
 import Image from "next/image";
 import React from "react";
+import Link from "next/link";
 import Logo from "../../public/images/Logo.png";
 import Garuda from "../../public/images/Garuda.png";
-import Link from "next/link";
+import CustomButton from "@/components/ui/CustomButton";
 
 export default function ContactHighlight() {
 	return (
@@ -28,9 +29,7 @@ export default function ContactHighlight() {
 
 					<div className="mt-8">
 						<Link href="/contact-us">
-							<button className="bg-red-600 hover:bg-red-700 transition px-6 py-3 text-lg font-semibold rounded-xl shadow-lg hover:cursor-pointer">
-								Hubungi Sekarang
-							</button>
+							<CustomButton text="Hubungi Sekarang " px={6} py={3} className="font-semibold" />
 						</Link>
 					</div>
 				</div>
