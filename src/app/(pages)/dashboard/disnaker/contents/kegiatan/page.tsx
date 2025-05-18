@@ -16,8 +16,8 @@ import {
   DocumentData,
 } from "firebase/firestore";
 import { db } from "@/firebase/config";
-import { SortColumn } from "@/components/dashboard/Sort";
-import { SearchInput } from "@/components/dashboard/SearchTable";
+import { SortColumn } from "@/components/Dashboard/Sort";
+import { SearchInput } from "@/components/Dashboard/SearchTable";
 
 export default function KegiatanPage() { 
   const [kegiatan, setKegiatan] = useState<DocumentData[]>([]);

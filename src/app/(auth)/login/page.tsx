@@ -1,127 +1,131 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "@/firebase/config";
 import { doc, getDoc } from "firebase/firestore";
+import { ToastContainer, toast } from "react-toastify";
 import Image from "next/image";
+import CustomButton from "@/components/ui/CustomButton";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isClient, setIsClient] = useState(false); // track if we're on the client
-  const [showSuccess, setShowSuccess] = useState(false); // track success state for popup
+	const router = useRouter();
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+	const [error, setError] = useState("");
+	const [isClient, setIsClient] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true); // set to true after component is mounted on the client
-  }, []);
+	useEffect(() => {
+		setIsClient(true);
+	}, []);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setShowSuccess(false); // reset success message on new attempt
+	const handleLogin = async (e: React.FormEvent) => {
+		e.preventDefault();
+		setError("");
 
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
+		try {
+			const userCredential = await signInWithEmailAndPassword(auth, email, password);
+			const user = userCredential.user;
+			const docRef = doc(db, "users", user.uid);
+			const docSnap = await getDoc(docRef);
 
-      // Ambil data role dari Firestore
-      const docRef = doc(db, "users", user.uid);
-      const docSnap = await getDoc(docRef);
+			if (docSnap.exists()) {
+				const userData = docSnap.data();
+				if (userData.role === "disnaker") {
+					toast.success("Login berhasil! Mengarahkan Anda...");
+					setTimeout(() => router.push("/dashboard/disnaker"), 3000);
+				} else if (userData.role === "lpk") {
+					if (!userData.lpkId) {
+						setError("ID LPK tidak ditemukan.");
+						return;
+					}
+					toast.success("Login berhasil! Mengarahkan Anda...");
+					setTimeout(() => router.push(`/dashboard/lpk/${userData.lpkId}`), 3000);
+				} else {
+					setError("Role tidak valid.");
+				}
+			} else {
+				setError("Data pengguna tidak ditemukan.");
+			}
+		} catch (e) {
+			toast.error("Email atau password salah.");
+			console.log(e)
+		}
+	};
 
-      if (docSnap.exists()) {
-        const userData = docSnap.data();
-        if (userData.role === "disnaker") {
-          setShowSuccess(true); // Show success message after successful login
-          setTimeout(() => {
-            router.push("/dashboard/disnaker");
-          }, 3000); // Delay navigation by 3 seconds
-        } else if (userData.role === "lpk") {
-          const lpkId = userData.lpkId; // Ambil lpkId dari data pengguna
-          if (!lpkId) {
-            setError("ID LPK tidak ditemukan.");
-            return;
-          }
-          setShowSuccess(true); // Show success message after successful login
-          setTimeout(() => {
-            router.push(`/dashboard/lpk/${lpkId}`);
-          }, 5000); // Delay navigation by 5 seconds
-        } else {
-          setError("Role tidak valid.");
-        }
-      } else {
-        setError("Data pengguna tidak ditemukan.");
-      }
-    } catch (err: any) {
-      console.error("Login error", err.message);
-      setError("Email atau password salah.");
-    }
-  };
+	if (!isClient) return null;
 
-  if (!isClient) return null; // prevent server-side rendering issues
+	return (
+		<div className="min-h-screen h-full flex flex-col md:flex-row">
+			{/* Left Side */}
+			<div className="hidden md:block md:w-1/2 relative">
+				<div className="absolute inset-0 bg-darkBlue bg-opacity-50 flex items-center justify-center px-20">
+					<h1 className="text-white text-5xl font-bold px-6 text-center leading-13">Selamat Datang di Portal Admin Gowa</h1>
+				</div>
+			</div>
 
-  return (
-    <div className="min-h-screen bg-gray-700 flex items-center justify-center">
-      <div className="w-full max-w-5xl bg-white shadow-md rounded-xl flex overflow-hidden py-11 px-10">
-        <div className="hidden md:flex w-1/2 relative">
-          <Image src="/images/Login.jpg" alt="Login Illustration" fill className="object-cover" />
-        </div>
+			{/* Right Side - Form */}
+			<div className="w-full min-h-screen md:w-1/2 flex items-center justify-center p-6 sm:p-10 bg-steelBlue">
+				<div className="w-full max-w-md space-y-6">
 
-        <div className="w-full md:w-1/2 p-8 md:p-12">
-          <Image src="/images/Logo.png" alt="Logo" width={50} height={50} />
-          <h2 className="text-2xl text-black font-bold mb-2 mt-4">Login</h2>
-          <p className="text-sm text-gray-500 mb-6">
-            Masuk menggunakan akun Admin Disnaker atau LPK Gowa
-          </p>
+					{/* Back Button - hanya tampil di mobile */}
+					<div className="md:hidden flex items-center mb-4">
+						<button
+							type="button"
+							onClick={() => router.back()}
+							className="text-white flex items-center gap-2 text-sm hover:underline"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+							</svg>
+								Kembali
+						</button>
+					</div>
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-gray-700 font-semibold">Email</label>
-              <input
-                type="email"
-                className="w-full text-black px-4 py-2 border rounded bg-gray-200"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@example.com"
-              />
-            </div>
+					<div className="text-center">
+						<Image src="/images/Logo.png" alt="Logo" width={60} height={60} className="mx-auto mb-2 pb-2" />
+						<h2 className="text-2xl lg:text-3xl font-bold text-gray-100">Masuk ke Akun Anda</h2>
+						<p className="text-sm text-gray-100">Admin Disnaker & LPK Gowa</p>
+					</div>
 
-            <div>
-              <label className="block text-gray-700 font-semibold">Password</label>
-              <input
-                type="password"
-                className="w-full text-black px-4 py-2 border rounded bg-gray-200"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••"
-              />
-            </div>
+					<form onSubmit={handleLogin} className="space-y-6 py-5">
+						<div>
+							<label className="block text-sm font-medium text-gray-100">Email</label>
+							<input
+								type="email"
+								value={email}
+								onChange={(e) => setEmail(e.target.value)}
+								placeholder="email@example.com"
+								className="mt-1 block w-full px-4 py-2 border border-gray-300 text-gray-800 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700"
+								required
+							/>
+						</div>
 
-            {error && <p className="text-red-500 text-sm">{error}</p>}
+						<div>
+							<label className="block text-sm font-medium text-gray-100">Password</label>
+							<input
+								type="password"
+								className="mt-1 block w-full px-4 py-2 border border-gray-300 text-gray-800 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700"
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+								placeholder="••••••••••••"
+								required
+							/>
+						</div>
 
-            <div className="text-end mt-4">
-              <a href="/forgot-password" className="text-blue-500 text-sm hover:underline">Lupa Password?</a>
-            </div>
+						{error && <p className="text-sm text-red-500 text-center">{error}</p>}
 
-            <button
-              type="submit"
-              className="cursor-pointer w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded font-semibold"
-            >
-              Login
-            </button>
-          </form>
+						<div className="text-right">
+							<a href="/forgot-password" className="text-sm text-gray-100 hover:underline">Lupa password?</a>
+						</div>
 
-          {/* Success Popup */}
-          {showSuccess && (
-            <div className="fixed top-0 left-0 right-0 bg-green-500 text-white py-2 px-4 text-center">
-              <p>Anda telah berhasil login! Anda akan diarahkan dalam 3 detik.</p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+						<CustomButton text="Login" width="w-full" py={2} variant="blue" />
+					</form>
+
+					<ToastContainer position="top-right" autoClose={3000} />
+				</div>
+			</div>
+		</div>
+	);
 }

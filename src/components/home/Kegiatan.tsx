@@ -8,6 +8,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/config";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
+	import Link from "next/link";
 
 type KegiatanItem = {
 	id: string;
@@ -91,9 +92,9 @@ export default function Kegiatan() {
 									</p>
 								</div>
 								<div className="px-4 md:px-5 py-4 flex justify-end">
-									<a className="bg-blue-700 text-white px-5 py-2 rounded-md shadow hover:bg-blue-800 transition text-sm md:text-base tracking-wider flex items-center gap-1"
+									<Link className="bg-blue-700 text-white px-5 py-2 rounded-md shadow hover:bg-blue-800 transition text-sm md:text-base tracking-wider flex items-center gap-1"
 										href={`/kegiatan/${item.id}`}> Selengkapnya <ArrowRight size={16} />
-									</a>
+									</Link>
 								</div>
 							</div>
 						</SwiperSlide>
