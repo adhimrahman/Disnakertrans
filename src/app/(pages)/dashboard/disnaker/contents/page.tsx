@@ -1,4 +1,4 @@
-import Card from '@/components/dashboard/Card';
+import Card from '@/components/Dashboard/Card';
 import { BsFillFileEarmarkArrowUpFill } from "react-icons/bs";
 import { MdContentPasteSearch } from "react-icons/md";
 import Link from 'next/link';

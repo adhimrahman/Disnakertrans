@@ -16,8 +16,8 @@ import {
   DocumentData
 } from "firebase/firestore";
 import { db } from "@/firebase/config";
-import { SortColumn } from "@/components/dashboard/Sort";
-import { SearchInput } from "@/components/dashboard/SearchTable";
+import { SortColumn } from "@/components/Dashboard/Sort";
+import { SearchInput } from "@/components/Dashboard/SearchTable";
 import { PulseLoader } from "react-spinners";
 
 export default function AccountsPage() {  
