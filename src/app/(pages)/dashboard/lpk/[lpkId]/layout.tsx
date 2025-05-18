@@ -1,4 +1,4 @@
-import SidebarLPK from '@/components/dashboard/SidebarLPK';
+import SidebarLPK from '@/components/Dashboard/SidebarLPK';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function DashboardLayout({

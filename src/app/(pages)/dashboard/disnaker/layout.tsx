@@ -1,6 +1,6 @@
 'use client';
 
-import Sidebar from '@/components/dashboard/Sidebar';
+import Sidebar from '@/components/Dashboard/Sidebar';
 import ProtectedRoute from '@/components/ProtectedRoute';
 
 export default function DashboardLayout({
