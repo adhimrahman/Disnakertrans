@@ -68,6 +68,21 @@ export default function LoginPage() {
 			{/* Right Side - Form */}
 			<div className="w-full min-h-screen md:w-1/2 flex items-center justify-center p-6 sm:p-10 bg-steelBlue">
 				<div className="w-full max-w-md space-y-6">
+
+					{/* Back Button - hanya tampil di mobile */}
+					<div className="md:hidden flex items-center mb-4">
+						<button
+							type="button"
+							onClick={() => router.back()}
+							className="text-white flex items-center gap-2 text-sm hover:underline"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+							</svg>
+								Kembali
+						</button>
+					</div>
+
 					<div className="text-center">
 						<Image src="/images/Logo.png" alt="Logo" width={60} height={60} className="mx-auto mb-2 pb-2" />
 						<h2 className="text-2xl lg:text-3xl font-bold text-gray-100">Masuk ke Akun Anda</h2>
