@@ -4,8 +4,10 @@ import { useRouter } from "next/navigation";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "@/firebase/config";
 import { doc, getDoc } from "firebase/firestore";
-import CustomButton from "@/components/ui/CustomButton";
+import { ToastContainer, toast } from "react-toastify";
 import Image from "next/image";
+import CustomButton from "@/components/ui/CustomButton";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function LoginPage() {
 	const router = useRouter();
@@ -13,7 +15,6 @@ export default function LoginPage() {
 	const [password, setPassword] = useState("");
 	const [error, setError] = useState("");
 	const [isClient, setIsClient] = useState(false);
-	const [showSuccess, setShowSuccess] = useState(false);
 
 	useEffect(() => {
 		setIsClient(true);
@@ -22,7 +23,6 @@ export default function LoginPage() {
 	const handleLogin = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError("");
-		setShowSuccess(false);
 
 		try {
 			const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -33,23 +33,24 @@ export default function LoginPage() {
 			if (docSnap.exists()) {
 				const userData = docSnap.data();
 				if (userData.role === "disnaker") {
-					setShowSuccess(true);
+					toast.success("Login berhasil! Mengarahkan Anda...");
 					setTimeout(() => router.push("/dashboard/disnaker"), 3000);
 				} else if (userData.role === "lpk") {
 					if (!userData.lpkId) {
 						setError("ID LPK tidak ditemukan.");
 						return;
 					}
-					setShowSuccess(true);
-					setTimeout(() => router.push(`/dashboard/lpk/${userData.lpkId}`), 5000);
+					toast.success("Login berhasil! Mengarahkan Anda...");
+					setTimeout(() => router.push(`/dashboard/lpk/${userData.lpkId}`), 3000);
 				} else {
 					setError("Role tidak valid.");
 				}
 			} else {
 				setError("Data pengguna tidak ditemukan.");
 			}
-		} catch (err: any) {
-			setError("Email atau password salah.");
+		} catch (e) {
+			toast.error("Email atau password salah.");
+			console.log(e)
 		}
 	};
 
@@ -57,14 +58,8 @@ export default function LoginPage() {
 
 	return (
 		<div className="min-h-screen h-full flex flex-col md:flex-row">
-			{/* Left Side - Image Background */}
+			{/* Left Side */}
 			<div className="hidden md:block md:w-1/2 relative">
-				<Image
-					src="/images/Logo.png"
-					alt="Login Background"
-					fill
-					className="object-cover"
-				/>
 				<div className="absolute inset-0 bg-darkBlue bg-opacity-50 flex items-center justify-center px-20">
 					<h1 className="text-white text-5xl font-bold px-6 text-center leading-13">Selamat Datang di Portal Admin Gowa</h1>
 				</div>
@@ -84,10 +79,10 @@ export default function LoginPage() {
 							<label className="block text-sm font-medium text-gray-100">Email</label>
 							<input
 								type="email"
-								className="mt-1 block w-full px-4 py-2 border border-gray-300 text-gray-800 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700"
 								value={email}
 								onChange={(e) => setEmail(e.target.value)}
 								placeholder="email@example.com"
+								className="mt-1 block w-full px-4 py-2 border border-gray-300 text-gray-800 rounded-lg bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700"
 								required
 							/>
 						</div>
@@ -110,14 +105,10 @@ export default function LoginPage() {
 							<a href="/forgot-password" className="text-sm text-gray-100 hover:underline">Lupa password?</a>
 						</div>
 
-						<CustomButton text="Login" width="w-full" py={2} />
+						<CustomButton text="Login" width="w-full" py={2} variant="blue" />
 					</form>
 
-					{showSuccess && (
-						<div className="fixed top-0 left-0 right-0 bg-green-500 text-white text-center py-3 px-4 shadow z-50">
-							Login berhasil! Mengarahkan Anda...
-						</div>
-					)}
+					<ToastContainer position="top-right" autoClose={3000} />
 				</div>
 			</div>
 		</div>
