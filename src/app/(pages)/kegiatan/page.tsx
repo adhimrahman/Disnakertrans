@@ -15,6 +15,10 @@ type KegiatanItem = {
 	ImageSampul: string;
 };
 
+function limitChars(text: string, maxLength: number) {
+	return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+}
+
 export default function Page() {
 	const [kegiatan, setKegiatan] = useState<KegiatanItem[]>([]);
 	const [visibleCount, setVisibleCount] = useState(9);
@@ -45,16 +49,16 @@ export default function Page() {
     <section className="relative w-full h-[300px] sm:h-[350px]">
         <Image src="/images/Ilustrasi.jpeg" alt="Ilustrasi Header" fill className="object-cover object-center brightness-50" />
         <div className="absolute inset-0 flex items-center justify-center text-center bg-gradient-to-b from-transparent to-black/50 pt-24 lg:pt-12">
-            <h1 className="text-white text-4xl md:text-5xl font-bold shadow-md capitalize">
+            <h1 className="text-white text-3xl lg:text-5xl md:text-5xl font-bold shadow-md capitalize">
                 Kegiatan - Kegiatan Disnaker
             </h1>
         </div>
     </section>
 
-    <section className="py-20 px-6 md:px-24 bg-gradient-to-b from-white to-gray-100">
-        <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-16 capitalize">
+    <section className="py-16 lg:py-20 px-6 md:px-24 bg-gradient-to-b from-white to-gray-100">
+        {/* <h2 className="text-2xl lg:text-3xl font-bold text-center text-gray-800 mb-16 capitalize px-11 lg:px-0">
             Highlight Kegiatan Disnaker Gowa
-        </h2>
+        </h2> */}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {isLoading ? (
@@ -80,7 +84,8 @@ export default function Page() {
                         </div>
     
                         <div className="p-6 bg-white">
-                            <h3 className="text-xl font-semibold text-gray-800 mb-2 capitalize">{item.Judul}</h3>
+                            {/* <h3 className="text-xl font-semibold text-gray-800 mb-2 capitalize">{item.Judul}</h3> */}
+                            <h3 className="text-xl font-semibold text-gray-800 mb-2 capitalize">{limitChars(item.Judul, 26)}</h3>
                             <p className="text-sm text-gray-600 line-clamp-3">{item.Deskripsi}</p>
                             <a className="mt-3 inline-block text-sm text-blue-600 hover:text-blue-800 font-medium"
                             href={`/kegiatan/${item.id}`}>
