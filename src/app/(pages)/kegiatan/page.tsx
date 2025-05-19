@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ContactHighlight from "@/components/ContactHightlight";
+import ContactHighlight from "@/components/ui/ContactHightlight";
 import KegiatanList from "@/components/ClientCompo/KegiatanList";
 import { getKegiatan } from "@/lib/getKegiatan";
 
@@ -31,8 +31,6 @@ export default async function KegiatanPage() {
     </section>
 
     <KegiatanList kegiatan={kegiatan} />
-
-    <ContactHighlight />
 
     <ContactHighlight />
     <Footer />
