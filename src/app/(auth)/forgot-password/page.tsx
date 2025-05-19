@@ -1,45 +1,34 @@
 "use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "@/firebase/config";
-import { ToastContainer, toast } from "react-toastify";
+import ForgotPasswordForm from "@/components/Auth/ForgotPasswordForm";
+import { ToastContainer } from "react-toastify";
 import Image from "next/image";
-import Link from "next/link";
-import CustomButton from "@/components/ui/CustomButton";
-import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/navigation";
 
-export default function ForgotPassword() {
+export default function ForgotPasswordPage() {
 	const router = useRouter();
-	const [email, setEmail] = useState("");
-
-	useEffect(() => {
-		setEmail("");
-	}, []);
-
-	const handleForgotPassword = async (e: React.FormEvent) => {
-		e.preventDefault();
-		if (!email) {
-			toast.error("Email harus diisi.");
-			return;
-		}
-
-		try {
-			await sendPasswordResetEmail(auth, email);
-			toast.success("Email reset password telah dikirim! Silakan periksa inbox Anda.");
-			setEmail("");
-		} catch (e) {
-			toast.error("Terjadi kesalahan. Pastikan email valid dan terdaftar.");
-			console.error("Error sending password reset email", e);
-		}
-	};
 
 	return (
 		<div className="min-h-screen h-full flex flex-col md:flex-row">
+			{/* Tombol Back & Home di Desktop - kiri atas */}
+			<div className="hidden md:flex fixed top-10 left-10 gap-5 z-50">
+				<button type="button" onClick={() => router.back()}
+					className="bg-white/10 text-white hover:bg-white/20 px-6 py-3 rounded-lg text-sm font-medium shadow-md transition hover:cursor-pointer"
+				>
+					← Kembali
+				</button>
+				<button type="button" onClick={() => router.push("/")}
+					className="bg-white/10 text-white hover:bg-white/20 px-6 py-3 rounded-lg text-sm font-medium shadow-md transition hover:cursor-pointer"
+				>
+					🏠 Home
+				</button>
+			</div>
+			
 			{/* Left Side */}
 			<div className="hidden md:block md:w-1/2 relative">
 				<div className="absolute inset-0 bg-darkBlue bg-opacity-50 flex items-center justify-center px-20">
-					<h1 className="text-white text-4xl font-bold px-6 text-center leading-13">Lupa Password? <br />Kami akan bantu reset</h1>
+					<h1 className="text-white text-4xl font-bold px-6 text-center leading-13">
+						Lupa Password? <br />Kami akan bantu reset
+					</h1>
 				</div>
 			</div>
 
@@ -47,7 +36,7 @@ export default function ForgotPassword() {
 			<div className="w-full min-h-screen md:w-1/2 flex items-center justify-center p-6 sm:p-10 bg-steelBlue">
 				<div className="w-full max-w-md space-y-6">
 
-					{/* Back Button - hanya tampil di mobile */}
+					{/* Back Button - Mobile */}
 					<div className="md:hidden flex items-center mb-4">
 						<button
 							type="button"
@@ -57,7 +46,7 @@ export default function ForgotPassword() {
 							<svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
 							</svg>
-								Kembali
+							Kembali
 						</button>
 					</div>
 
@@ -67,31 +56,10 @@ export default function ForgotPassword() {
 						<p className="text-sm text-gray-100">Masukkan email Anda untuk menerima instruksi</p>
 					</div>
 
-					<form onSubmit={handleForgotPassword} className="space-y-6 py-5">
-						<div>
-							<label className="block text-sm font-medium text-gray-100">Email</label>
-							<input
-								type="email"
-								value={email}
-								onChange={(e) => setEmail(e.target.value)}
-								placeholder="admin@example.com"
-								className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 shadow-sm focus:ring-blue700 text-gray-800"
-								required
-							/>
-						</div>
-
-						<CustomButton text="Kirim Link Reset" width="w-full" py={2} variant="blue" />
-
-						<div className="text-center">
-							<Link href="/login" className="text-sm text-gray-100 hover:underline">
-								Kembali ke Halaman Login
-							</Link>
-						</div>
-					</form>
+					<ForgotPasswordForm />
+					<ToastContainer position="top-center" autoClose={3000} />
 				</div>
 			</div>
-
-			<ToastContainer position="top-center" autoClose={3000} />
 		</div>
 	);
 }
