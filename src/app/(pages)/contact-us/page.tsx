@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import CustomButton from "@/components/ui/CustomButton";
 
 export default function ContactUsPage() {
     return (
@@ -37,9 +38,7 @@ export default function ContactUsPage() {
                             <textarea rows={5} placeholder="Tulis pesan Anda..." className="w-full p-3 rounded-lg border border-gray-300 bg-gray-50 placeholder:text-gray-400"></textarea>
                         </div>
                         <div className="md:col-span-2">
-                            <button type="submit" className="w-full bg-red-600 hover:bg-red-700 transition-colors duration-200 text-white font-semibold py-3 rounded-lg hover:cursor-pointer">
-                                Kirim Pesan
-                            </button>
+                            <CustomButton text="Kirim Pesan" width="w-full" py={3} />
                         </div>
                     </form>
                 </div>
