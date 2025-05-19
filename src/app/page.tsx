@@ -7,7 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Kegiatan from "@/components/Home/Kegiatan";
 import Lowongan from "@/components/Home/Lowongan";
-import ContactHighlight from "@/components/ContactHightlight";
+import ContactHighlight from "@/components/ui/ContactHightlight";
 import InfografisSection from "@/components/Home/InfografisSection";
 import HeroCarousel from "@/components/Home/Carousel";
 import CustomButton from "@/components/ui/CustomButton";

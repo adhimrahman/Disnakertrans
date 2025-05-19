@@ -17,10 +17,10 @@ export const getKegiatan = cache(async (): Promise<KegiatanItem[]> => {
 		const docData = doc.data();
 		return {
 			id: doc.id,
-			Judul: docData.Judul,
-			Deskripsi: docData.Deskripsi,
-			ImageSampul: docData.ImageSampul,
-			Tanggal: docData.Tanggal?.toDate().toISOString(),
+			Judul: docData.Judul ?? "Tidak ada Judul",
+			Deskripsi: docData.Deskripsi ?? "Tidak ada Deskripsi",
+			ImageSampul: docData.ImageSampul ?? "/images/placeholder.jpg",
+			Tanggal: docData.Tanggal?.toDate().toISOString() ?? "",
 		};
 	});
 	return data;

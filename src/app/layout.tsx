@@ -8,7 +8,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-	title: "Disnakertrans",
+	title: "Disnakertrans Gowa",
 	description: "Lorem ipsum dolor ci amet anjay",
 	icons: {
 		icon: "/pemkabGowaLogo.svg"

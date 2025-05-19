@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 import "swiper/css";
 import "swiper/css/navigation";
 import { LowonganItem } from "@/lib/getLowongan";
+import Link from "next/link";
 
 function formatRupiah(value: number) {
     return new Intl.NumberFormat("id-ID", {
@@ -44,11 +45,13 @@ export default function LowonganHome({ lowongan }: { lowongan: LowonganItem[] })
 							<h3 className="text-xl font-bold text-gray-800 mb-1 line-clamp-2">{item.Judul}</h3>
 							<p className="text-gray-500 text-sm">{item.Perusahaan}</p>
 							<div className="flex flex-wrap gap-2 mt-2">
-								{item.Tipe.map((tipe, index) => (
-									<span key={index} className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
-										{tipe}
-									</span>
-								))}
+								{Array.isArray(item.Tipe) && 
+									item.Tipe.map((tipe, index) => (
+										<span key={index} className="text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700 font-medium">
+											{tipe}
+										</span>
+									))
+								}
 							</div>
 							<div className="mt-3 text-sm text-green-600 font-semibold">
 								{formatRupiah(item.Range.min)} - {formatRupiah(item.Range.max)}
@@ -59,10 +62,10 @@ export default function LowonganHome({ lowongan }: { lowongan: LowonganItem[] })
 							</div>
 						</div>
 						<div className="px-4 md:px-5 py-4 flex justify-end">
-							<a className="bg-blue-700 text-white px-5 py-2 rounded-md shadow hover:bg-blue-800 transition text-sm md:text-base tracking-wider flex items-center gap-1"
+							<Link className="bg-blue-700 text-white px-5 py-2 rounded-md shadow hover:bg-blue-800 transition text-sm md:text-base tracking-wider flex items-center gap-1"
 								href={`/lapangan-kerja/${item.id}`}>
 								Selengkapnya <ArrowRight size={16} />
-							</a>
+							</Link>
 						</div>
 					</div>
 				</SwiperSlide>
