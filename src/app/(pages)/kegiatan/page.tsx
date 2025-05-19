@@ -1,11 +1,18 @@
+import { Metadata } from "next";
 import Image from "next/image";
-
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ContactHighlight from "@/components/ContactHightlight";
 import KegiatanList from "@/components/ClientCompo/KegiatanList";
-
 import { getKegiatan } from "@/lib/getKegiatan";
+
+export const metadata: Metadata = {
+	title: "Kegiatan Disnakertrans",
+	description: "Lorem ipsum dolor ci amet anjay",
+	icons: {
+		icon: "/pemkabGowaLogo.svg"
+	}
+};
 
 export default async function KegiatanPage() {
 	const kegiatan = await getKegiatan();
