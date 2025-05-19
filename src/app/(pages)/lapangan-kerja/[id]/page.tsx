@@ -1,14 +1,14 @@
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ContactHighlight from "@/components/ContactHightlight";
+import ContactHighlight from "@/components/ui/ContactHightlight";
 import { getLowongan } from "@/lib/getLowongan";
 import { getLowonganById } from "@/lib/getLowonganById";
 import LowonganDetail from "@/components/ClientCompo/LowonganDetail";
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
 	const data = await getLowonganById(params.id);
-	if (!data) return { title: "Kegiatan Tidak Ditemukan" };
+	if (!data) return { title: "Lowongan Tidak Ditemukan" };
 
 	return {
 		title: `Disnakertrans - ${data.Judul}`,
