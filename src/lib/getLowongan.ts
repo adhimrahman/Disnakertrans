@@ -13,6 +13,10 @@ export type LowonganItem = {
 	};
 	Alamat: string;
 	ImageSampul: string;
+	Deskripsi: string;
+	Syarat: string[];
+	BatasLowongan?: string;
+	LinkLowongan: string;
 };
 
 export const getLowongan = cache(async (): Promise<LowonganItem[]> => {
@@ -30,6 +34,10 @@ export const getLowongan = cache(async (): Promise<LowonganItem[]> => {
             },
             Alamat: docData.Alamat,
             ImageSampul: docData.ImageSampul,
+            Deskripsi: docData.Deskripsi,
+            Syarat: docData.Syarat,
+            BatasLowongan: docData.BatasLowongan?.toDate().toISOString(),
+            LinkLowongan: docData.LinkLowongan,
         }
     });
     return data;
