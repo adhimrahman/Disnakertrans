@@ -8,6 +8,7 @@ export type KegiatanItem = {
 	Deskripsi: string;
 	ImageSampul: string;
     Tanggal?: string;
+	ImageDesc?: string;
 };
 
 export const getKegiatan = cache(async (): Promise<KegiatanItem[]> => {
