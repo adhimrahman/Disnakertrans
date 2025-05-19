@@ -1,21 +1,12 @@
 "use client"
-import { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/firebase/config";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-
-type KegiatanItem = {
-	id: string;
-	Judul: string;
-	Deskripsi: string;
-	ImageSampul: string;
-};
+import type { KegiatanItem } from "@/lib/getKegiatan";
 
 function limitChars(text: string, maxLength: number) {
 	return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
@@ -26,25 +17,8 @@ function limitWords(text: string, count: number) {
 	return words.slice(0, count).join(" ") + (words.length > count ? "..." : "");
 }
 
-export default function Kegiatan() {
-	const [kegiatan, setKegiatan] = useState<KegiatanItem[]>([]);
-
-	useEffect(() => {
-		const fetchKegiatan = async () => {
-			const querySnapshot = await getDocs(collection(db, "Kegiatan"));
-			const data = querySnapshot.docs.map((doc) => ({
-				id: doc.id,
-				...doc.data(),
-			})) as KegiatanItem[];
-
-			console.log('Data Kegiatan : ', data);
-			setKegiatan(data);
-		};
-
-		fetchKegiatan();
-	}, []);
-
-	const isLoading = kegiatan.length === 0;
+export default function KegiatanHome({ kegiatan }: { kegiatan: KegiatanItem[] }) {
+	const isLoading = !Array.isArray(kegiatan) || kegiatan.length === 0;
 
 	return (
 		<section className="pt-16 pb-10 px-5 bg-gray-100">

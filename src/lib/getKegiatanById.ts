@@ -7,13 +7,13 @@ export async function getKegiatanById(id: string): Promise<KegiatanItem | null> 
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) return null;
 
-    const data = docSnap.data();
+    const docData = docSnap.data();
     return {
         id: docSnap.id,
-        Judul: data.Judul,
-        Deskripsi: data.Deskripsi,
-        ImageSampul: data.ImageSampul,
-        Tanggal: data.Tanggal?.toDate().toISOString(),
-        ImageDesc: data.ImageDesc,
+        Judul: docData.Judul ?? "Tidak ada Judul",
+        Deskripsi: docData.Deskripsi ?? "Tidak ada Deskripsi",
+        ImageSampul: docData.ImageSampul ?? "/images/placeholder.jpg",
+        Tanggal: docData.Tanggal?.toDate().toISOString() ?? "",
+        ImageDesc: docData.ImageDesc ?? "/images/placeholder.jpg",
     };
 }

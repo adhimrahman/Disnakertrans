@@ -1,8 +1,8 @@
 import Image from "next/image";
 import React from "react";
 import Link from "next/link";
-import Logo from "../../public/images/Logo.png";
-import Garuda from "../../public/images/Garuda.png";
+import Logo from "../../../public/images/Logo.png";
+import Garuda from "../../../public/images/Garuda.png";
 import CustomButton from "@/components/ui/CustomButton";
 
 export default function ContactHighlight() {
