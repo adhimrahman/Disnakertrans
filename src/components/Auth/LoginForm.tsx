@@ -20,7 +20,9 @@ export default function LoginForm() {
 			if (userData.role === "disnaker") router.push("/dashboard/disnaker");
 			else if (userData.role === "lpk") router.push(`/dashboard/lpk/${userData.lpkId}`);
 			else setError("Role tidak valid.");
-		} catch {
+		} catch (err) {
+			console.error(err);
+			setError("Email atau password salah.");
 			toast.error("Email atau password salah.");
 		}
 	};
