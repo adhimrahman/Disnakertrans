@@ -25,19 +25,19 @@ export const getLowongan = cache(async (): Promise<LowonganItem[]> => {
         const docData = doc.data();
         return {
             id: doc.id,
-            Judul: docData.Judul,
-            Perusahaan: docData.Perusahaan,
-            Tipe: docData.Tipe,
+            Judul: docData.Judul ?? "Tidak ada Judul",
+            Perusahaan: docData.Perusahaan ?? "Tidak ada Perusahaan",
+            Tipe: docData.Tipe ?? ["no type"],
             Range: {
-                min: docData.Range.min,
-                max: docData.Range.max,
+                min: docData.min ?? 0,
+                max: docData.max ?? 0,
             },
-            Alamat: docData.Alamat,
-            ImageSampul: docData.ImageSampul,
-            Deskripsi: docData.Deskripsi,
-            Syarat: docData.Syarat,
-            BatasLowongan: docData.BatasLowongan?.toDate().toISOString(),
-            LinkLowongan: docData.LinkLowongan,
+            Alamat: docData.Alamat ?? "Tidak ada Alamat",
+            ImageSampul: docData.ImageSampul ?? "/images/placeholder.jpg",
+            Deskripsi: docData.Deskripsi ?? "Tidak ada Deskripsi",
+            Syarat: docData.Syarat ?? ["null"],
+            BatasLowongan: docData.BatasLowongan?.toDate().toISOString() ?? "null",
+            LinkLowongan: docData.LinkLowongan ?? "",
         }
     });
     return data;
