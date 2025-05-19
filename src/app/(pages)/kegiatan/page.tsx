@@ -34,6 +34,7 @@ export default async function KegiatanPage() {
 
     <ContactHighlight />
 
+    <ContactHighlight />
     <Footer />
     </>
 	);
