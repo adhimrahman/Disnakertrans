@@ -6,7 +6,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Kegiatan from "@/components/Home/Kegiatan";
-import LowonganCarousel from "@/components/Home/Lowongan";
+import Lowongan from "@/components/Home/Lowongan";
 import ContactHighlight from "@/components/ContactHightlight";
 import InfografisSection from "@/components/Home/InfografisSection";
 import HeroCarousel from "@/components/Home/Carousel";
@@ -62,7 +62,7 @@ export default function HomePage() {
 
 			<Kegiatan />
 
-			<LowonganCarousel />
+			<Lowongan />
 			
 			<InfografisSection />
 			
