@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, db } from "@/firebase/config";
 import { doc, getDoc } from "firebase/firestore";
@@ -9,42 +9,58 @@ import Modal from "react-modal";
 type ProtectedRouteProps = {
 	children: React.ReactNode;
 	expectedRole: "disnaker" | "lpk";
+	checkLpkId?: boolean;
 };
 
-const ProtectedRoute = ({ children, expectedRole }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ children, expectedRole, checkLpkId = false }: ProtectedRouteProps) => {
 	const router = useRouter();
+	const params = useParams();
 	// const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, async (user) => {
-			if (user) {
-				const docRef = doc(db, "akun", user.uid);
-				const docSnap = await getDoc(docRef);
+			if (!user) {
+				setIsAuthorized(false);
+				setIsModalOpen(true);
+				return;
+			}
 
-				if (!docSnap.exists()) {
+			const docRef = doc(db, "akun", user.uid);
+			const docSnap = await getDoc(docRef);
+
+			if (!docSnap.exists()) {
+				setIsAuthorized(false);
+				setIsModalOpen(true);
+				return;
+			}
+
+			const userData = docSnap.data();
+			const role = userData.role;
+
+			if (role !== expectedRole) {
+				setIsAuthorized(false);
+				setIsModalOpen(true);
+				return;
+			}
+
+			if (checkLpkId) {
+				const urlLpkId = params?.lpkId;
+				const userLpkId = userData.lpkId;
+
+				if (urlLpkId !== userLpkId) {
 					setIsAuthorized(false);
 					setIsModalOpen(true);
 					return;
 				}
-
-				const role = docSnap.data().role;
-
-				if (role === expectedRole) {
-					setIsAuthorized(true);
-				} else {
-					setIsAuthorized(false);
-					setIsModalOpen(true);
-				}
-			} else {
-				setIsAuthorized(false);
-				setIsModalOpen(true);
 			}
+
+			setIsAuthorized(true);
 		});
 
 		return () => unsubscribe();
-	}, [expectedRole]);
+	}, [expectedRole, checkLpkId, params]);
 
 	const handleRedirect = () => {
 		setIsModalOpen(false);
