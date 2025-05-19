@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import ContactHighlight from '@/components/ContactHightlight';
+import ContactHighlight from '@/components/ui/ContactHightlight';
 import LowonganList from "@/components/ClientCompo/LowonganList";
 import { getLowongan } from "@/lib/getLowongan";
 
