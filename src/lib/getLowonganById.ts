@@ -7,21 +7,21 @@ export async function getLowonganById(id: string): Promise<LowonganItem | null> 
 	const docSnap = await getDoc(docRef);
 	if (!docSnap.exists()) return null;
 
-    const data = docSnap.data();
+    const docData = docSnap.data();
 	return {
 		id: docSnap.id,
-		Judul: data.Judul,
-		Perusahaan: data.Perusahaan,
-		Tipe: data.Tipe,
+		Judul: docData.Judul ?? "Tidak ada Judul",
+		Perusahaan: docData.Perusahaan ?? "Tidak ada Perusahaan",
+		Tipe: docData.Tipe ?? ["no type"],
 		Range: {
-			min: data.Range.min,
-			max: data.Range.max,
+			min: docData.min ?? 0,
+			max: docData.max ?? 0,
 		},
-		Alamat: data.Alamat,
-		ImageSampul: data.ImageSampul,
-		Deskripsi: data.Deskripsi,
-		Syarat: data.Syarat,
-		BatasLowongan: data.BatasLowongan?.toDate().toISOString(),
-		LinkLowongan: data.LinkLowongan,
-	};
+		Alamat: docData.Alamat ?? "Tidak ada Alamat",
+		ImageSampul: docData.ImageSampul ?? "/images/placeholder.jpg",
+		Deskripsi: docData.Deskripsi ?? "Tidak ada Deskripsi",
+		Syarat: docData.Syarat ?? ["null"],
+		BatasLowongan: docData.BatasLowongan?.toDate().toISOString() ?? "null",
+		LinkLowongan: docData.LinkLowongan ?? "",
+	}
 }
