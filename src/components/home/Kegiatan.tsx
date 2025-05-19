@@ -8,7 +8,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/config";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-	import Link from "next/link";
+import Link from "next/link";
 
 type KegiatanItem = {
 	id: string;
