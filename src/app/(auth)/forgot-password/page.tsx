@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/firebase/config"; // Ensure that your Firebase config is correct
+import Image from "next/image";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -28,6 +29,7 @@ export default function ForgotPassword() {
       await sendPasswordResetEmail(auth, email);
       setSuccessMessage("Email reset password telah dikirim! Silakan periksa inbox Anda.");
       setEmail(""); // Reset the email after successful submission
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("Error sending password reset email", err);
       setError("Terjadi kesalahan, pastikan email yang Anda masukkan benar.");
@@ -39,10 +41,12 @@ export default function ForgotPassword() {
       <div className="w-full max-w-5xl bg-white shadow-md rounded-xl flex overflow-hidden  py-11 px-10">
         {/* Left side: Image (optional) */}
         <div className="hidden md:flex w-1/2 relative">
-          <img
+          <Image
             src="/images/Login.jpg"
             alt="Forgot Password Illustration"
             className="object-cover w-full h-full"
+            width={500}
+            height={500}
           />
         </div>
 

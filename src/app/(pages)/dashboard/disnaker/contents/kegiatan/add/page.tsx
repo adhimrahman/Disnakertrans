@@ -1,48 +1,33 @@
 'use client';
 
-import { collection, getDocs, setDoc, doc, Timestamp } from 'firebase/firestore';
-import { db } from '@/firebase/config';
 import React, { useState } from 'react';
 import { 
-  TextField, 
-  Button, 
-  Box, 
-  Typography, 
-  Paper, 
+  TextField, Button, 
+  Box, Typography, 
   CircularProgress, 
-  Stack, 
-  Divider, 
-  Card, 
-  Container,
-  FormControl,
-  InputLabel,
-  FormHelperText 
+  Stack, Divider, 
+  Card, Container,
 } from '@mui/material';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { id } from 'date-fns/locale'; // Indonesian locale
-import { Kegiatan } from '@/models/Kegiatan';
+// import { Kegiatan } from '@/models/Kegiatan';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { addKegiatan } from '@/firebase/utils/kegiatan-service';
+import { createKegiatanFormData, createKegiatanSchema } from '@/validation/kegiatan-validation';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-// npm install @mui/x-date-pickers @date-io/date-fns date-fns
 
 export default function AddKontenKegiatanPage() {
-  const docRef = collection(db, "Kegiatan");
-  const [formData, setFormData] = useState<Kegiatan>({
-    Judul: "",
-    Deskripsi: "",
-    ImageDesc: "",
-    ImageSampul: "",
-    Tanggal: null,
-    link: "",
-    isDelete: false
+  const [formData, setFormData] = useState<createKegiatanFormData>({
+    judul: "",
+    deskripsi: "",
+    gambar_sampul: "",
+    gambar_kegiatan: "",
   });
 
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [errors, setErrors] = useState<Partial<Kegiatan & {TanggalError: string}>>({});
-  const [isUploading, setIsUploading] = useState<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [errors, setErrors] = useState<Record<string, any>>({});
+  const [files, setFiles] = useState<{ gambar_sampul?: File; gambar_kegiatan?: File }>({});
+  const [previews, setPreviews] = useState<{ gambar_sampul?: string; gambar_kegiatan?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const router = useRouter();
 
@@ -52,103 +37,64 @@ export default function AddKontenKegiatanPage() {
       ...formData,
       [name]: value,
     });
-    setErrors({
-      ...errors,
-      [name]: "",
-    });
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: { _errors: [] },
+    }));
+
+    setErrors({});
   };
 
-  const handleDateChange = (newDate: Date | null) => {
-    setSelectedDate(newDate);
-    setErrors({
-      ...errors,
-      TanggalError: "",
-    });
-  };
-
-  const handleImageUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: 'ImageSampul' | 'ImageDesc'
-  ) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'gambar_sampul' | 'gambar_kegiatan') => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
 
-    setIsUploading(true);
-
-    const formDataImg = new FormData();
-    formDataImg.append('file', file);
-    formDataImg.append('upload_preset', 'kegiatan_upload'); // <- Ganti dengan Upload Preset Anda
-    formDataImg.append('cloud_name', 'dsqgrzcgb'); // <- Ganti dengan Cloud Name Anda
-
-    try {
-      const res = await fetch('https://api.cloudinary.com/v1_1/dsqgrzcgb/image/upload', {
-        method: 'POST',
-        body: formDataImg,
-      });
-
-      const data = await res.json();
-      if (data.secure_url) {
-        setFormData((prev) => ({
-          ...prev,
-          [field]: data.secure_url,
-        }));
-      }
-    } catch (error) {
-      console.error("Upload error:", error);
-    } finally {
-      setIsUploading(false);
+    if (file && file.size > MAX_FILE_SIZE) {
+      alert("Ukuran file terlalu besar. Maksimum 2 MB.");
+      return;
     }
-  };
+
+    if (file) {
+      setFiles(prev => ({ ...prev, [field]: file }));
+      setPreviews(prev => ({ ...prev, [field]: URL.createObjectURL(file) }));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setErrors((prev: any) => ({
+      ...prev,
+      [field]: { _errors: [] },  // clear error properly
+    }));
+    }
+  };  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setIsUploading(true);
 
-    const newErrors: any = {};
-    if (!formData.Judul) newErrors.Judul = "Judul harus diisi";
-    if (!formData.ImageSampul) newErrors.ImageSampul = "Gambar Sampul harus diisi";
-    if (!formData.ImageDesc) newErrors.ImageDesc = "Dokumentasi kegiatan harus diisi";
-    if (!formData.Deskripsi) newErrors.Deskripsi = "Deskripsi harus diisi";
-    if (!selectedDate) newErrors.TanggalError = "Tanggal kegiatan harus diisi";
+    const newFormData = {
+      ...formData,
+      gambar_sampul: previews.gambar_sampul || "",
+      gambar_kegiatan: previews.gambar_kegiatan || ""
+    }
 
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) {
-      setIsSubmitting(false);
-      setIsUploading(false);
-      return;
+    const result = createKegiatanSchema.safeParse(newFormData);
+    if (!result.success) {
+      setErrors(result.error.format());
+    } else {
+      setErrors({});
     }
 
     try {
-      const kegiatanSnapshot = await getDocs(docRef);
-      let new_id = 1;
-      if (!kegiatanSnapshot.empty) {
-        const maxId = kegiatanSnapshot.docs.reduce((max, doc) => {
-          const idNumber = parseInt(doc.id, 10);
-          return idNumber > max ? idNumber : max;
-        }, 0);
-        new_id = maxId + 1;
+      const success = await addKegiatan(formData, files);
+      if (success) {
+        alert("Kegiatan berhasil ditambahkan!");
+        router.push("/dashboard/disnaker/contents/kegiatan");
+      } else {
+        alert("Konten Kegiatan gagal ditambahkan! Mohon periksa kembali.");
       }
-
-      // Create Timestamp from the selected date
-      const firestoreTimestamp = selectedDate ? Timestamp.fromDate(selectedDate) : Timestamp.now();
-
-      const data = {
-        ...formData,
-        Tanggal: firestoreTimestamp,
-        isDelete: false,
-        link: formData.link || ""
-      };
-
-      await setDoc(doc(docRef, String(new_id)), data);
-      alert("Konten Kegiatan Berhasil Ditambahkan");
-      console.log("Form data:", data);
-      router.push('/dashboard/disnaker/contents/kegiatan');
     } catch (e) {
+      alert("Terjadi kesalahan saat menyimpan data.");
       console.error("Error adding document:", e);
     } finally {
       setIsSubmitting(false);
-      setIsUploading(false);
     }
   };
 
@@ -175,11 +121,9 @@ export default function AddKontenKegiatanPage() {
               </Typography>
               <TextField
                 placeholder='Tuliskan judul konten kegiatan disini'
-                name="Judul"
-                value={formData.Judul}
+                name="judul"
+                value={formData.judul}
                 onChange={handleChange}
-                error={!!errors.Judul}
-                helperText={errors.Judul}
                 fullWidth
                 variant="outlined"
                 size="medium"
@@ -189,8 +133,10 @@ export default function AddKontenKegiatanPage() {
                   }
                 }}
               />
+              {errors?.judul?._errors?.length > 0 && errors.judul._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
             </Box>
-
             {/* Deskripsi Kegiatan */}
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>
@@ -198,11 +144,9 @@ export default function AddKontenKegiatanPage() {
               </Typography>
               <TextField
                 placeholder='Tuliskan deskripsi pekerjaan disini'
-                name="Deskripsi"
-                value={formData.Deskripsi}
+                name="deskripsi"
+                value={formData.deskripsi}
                 onChange={handleChange}
-                error={!!errors.Deskripsi}
-                helperText={errors.Deskripsi}
                 fullWidth
                 multiline
                 rows={4}
@@ -213,34 +157,9 @@ export default function AddKontenKegiatanPage() {
                   }
                 }}
               />
-            </Box>
-
-            {/* Tanggal Kegiatan */}
-            <Box>
-              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>
-                Tanggal Kegiatan
-              </Typography>
-              <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={id}>
-                <DateTimePicker 
-                  label="Pilih Tanggal dan Waktu"
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                  sx={{ 
-                    width: '100%',
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: 1.5
-                    }
-                  }}
-                  slotProps={{
-                    textField: {
-                      variant: 'outlined',
-                      error: !!errors.TanggalError,
-                      helperText: errors.TanggalError,
-                      placeholder: 'DD/MM/YYYY HH:MM',
-                    },
-                  }}
-                />
-              </LocalizationProvider>
+              {errors?.deskripsi?._errors?.length > 0 && errors.deskripsi._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
             </Box>
           </Stack>
 
@@ -276,8 +195,9 @@ export default function AddKontenKegiatanPage() {
                 Pilih File
                 <input
                   type="file"
+                  name='gambar_sampul'
                   accept="image/*"
-                  onChange={(e) => handleImageUpload(e, 'ImageSampul')}
+                  onChange={(e) => handleFileChange(e, 'gambar_sampul')}
                   hidden
                 />
               </Button>
@@ -286,24 +206,27 @@ export default function AddKontenKegiatanPage() {
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: 1,
-                color: formData.ImageSampul ? 'success.main' : 'text.secondary'
+                color: formData.gambar_sampul ? 'success.main' : 'text.secondary'
               }}>
-                {formData.ImageSampul ? (
-                  <>
-                    <CheckCircleOutlineIcon fontSize="small" />
-                    <Typography variant="body2">
-                      Gambar Sampul telah diupload!
-                    </Typography>
-                  </>
+                {previews.gambar_sampul ? (
+                  <div className='flex flex-col gap-y-3 items-center'>
+                    <Image src={previews.gambar_sampul} alt="Preview Gambar Sampul" width={200} height={150} />
+                    <div className='flex flex-row items-center gap-x-2'>
+                      <CheckCircleOutlineIcon fontSize="small"  className='text-green-600'/>
+                      <Typography variant="body2">
+                        Gambar Sampul telah diupload!
+                      </Typography>
+                    </div>
+                  </div>
                 ) : (
                   <Typography variant="body2">
                     Belum ada gambar yang diunggah
                   </Typography>
                 )}
               </Box>
-              {!!errors.ImageSampul && (
-                <Typography variant="caption" color="error" sx={{ mt: 1 }}>
-                  {errors.ImageSampul}
+              {errors?.gambar_sampul?._errors.length > 0 && (
+                <Typography variant="caption" color="error" className='text-md text-red-700'>
+                  {errors.gambar_sampul._errors[0]}
                 </Typography>
               )}
             </Box>
@@ -316,7 +239,7 @@ export default function AddKontenKegiatanPage() {
             </Typography>
             <Box sx={{ 
               border: '1px dashed',
-              borderColor: errors.ImageDesc ? 'error.main' : 'divider',
+              borderColor: errors.gambar_kegiatan ? 'error.main' : 'divider',
               p: 3,
               borderRadius: 2,
               display: 'flex',
@@ -338,9 +261,10 @@ export default function AddKontenKegiatanPage() {
               >
                 Pilih File
                 <input
+                  name='gambar_kegiatan'
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleImageUpload(e, 'ImageDesc')}
+                  onChange={(e) => handleFileChange(e, 'gambar_kegiatan')}
                   hidden
                 />
               </Button>
@@ -349,26 +273,29 @@ export default function AddKontenKegiatanPage() {
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: 1,
-                color: formData.ImageDesc ? 'success.main' : 'text.secondary'
+                color: formData.gambar_kegiatan ? 'success.main' : 'text.secondary'
               }}>
-                {formData.ImageDesc ? (
-                  <>
-                    <CheckCircleOutlineIcon fontSize="small" />
-                    <Typography variant="body2">
-                      Gambar Kegiatan telah diupload!
-                    </Typography>
-                  </>
+                {previews.gambar_kegiatan ? (
+                  <div className='flex flex-col gap-y-3 items-center'>
+                    <Image src={previews.gambar_kegiatan} alt="Preview Gambar Sampul" width={200} height={150} />
+                    <div className='flex flex-row items-center gap-x-2'>
+                      <CheckCircleOutlineIcon fontSize="small"  className='text-green-600'/>
+                      <Typography variant="body2">
+                        Gambar Sampul telah diupload!
+                      </Typography>
+                    </div>
+                  </div>
                 ) : (
                   <Typography variant="body2">
                     Belum ada gambar yang diunggah
                   </Typography>
                 )}
               </Box>
-              {!!errors.ImageDesc && (
-                <Typography variant="caption" color="error" sx={{ mt: 1 }}>
-                  {errors.ImageDesc}
-                </Typography>
-              )}
+              {errors?.gambar_kegiatan?._errors.length > 0 && (
+              <Typography variant="caption" color="error" className='text-md text-red-700'>
+                {errors.gambar_kegiatan._errors[0]}
+              </Typography>
+            )}
             </Box>
           </Box>
 
@@ -380,7 +307,7 @@ export default function AddKontenKegiatanPage() {
               type="submit"
               variant="contained"
               color="primary"
-              disabled={isSubmitting || isUploading}
+              disabled={isSubmitting}
               sx={{ 
                 minWidth: '150px', 
                 py: 1.5,
@@ -389,15 +316,10 @@ export default function AddKontenKegiatanPage() {
                 textTransform: 'uppercase',
                 fontWeight: 'bold'
               }}
-              startIcon={isSubmitting || isUploading ? <CircularProgress size={20} color="inherit" /> : null}
+              startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
             >
               {isSubmitting ? 'Mengirim...' : 'SUBMIT'}
             </Button>
-            {isUploading && (
-              <Typography variant="caption" sx={{ ml: 2, alignSelf: 'center', color: 'text.secondary' }}>
-                Sedang mengunggah gambar...
-              </Typography>
-            )}
           </Box>
         </Box>
       </Card>

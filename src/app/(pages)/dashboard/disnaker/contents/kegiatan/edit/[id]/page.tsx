@@ -1,221 +1,347 @@
 'use client';
 
-import { doc, getDoc, Timestamp, updateDoc } from 'firebase/firestore';
-import { useState, useEffect } from 'react';
-import { db } from '@/firebase/config';
-import { useParams } from 'next/navigation';
-import { TextField, Button, Card, Container, Divider, CircularProgress, Typography } from '@mui/material';
-import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { id as localeId } from 'date-fns/locale';
-import { Kegiatan } from '@/models/Kegiatan';
+import React, { useEffect, useState } from 'react';
+import { TextField, Button, Box, Typography, CircularProgress, Stack, Divider, Card, Container,} from '@mui/material';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { getKegiatanById, updateKegiatan } from '@/firebase/utils/kegiatan-service';
+import { updateKegiatanFormData, updateKegiatanSchema } from '@/validation/kegiatan-validation';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
 
-export default function EditKontenKegiatanPage() {
-  const [formData, setFormData] = useState<Kegiatan>({
+export default function UpdateKontenKegiatanPage() {
+  const [formData, setFormData] = useState<Partial<updateKegiatanFormData>>({
     Judul: "",
     Deskripsi: "",
-    ImageDesc: "",
     ImageSampul: "",
-    Tanggal: null,
-    link: null,
-    isDelete: false
+    ImageDesc: "",
   });
 
-  const [errors, setErrors] = useState<Partial<Kegiatan & {TanggalError: string}>>({});
-  const [isUploading, setIsUploading] = useState<boolean>(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [errors, setErrors] = useState<Record<string, any>>({});
+  const [files, setFiles] = useState<{ ImageSampul?: File; ImageDesc?: File }>({});
+  const [previews, setPreviews] = useState<{ ImageSampul?: string; ImageDesc?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const { id } = useParams();
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchKegiatan() {
-      if (!id) return;
-      const docRef = doc(db, "Kegiatan", id as string);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const data = docSnap.data();
+      const data = await getKegiatanById(id as string);
+      if (data) {
         setFormData({
-          Judul: data.Judul || '',
-          Deskripsi: data.Deskripsi || '',
-          ImageSampul: data.ImageSampul || '',
-          ImageDesc: data.ImageDesc || '',
-          Tanggal: data.Tanggal || Timestamp.now(),
-          link: data.link || '',
-          isDelete: false
+          id: id as string,
+          Judul: data.Judul,
+          Deskripsi: data.Deskripsi,
+          ImageSampul: data.ImageSampul as string,
+          ImageDesc: data.ImageDesc as string
         });
-        setSelectedDate(data.Tanggal?.toDate ? data.Tanggal.toDate() : null);
       }
     }
     fetchKegiatan();
   }, [id]);
 
-  const handleDateChange = (newDate: Date | null) => {
-    setSelectedDate(newDate);
-    setFormData((prev) => ({
-      ...prev,
-      Tanggal: newDate ? Timestamp.fromDate(newDate) : null,
-    }));
-    setErrors((prev) => ({ ...prev, TanggalError: '' }));
+  useEffect(() => {
+  return () => {
+    if (previews.ImageSampul) URL.revokeObjectURL(previews.ImageSampul);
+    if (previews.ImageDesc) URL.revokeObjectURL(previews.ImageDesc);
   };
+}, [previews]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: { _errors: [] },
+    }));
+
+    setErrors({});
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'ImageSampul' | 'ImageDesc') => {
+    const file = e.target.files?.[0];
+    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
+
+    if (file && file.size > MAX_FILE_SIZE) {
+      alert("Ukuran file terlalu besar. Maksimum 2 MB.");
+      return;
+    }
+
+    if (file) {
+      setFiles(prev => ({ ...prev, [field]: file }));
+      setPreviews(prev => ({ ...prev, [field]: URL.createObjectURL(file) }));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setErrors((prev: any) => ({
+      ...prev,
+      [field]: { _errors: [] },  // clear error properly
+    }));
+    }
+  };  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setIsUploading(true);
 
-    const newErrors: Partial<Kegiatan & {TanggalError: string}> = {};
+    const newFormData = {
+      ...formData,
+      ImageSampul: previews.ImageSampul || "",
+      ImageDesc: previews.ImageDesc || ""
+    }
 
-    if (!formData.Judul) newErrors.Judul = "Judul harus diisi";
-    if (!formData.ImageSampul) newErrors.ImageSampul = "Gambar Sampul kegiatan harus diisi";
-    if (!formData.ImageDesc) newErrors.ImageDesc = "Dokumentasi kegiatan harus diisi";
-    if (!formData.Deskripsi) newErrors.Deskripsi = "Deskripsi harus diisi";
-    if (!formData.link) newErrors.link = "Link lowongan harus diisi";
-
-    setErrors(newErrors);
+    const result = updateKegiatanSchema.safeParse(newFormData);
+    if (!result.success) {
+      setErrors(result.error.format());
+    } else {
+      setErrors({});
+    }
 
     try {
-      const docRef = doc(db, "Kegiatan", id as string);
-      await updateDoc(docRef, {
-        ...formData,
-      });
-
-      alert("Konten Kegiatan berhasil diupdate!");
-    } catch (error) {
-      console.error(error);
+      const success = await updateKegiatan(formData, files);
+      if (success) {
+        alert("Kegiatan berhasil diperbarui!");
+        router.push("/dashboard/disnaker/contents/kegiatan");
+      } else {
+        alert("Konten Kegiatan gagal diperbarui! Mohon periksa kembali.");
+      }
+    } catch (e) {
+      alert("Terjadi kesalahan saat memperbarui data.");
+      console.error("Error adding document:", e);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
+  const imageSampulSrc = previews.ImageSampul || formData.ImageSampul || "";
+  const imageKegiatanSrc = previews.ImageDesc || formData.ImageDesc || "";
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Card elevation={1} sx={{ borderRadius: 2, overflow: 'hidden' }}>
-        <div style={{ background: '#1976d2', color: 'white', padding: '16px 24px' }}>
-          <h1 style={{ fontWeight: 'bold', fontSize: 24 }}>Edit Konten Kegiatan</h1>
-        </div>
-        <form onSubmit={handleSubmit} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 24 }}>
-          <div>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Judul Konten</Typography>
-            <TextField
-              placeholder='Tuliskan judul konten kegiatan disini'
-              name="Judul"
-              value={formData.Judul}
-              onChange={handleChange}
-              error={!!errors.Judul}
-              helperText={errors.Judul}
-              fullWidth
-              variant="outlined"
-              size="medium"
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5 } }}
-            />
-          </div>
-          <div>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Deskripsi Kegiatan</Typography>
-            <TextField
-              placeholder='Tuliskan deskripsi pekerjaan disini'
-              name="Deskripsi"
-              value={formData.Deskripsi}
-              onChange={handleChange}
-              error={!!errors.Deskripsi}
-              helperText={errors.Deskripsi}
-              fullWidth
-              multiline
-              rows={4}
-              variant="outlined"
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5 } }}
-            />
-          </div>
-          <div>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Tanggal Kegiatan</Typography>
-            <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={localeId}>
-              <DateTimePicker
-                label="Pilih Tanggal dan Waktu"
-                value={selectedDate}
-                onChange={handleDateChange}
-                sx={{ width: '100%', '& .MuiOutlinedInput-root': { borderRadius: 1.5 } }}
-                slotProps={{
-                  textField: {
-                    variant: 'outlined',
-                    error: !!errors.TanggalError,
-                    helperText: errors.TanggalError,
-                    placeholder: 'DD/MM/YYYY HH:MM',
-                  },
+        <Box sx={{ bgcolor: 'primary.main', color: 'white', py: 2, px: 3 }}>
+          <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>
+            Tambah Konten Kegiatan
+          </Typography>
+        </Box>
+        
+        <Box component="form" onSubmit={handleSubmit} sx={{ 
+          p: 3, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: 3 
+        }}>
+          <Stack spacing={3}>
+            {/* Judul Konten */}
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>
+                Judul Konten
+              </Typography>
+              <TextField
+                placeholder='Tuliskan judul konten kegiatan disini'
+                name="Judul"
+                value={formData.Judul || ""}
+                onChange={handleChange}
+                fullWidth
+                variant="outlined"
+                size="medium"
+                sx={{ 
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 1.5
+                  }
                 }}
               />
-            </LocalizationProvider>
-          </div>
+              {errors?.Judul?._errors?.length > 0 && errors.Judul._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
+            </Box>
+            {/* Deskripsi Kegiatan */}
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>
+                Deskripsi Kegiatan
+              </Typography>
+              <TextField
+                placeholder='Tuliskan deskripsi pekerjaan disini'
+                name="Deskripsi"
+                value={formData.Deskripsi || ""}
+                onChange={handleChange}
+                fullWidth
+                multiline
+                rows={8}
+                variant="outlined"
+                sx={{ 
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 1.5
+                  }
+                }}
+              />
+              {errors?.Deskripsi?._errors?.length > 0 && errors.Deskripsi._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
+            </Box>
+          </Stack>
+
           <Divider sx={{ my: 1 }} />
-          <div>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}>Gambar Sampul</Typography>
-            <TextField
-              placeholder='URL gambar sampul kegiatan'
-              name="ImageSampul"
-              value={formData.ImageSampul || ''}
-              onChange={handleChange}
-              error={!!errors.ImageSampul}
-              helperText={errors.ImageSampul}
-              fullWidth
-              variant="outlined"
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5 } }}
-            />
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-              {formData.ImageSampul ? 'Gambar Sampul sudah ada.' : 'Belum ada gambar yang diunggah.'}
+
+          {/* Gambar Sampul */}
+          <Box>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}>
+              Gambar Sampul
             </Typography>
-          </div>
-          <div>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}>Gambar Kegiatan</Typography>
-            <TextField
-              placeholder='URL dokumentasi kegiatan'
-              name="ImageDesc"
-              value={formData.ImageDesc || ''}
-              onChange={handleChange}
-              error={!!errors.ImageDesc}
-              helperText={errors.ImageDesc}
-              fullWidth
-              variant="outlined"
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5 } }}
-            />
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-              {formData.ImageDesc ? 'Gambar Kegiatan sudah ada.' : 'Belum ada gambar yang diunggah.'}
+            <Box sx={{ 
+              border: '1px dashed',
+              borderColor: errors.ImageSampul ? 'error.main' : 'divider',
+              p: 3,
+              borderRadius: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              bgcolor: 'background.paper'
+            }}>
+              <Button 
+                variant="outlined" 
+                component="label" 
+                startIcon={<CloudUploadIcon />}
+                sx={{ 
+                  textTransform: 'none', 
+                  px: 3,
+                  py: 1.5,
+                  borderRadius: 1.5,
+                  mb: 2
+                }}
+              >
+                Pilih File
+                <input
+                  type="file"
+                  name='ImageSampul'
+                  accept="image/*"
+                  onChange={(e) => handleFileChange(e, 'ImageSampul')}
+                  hidden
+                />
+              </Button>
+
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1,
+                color: formData.ImageSampul ? 'success.main' : 'text.secondary'
+              }}>
+                {(previews.ImageSampul || formData.ImageSampul) ? (
+                  <div className='flex flex-col gap-y-3 items-center'>
+                    <Image src={imageSampulSrc} alt="Preview Gambar Sampul" width={200} height={150} />
+                    <div className='flex flex-row items-center gap-x-2'>
+                      <CheckCircleOutlineIcon fontSize="small"  className='text-green-600'/>
+                      <Typography variant="body2">
+                        Gambar Sampul telah diupload!
+                      </Typography>
+                    </div>
+                  </div>
+                ) : (
+                  <Typography variant="body2" className='text-center text-red-600'>
+                    Belum ada gambar yang diunggah
+                  </Typography>
+                )}
+              </Box>
+              {errors?.ImageSampul?._errors.length > 0 && (
+                <Typography variant="caption" color="error" className='text-md text-red-700'>
+                  {errors.ImageSampul._errors[0]}
+                </Typography>
+              )}
+            </Box>
+          </Box>
+
+          {/* Gambar Kegiatan */}
+          <Box>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}>
+              Gambar Kegiatan
             </Typography>
-          </div>
+            <Box sx={{ 
+              border: '1px dashed',
+              borderColor: errors.ImageDesc ? 'error.main' : 'divider',
+              p: 3,
+              borderRadius: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              bgcolor: 'background.paper'
+            }}>
+              <Button 
+                variant="outlined" 
+                component="label" 
+                startIcon={<CloudUploadIcon />}
+                sx={{ 
+                  textTransform: 'none', 
+                  px: 3,
+                  py: 1.5,
+                  borderRadius: 1.5,
+                  mb: 2
+                }}
+              >
+                Pilih File
+                <input
+                  name='ImageDesc'
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileChange(e, 'ImageDesc')}
+                  hidden
+                />
+              </Button>
+
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1,
+                color: formData.ImageDesc ? 'success.main' : 'text.secondary'
+              }}>
+                {(previews.ImageDesc || formData.ImageDesc) ? (
+                  <div className='flex flex-col gap-y-3 items-center'>
+                    <Image src={imageKegiatanSrc} alt="Preview Gambar Sampul" width={200} height={150} />
+                    <div className='flex flex-row items-center gap-x-2'>
+                      <CheckCircleOutlineIcon fontSize="small"  className='text-green-600'/>
+                      <Typography variant="body2">
+                        Gambar Kegiatan telah diupload!
+                      </Typography>
+                    </div>
+                  </div>
+                ) : (
+                  <Typography variant="body2" className='text-center text-red-600'>
+                    Belum ada gambar yang diunggah
+                  </Typography>
+                )}
+              </Box>
+              {errors?.ImageDesc?._errors.length > 0 && (
+              <Typography variant="caption" color="error" className='text-md text-red-700'>
+                {errors.ImageDesc._errors[0]}
+              </Typography>
+            )}
+            </Box>
+          </Box>
+
           <Divider sx={{ my: 1 }} />
-          <div>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}>Link Unggahan</Typography>
-            <TextField
-              placeholder='Link unggahan kegiatan (opsional)'
-              name="link"
-              value={formData.link || ''}
-              onChange={handleChange}
-              error={!!errors.link}
-              helperText={errors.link}
-              fullWidth
-              variant="outlined"
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5 } }}
-            />
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16 }}>
+
+          {/* Submit Button */}
+          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
             <Button
               type="submit"
               variant="contained"
               color="primary"
-              disabled={isSubmitting || isUploading}
-              sx={{ minWidth: '150px', py: 1.5, px: 4, borderRadius: 1.5, textTransform: 'uppercase', fontWeight: 'bold' }}
-              startIcon={isSubmitting || isUploading ? <CircularProgress size={20} color="inherit" /> : null}
+              disabled={isSubmitting}
+              sx={{ 
+                minWidth: '150px', 
+                py: 1.5,
+                px: 4,
+                borderRadius: 1.5,
+                textTransform: 'uppercase',
+                fontWeight: 'bold'
+              }}
+              startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
             >
-              {isSubmitting ? 'Menyimpan...' : 'SIMPAN'}
+              {isSubmitting ? 'Mengirim...' : 'SUBMIT'}
             </Button>
-          </div>
-        </form>
+          </Box>
+        </Box>
       </Card>
     </Container>
   );

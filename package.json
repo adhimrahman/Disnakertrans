@@ -32,7 +32,9 @@
 		"react-spinners": "^0.17.0",
 		"spinner": "^0.2.4",
 		"spinners": "^1.2.2",
-		"swiper": "^11.2.6"
+		"swiper": "^11.2.6",
+		"zod": "^3.24.4",
+		"zod-form-data": "^2.0.7"
 	},
 	"devDependencies": {
 		"@eslint/eslintrc": "^3",
