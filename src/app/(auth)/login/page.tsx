@@ -55,6 +55,7 @@ export default function LoginPage() {
       } else {
         setError("Data pengguna tidak ditemukan.");
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error("Login error", err.message);
       setError("Email atau password salah.");
