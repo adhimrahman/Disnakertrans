@@ -13,7 +13,6 @@ export default function DashboardLayout({
     <div className="flex h-screen overflow-hidden">
       {/* Sidebar component */}
       <Sidebar />
-
         {/* Konten Utama */}
         <div className="flex flex-col flex-1 bg-gray-100 h-full overflow-y-auto w-full lg:ml-64">
           {/* Main content with padding adjustment for mobile */}
