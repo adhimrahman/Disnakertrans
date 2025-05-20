@@ -7,18 +7,22 @@ import Link from "next/link";
 
 export default function ForgotPasswordForm() {
 	const [email, setEmail] = useState("");
+	const [loading, setLoading] = useState(false);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!email) { toast.error("Email harus diisi."); return; }
 
 		try {
+			setLoading(true);
 			await resetPassword(email);
 			toast.success("Link reset password berhasil dikirim.");
 			setEmail("");
 		} catch (error) {
 			console.error(error);
 			toast.error("Gagal mengirim email. Pastikan email valid dan terdaftar.");
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -31,7 +35,7 @@ export default function ForgotPasswordForm() {
 				/>
 			</div>
 
-			<CustomButton text="Kirim Link Reset" width="w-full" py={2} variant="blue" />
+			<CustomButton text="Kirim Link Reset" width="w-full" py={2} variant="blue" disabled={loading} />
 
 			<div className="text-center">
 				<Link href="/login" className="text-sm text-gray-100 hover:underline">Kembali ke Halaman Login</Link>

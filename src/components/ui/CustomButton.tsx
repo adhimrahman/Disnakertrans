@@ -8,6 +8,7 @@ type CustomButtonProps = {
 	px?: number;
 	py?: number;
 	variant?: "red" | "blue";
+	disabled?: boolean;
 };
 
 const CustomButton: React.FC<CustomButtonProps> = (
@@ -23,7 +24,7 @@ const CustomButton: React.FC<CustomButtonProps> = (
 			className={`
 				text-white rounded-xl shadow-lg font-semibold
 				transition hover:cursor-pointer capitalize 
-				px-${px} py-${py}
+				px-${Number(px)} py-${Number(py)}
 				${width} ${height}
 				${className}
 				${colorClasses}
