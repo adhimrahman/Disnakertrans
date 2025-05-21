@@ -7,8 +7,6 @@ export default function SearchSortControls() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get('search') || '');
-  // const startDate = searchParams.get('startDate') ?? '';
-  // const endDate = searchParams.get('endDate') ?? '';
   const [sort, setSort] = useState(searchParams.get('sort') ?? 'Tanggal');
   const [order, setOrder] = useState(searchParams.get('order') ?? 'asc');
   const [isPending, startTransition] = useTransition();

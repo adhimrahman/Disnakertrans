@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 export const createKegiatanSchema = z.object({
-  judul: z.string().min(3, "Judul harus diisi").max(30, "Judul maksimal 30 karakter"),
-  deskripsi: z.string().min(3, "Deskripsi harus diisi").max(1000, "Deskripsi maksimal 1000 karakter"),
-  gambar_sampul: z.string().url("Gambar Sampul harus diisi"),
-  gambar_kegiatan: z.string().url("Gambar Kegiatan harus diisi"),
+  Judul: z.string().min(3, "Judul harus diisi").max(30, "Judul maksimal 30 karakter"),
+  Deskripsi: z.string().min(3, "Deskripsi harus diisi").max(1000, "Deskripsi maksimal 1000 karakter"),
+  ImageSampul: z.string().url("Gambar Sampul harus diisi"),
+  ImageDesc: z.string().url("Gambar Kegiatan harus diisi"),
 });
 
 export const getKegiatanSchema = z.string().min(1, "ID Kegiatan tidak valid");

@@ -16,7 +16,7 @@ export interface Kegiatan {
 export interface KegiatanItem {
   id: string;
   Judul: string;
-  Tanggal: string | Timestamp;
+  Tanggal?: string;
   ImageSampul?: File | string;
   Deskripsi: string;
   ImageDesc?: File | string;

@@ -18,16 +18,16 @@ import { useRouter } from 'next/navigation';
 
 export default function AddKontenKegiatanPage() {
   const [formData, setFormData] = useState<createKegiatanFormData>({
-    judul: "",
-    deskripsi: "",
-    gambar_sampul: "",
-    gambar_kegiatan: "",
+    Judul: "",
+    Deskripsi: "",
+    ImageSampul: "",
+    ImageDesc: "",
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setErrors] = useState<Record<string, any>>({});
-  const [files, setFiles] = useState<{ gambar_sampul?: File; gambar_kegiatan?: File }>({});
-  const [previews, setPreviews] = useState<{ gambar_sampul?: string; gambar_kegiatan?: string }>({});
+  const [files, setFiles] = useState<{ ImageSampul?: File; ImageDesc?: File }>({});
+  const [previews, setPreviews] = useState<{ ImageSampul?: string; ImageDesc?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const router = useRouter();
 
@@ -45,7 +45,7 @@ export default function AddKontenKegiatanPage() {
     setErrors({});
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'gambar_sampul' | 'gambar_kegiatan') => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'ImageSampul' | 'ImageDesc') => {
     const file = e.target.files?.[0];
     const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
 
@@ -71,8 +71,8 @@ export default function AddKontenKegiatanPage() {
 
     const newFormData = {
       ...formData,
-      gambar_sampul: previews.gambar_sampul || "",
-      gambar_kegiatan: previews.gambar_kegiatan || ""
+      ImageSampul: previews.ImageSampul || "",
+      ImageDesc: previews.ImageDesc || ""
     }
 
     const result = createKegiatanSchema.safeParse(newFormData);
@@ -121,8 +121,8 @@ export default function AddKontenKegiatanPage() {
               </Typography>
               <TextField
                 placeholder='Tuliskan judul konten kegiatan disini'
-                name="judul"
-                value={formData.judul}
+                name="Judul"
+                value={formData.Judul}
                 onChange={handleChange}
                 fullWidth
                 variant="outlined"
@@ -133,7 +133,7 @@ export default function AddKontenKegiatanPage() {
                   }
                 }}
               />
-              {errors?.judul?._errors?.length > 0 && errors.judul._errors.map((msg: string, i: number) => (
+              {errors?.Judul?._errors?.length > 0 && errors.Judul._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -144,8 +144,8 @@ export default function AddKontenKegiatanPage() {
               </Typography>
               <TextField
                 placeholder='Tuliskan deskripsi pekerjaan disini'
-                name="deskripsi"
-                value={formData.deskripsi}
+                name="Deskripsi"
+                value={formData.Deskripsi}
                 onChange={handleChange}
                 fullWidth
                 multiline
@@ -157,7 +157,7 @@ export default function AddKontenKegiatanPage() {
                   }
                 }}
               />
-              {errors?.deskripsi?._errors?.length > 0 && errors.deskripsi._errors.map((msg: string, i: number) => (
+              {errors?.Deskripsi?._errors?.length > 0 && errors.Deskripsi._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -195,9 +195,9 @@ export default function AddKontenKegiatanPage() {
                 Pilih File
                 <input
                   type="file"
-                  name='gambar_sampul'
+                  name='ImageSampul'
                   accept="image/*"
-                  onChange={(e) => handleFileChange(e, 'gambar_sampul')}
+                  onChange={(e) => handleFileChange(e, 'ImageSampul')}
                   hidden
                 />
               </Button>
@@ -206,11 +206,11 @@ export default function AddKontenKegiatanPage() {
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: 1,
-                color: formData.gambar_sampul ? 'success.main' : 'text.secondary'
+                color: formData.ImageSampul ? 'success.main' : 'text.secondary'
               }}>
-                {previews.gambar_sampul ? (
+                {previews.ImageSampul ? (
                   <div className='flex flex-col gap-y-3 items-center'>
-                    <Image src={previews.gambar_sampul} alt="Preview Gambar Sampul" width={200} height={150} />
+                    <Image src={previews.ImageSampul} alt="Preview Gambar Sampul" width={200} height={150} />
                     <div className='flex flex-row items-center gap-x-2'>
                       <CheckCircleOutlineIcon fontSize="small"  className='text-green-600'/>
                       <Typography variant="body2">
@@ -224,9 +224,9 @@ export default function AddKontenKegiatanPage() {
                   </Typography>
                 )}
               </Box>
-              {errors?.gambar_sampul?._errors.length > 0 && (
+              {errors?.ImageSampul?._errors.length > 0 && (
                 <Typography variant="caption" color="error" className='text-md text-red-700'>
-                  {errors.gambar_sampul._errors[0]}
+                  {errors.ImageSampul._errors[0]}
                 </Typography>
               )}
             </Box>
@@ -239,7 +239,7 @@ export default function AddKontenKegiatanPage() {
             </Typography>
             <Box sx={{ 
               border: '1px dashed',
-              borderColor: errors.gambar_kegiatan ? 'error.main' : 'divider',
+              borderColor: errors.ImageDesc ? 'error.main' : 'divider',
               p: 3,
               borderRadius: 2,
               display: 'flex',
@@ -261,10 +261,10 @@ export default function AddKontenKegiatanPage() {
               >
                 Pilih File
                 <input
-                  name='gambar_kegiatan'
+                  name='ImageDesc'
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleFileChange(e, 'gambar_kegiatan')}
+                  onChange={(e) => handleFileChange(e, 'ImageDesc')}
                   hidden
                 />
               </Button>
@@ -273,11 +273,11 @@ export default function AddKontenKegiatanPage() {
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: 1,
-                color: formData.gambar_kegiatan ? 'success.main' : 'text.secondary'
+                color: formData.ImageDesc ? 'success.main' : 'text.secondary'
               }}>
-                {previews.gambar_kegiatan ? (
+                {previews.ImageDesc ? (
                   <div className='flex flex-col gap-y-3 items-center'>
-                    <Image src={previews.gambar_kegiatan} alt="Preview Gambar Sampul" width={200} height={150} />
+                    <Image src={previews.ImageDesc} alt="Preview Gambar Sampul" width={200} height={150} />
                     <div className='flex flex-row items-center gap-x-2'>
                       <CheckCircleOutlineIcon fontSize="small"  className='text-green-600'/>
                       <Typography variant="body2">
@@ -291,9 +291,9 @@ export default function AddKontenKegiatanPage() {
                   </Typography>
                 )}
               </Box>
-              {errors?.gambar_kegiatan?._errors.length > 0 && (
+              {errors?.ImageDesc?._errors.length > 0 && (
               <Typography variant="caption" color="error" className='text-md text-red-700'>
-                {errors.gambar_kegiatan._errors[0]}
+                {errors.ImageDesc._errors[0]}
               </Typography>
             )}
             </Box>
