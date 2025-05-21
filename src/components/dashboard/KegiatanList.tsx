@@ -7,7 +7,6 @@ import { redirect } from "next/navigation";
 import PaginationControls from "./Pagination";
 import { deleteKegiatanById } from "@/firebase/utils/kegiatan-service";
 import { useState } from "react";
-import { Timestamp } from "firebase/firestore";
 
 interface KegiatanListProps {
   kegiatan: KegiatanItem[];
@@ -19,29 +18,6 @@ export default function KegiatanList({ kegiatan, pageSize = 10 }: KegiatanListPr
   const totalPages = Math.ceil(kegiatan.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
   const visibleRow = kegiatan.slice(startIndex, startIndex + pageSize);
-  
-  function formatTanggal(value: string | Timestamp | undefined | null): string {
-    if (!value) return "-";
-
-    let date: Date;
-
-    if (typeof value === "string") {
-      date = new Date(value);
-    } else if (value instanceof Timestamp) {
-      date = value.toDate();
-    } else {
-      return "-";
-    }
-
-    if (isNaN(date.getTime())) return "-";
-
-    return date.toLocaleDateString("id-ID", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
-  }
-
   
   return (
     <>
@@ -59,9 +35,9 @@ export default function KegiatanList({ kegiatan, pageSize = 10 }: KegiatanListPr
           { visibleRow.length > 0 && kegiatan.length > 0 ? (
             visibleRow.map((item, index) => (
               <tr key={item.id} className="hover:bg-blue-50 transition-colors duration-150 ease-in-out">
-                <td className="px-4 py-3 text-sm text-gray-800 font-medium">{(index + 1)}</td>
+                <td className="px-4 py-3 text-sm text-gray-800 font-medium">{(currentPage - 1) * 10 + (index + 1)}</td>
                 <td className="px-4 py-3 text-sm text-gray-800 font-medium">{item.Judul}</td>
-                <td className="px-4 py-3 text-sm text-gray-800">{formatTanggal(item.Tanggal)}
+                <td className="px-4 py-3 text-sm text-gray-800">{item.Tanggal}
                 </td>
                 <td className="px-4 py-3 text-sm">
                   {item.link ? (

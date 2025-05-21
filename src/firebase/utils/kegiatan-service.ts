@@ -1,10 +1,11 @@
 'use server'
 
 import {
-  addDoc, collection, getDocs, Timestamp,
+  collection, getDocs, Timestamp,
   updateDoc, where, query, doc, orderBy,
   QueryDocumentSnapshot, limit, startAfter,
-  getDoc, 
+  getDoc,
+  setDoc, 
 } from "firebase/firestore"
 import { db } from "../config"
 import { Validation } from "@/validation/validation";
@@ -13,33 +14,46 @@ import { uploadKegiatanImage } from "@/cloudinary/upload";
 import { KegiatanItem } from "@/models/Kegiatan";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function addKegiatan (formData: any, files: { gambar_sampul?: File, gambar_kegiatan?: File }) {
+export async function addKegiatan (formData: any, files: { ImageSampul?: File, ImageDesc?: File }) {
   // const data = formDataToObject(formData);
 
-  const gambarSampulUrl   = files.gambar_sampul ? await uploadKegiatanImage(files.gambar_sampul) : "";
-  const gambarKegiatanUrl = files.gambar_kegiatan ? await uploadKegiatanImage(files.gambar_kegiatan) : "";
+  const gambarSampulUrl   = files.ImageSampul ? await uploadKegiatanImage(files.ImageSampul) : "";
+  const gambarKegiatanUrl = files.ImageDesc ? await uploadKegiatanImage(files.ImageDesc) : "";
 
-  const collectionRef = collection(db, "kegiatan");
+
+
+  const collectionRef = collection(db, "Kegiatan");
   const data = {
     ...formData,
-    gambar_sampul: gambarSampulUrl,
-    gambar_kegiatan: gambarKegiatanUrl
+    ImageSampul: gambarSampulUrl,
+    ImageDesc: gambarKegiatanUrl
   }
   try {
+    const kegiatanSnapshot = await getDocs(collectionRef);
+    let new_id = `kegiatan_1`;
+    if(!kegiatanSnapshot.empty) {
+      const maxId = kegiatanSnapshot.docs.reduce((max, doc) => {
+        const idNumber = parseInt(doc.id, 10);
+        return idNumber > max ? idNumber : max;
+      }, 0);
+      new_id = `kegiatan_${maxId + 1}`;
+    }
+
     const validatedData = Validation.validate(createKegiatanSchema, data);
-    
-    const docRef = await addDoc(collectionRef, {
-      judul: validatedData.judul,
-      deskripsi: validatedData.deskripsi,
-      gambar_sampul: validatedData.gambar_sampul,
-      gambar_kegiatan: validatedData.gambar_kegiatan,
-      is_delete: false,
-      createdAt: Timestamp.now(),
+
+    const docRef = doc(collectionRef, String(new_id));
+    const result = await setDoc(docRef, {
+      Judul: validatedData.Judul,
+      Deskripsi: validatedData.Deskripsi,
+      ImageSampul: validatedData.ImageSampul,
+      ImageDesc: validatedData.ImageDesc,
+      isDelete: false,
+      Tanggal: Timestamp.now(),
       updatedAt: Timestamp.now()
     });
 
     await updateDoc(docRef, { link: `/kegiatan/${docRef.id}` });
-    console.log(docRef);
+    console.log(result);
     return true;
   } catch (error) {
     console.log(error);
@@ -56,8 +70,12 @@ export async function getKegiatan (): Promise<KegiatanItem[]> {
     const data = doc.data();
     const tanggal = data.Tanggal;
 
-    const tanggalStr = tanggal?.toDate ? tanggal.toDate().toISOString() : tanggal || null;
-
+    const tanggalStr = tanggal?.toDate() ? tanggal.toDate().toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+    }) : null;
+    
     return {
       id: doc.id,
       Judul: data.Judul || '',
@@ -80,7 +98,11 @@ export async function getKegiatanById (id: string): Promise<KegiatanItem | null>
 
   const data = kegiatanSnapshot.data();
   const tanggal = data.Tanggal;
-  const tanggalStr = tanggal?.toDate ? tanggal.toDate().toISOString() : tanggal || null;
+  const tanggalStr = tanggal?.toDate() ? tanggal.toDate().toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+  }) : null;
 
   return {
     id: kegiatanSnapshot.id,
@@ -96,8 +118,6 @@ export async function getKegiatanById (id: string): Promise<KegiatanItem | null>
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function updateKegiatan(formData: any, files: { ImageSampul?: File, ImageDesc?: File }) {
-  // const data = formDataToObject(formData);
-
   const gambarSampulUrl = files.ImageSampul ? await uploadKegiatanImage(files.ImageSampul) : formData.ImageSampul || "";
   const gambarKegiatanUrl = files.ImageDesc ? await uploadKegiatanImage(files.ImageDesc) : formData.ImageDesc || "";
 
@@ -134,24 +154,12 @@ export async function deleteKegiatanById (kegiatan_id: string) {
 }
 
 export async function getKegiatanByDateAndSort(
-  startDate?: string,
-  endDate?: string,
   sortField: keyof KegiatanItem = "Tanggal",
   sortOrder: "asc" | "desc" = "asc"
 ): Promise<KegiatanItem[]> {
   const collectionRef = collection(db, "Kegiatan");
 
   let q = query(collectionRef, where("isDelete", "==", false));
-
-  if (startDate) {
-    const startTimestamp = Timestamp.fromDate(new Date(startDate));
-    q = query(q, where("Tanggal", ">=", startTimestamp));
-  }
-
-  if (endDate) {
-    const endTimestamp = Timestamp.fromDate(new Date(endDate));
-    q = query(q, where("Tanggal", "<=", endTimestamp));
-  }
 
   q = query(q, orderBy(sortField as string, sortOrder));
 
@@ -160,7 +168,11 @@ export async function getKegiatanByDateAndSort(
   return snapshot.docs.map(doc => {
     const data = doc.data();
     const tanggal = data.Tanggal;
-    const tanggalStr = tanggal?.toDate ? tanggal.toDate().toISOString() : null;
+    const tanggalStr = tanggal?.toDate() ? tanggal.toDate().toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+    }) : null;
 
     return {
       id: doc.id,
@@ -177,24 +189,24 @@ export async function getKegiatanByDateAndSort(
 
 export async function getKegiatanFilteredByJudulContains(
   search: string,
-  startDate?: string,
-  endDate?: string,
   sortField: keyof KegiatanItem = "Tanggal",
   sortOrder: "asc" | "desc" = "asc"
 ): Promise<KegiatanItem[]> {
-  const allData = await getKegiatanByDateAndSort(startDate, endDate, sortField, sortOrder);
+  const allData = await getKegiatanByDateAndSort(sortField, sortOrder);
 
   if (!search.trim()) return allData;
 
   const lowerSearch = search.toLowerCase();
 
-  const filtered = allData.filter(item =>
-    item.Judul.toLowerCase().includes(lowerSearch)
-  );
+  const filtered = allData.filter(item =>{    
+    return (
+      item.Judul.toLowerCase().includes(lowerSearch) ||
+      item.Tanggal?.includes(lowerSearch)
+    )
+  });
 
   return filtered;
 }
-
 
 export async function fetchPage(pageNumber: number, pageSize: number) {
   // Store the first document snapshot of each page
@@ -219,8 +231,12 @@ export async function fetchPage(pageNumber: number, pageSize: number) {
   return snapshot.docs.map(doc => {
     const data = doc.data();
     const tanggal = data.Tanggal;
-    const tanggalStr = tanggal?.toDate ? tanggal.toDate().toISOString() : null;
-
+    const tanggalStr = tanggal?.toDate() ? tanggal.toDate().toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+    }) : null;
+    
     return {
       id: doc.id,
       Judul: data.Judul || '',
