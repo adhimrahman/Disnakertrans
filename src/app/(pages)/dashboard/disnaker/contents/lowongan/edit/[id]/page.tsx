@@ -14,25 +14,25 @@ import { GoPlus } from "react-icons/go";
 
 export default function UpdateKontenLowonganPage() {
   const [formData, setFormData] = useState<Partial<updateLowonganFormData>>({
-    Judul: "",
+    judul: "",
     nama_lowongan: "",
-    Deskripsi: "",
-    ImageSampul: "",
-    Alamat: "",
-    BatasLowongan: "",
-    Range: { max: 0, min: 0 },
-    Tipe: [],
-    Syarat: [],
-    Perusahaan: "",
-    LinkLowongan: "",
+    deskripsi: "",
+    gambar_sampul: "",
+    alamat: "",
+    batas_lowongan: "",
+    range_gaji: { max: 0, min: 0 },
+    tipe: [],
+    syarat: [],
+    perusahaan: "",
+    link_lowongan: "",
     link_konten: "",
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any 
   const [errors, setErrors] = useState<Record<string, any>>({});
-  const [files, setFiles] = useState<{ ImageSampul?: File }>({});
+  const [files, setFiles] = useState<{ gambar_sampul?: File }>({});
   const [newSyarat, setNewSyarat] = useState<string>("");
-  const [previews, setPreviews] = useState<{ ImageSampul?: string; }>({});
+  const [previews, setPreviews] = useState<{ gambar_sampul?: string; }>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { id } = useParams();
   const router = useRouter();
@@ -43,20 +43,20 @@ export default function UpdateKontenLowonganPage() {
       if (data) {
         setFormData({
           id: id as string,
-          Judul: data.Judul,
+          judul: data.judul,
           nama_lowongan: data.nama_lowongan,
-          ImageSampul: data.ImageSampul as string,
-          Deskripsi: data.Deskripsi,
-          BatasLowongan: data.BatasLowongan as string,
-          Range: {
+          gambar_sampul: data.gambar_sampul as string,
+          deskripsi: data.deskripsi,
+          batas_lowongan: data.batas_lowongn as string,
+          range_gaji: {
             max: data.Range?.max ?? 0,
             min: data.Range?.min ?? 0
           },
-          Tipe: data.Tipe,
-          Syarat: data.Syarat,
-          Perusahaan: data.Perusahaan,
-          Alamat: data.Alamat,
-          LinkLowongan: data.LinkLowongan,
+          tipe: data.Tipe,
+          syarat: data.Syarat,
+          perusahaan: data.Perusahaan,
+          alamat: data.Alamat,
+          link_lowongan: data.LinkLowongan,
           link_konten: data.link_konten
         });
       }
@@ -66,7 +66,7 @@ export default function UpdateKontenLowonganPage() {
 
   useEffect(() => {
   return () => {
-    if (previews.ImageSampul) URL.revokeObjectURL(previews.ImageSampul);
+    if (previews.gambar_sampul) URL.revokeObjectURL(previews.gambar_sampul);
   };
 }, [previews]);
 
@@ -84,7 +84,7 @@ export default function UpdateKontenLowonganPage() {
     setErrors({});
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'ImageSampul' | 'ImageDesc') => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'gambar_sampul') => {
     const file = e.target.files?.[0];
     const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
 
@@ -112,7 +112,7 @@ export default function UpdateKontenLowonganPage() {
     if (newSyarat.trim() !== "") {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        Syarat: [...prevFormData.Syarat ?? [], newSyarat.trim()]
+        Syarat: [...prevFormData.syarat ?? [], newSyarat.trim()]
       }));
       setNewSyarat(""); // Clear input field after adding
     }
@@ -121,7 +121,7 @@ export default function UpdateKontenLowonganPage() {
   const handleRemoveSyarat = (index: number) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      Syarat: prevFormData.Syarat?.filter((_, i) => i !== index)
+      Syarat: prevFormData.syarat?.filter((_, i) => i !== index)
     }));
   };
   
@@ -130,8 +130,8 @@ export default function UpdateKontenLowonganPage() {
     
     setFormData(prevFormData => {
       const newTipe = checked
-        ? [...prevFormData.Tipe ?? [], name] // Add the selected type to the array
-        : prevFormData.Tipe?.filter((item) => item !== name); // Remove it if unchecked
+        ? [...prevFormData.tipe ?? [], name] // Add the selected type to the array
+        : prevFormData.tipe?.filter((item) => item !== name); // Remove it if unchecked
     
       return {
         ...prevFormData,
@@ -146,7 +146,7 @@ export default function UpdateKontenLowonganPage() {
 
     const newFormData = {
       ...formData,
-      ImageSampul: previews.ImageSampul || formData.ImageSampul ||"",
+      ImageSampul: previews.gambar_sampul || formData.gambar_sampul ||"",
     }
 
     const result = updateLowonganSchema.safeParse(newFormData);
@@ -173,7 +173,7 @@ export default function UpdateKontenLowonganPage() {
     }
   };
 
-  const imageSampulSrc = previews.ImageSampul || formData.ImageSampul || "";
+  const imageSampulSrc = previews.gambar_sampul || formData.gambar_sampul || "";
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
@@ -191,8 +191,8 @@ export default function UpdateKontenLowonganPage() {
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Judul Konten</Typography>
               <TextField
                 placeholder='Tuliskan judul konten lowongan disini'
-                name="Judul"
-                value={formData.Judul || ""}
+                name="judul"
+                value={formData.judul || ""}
                 onChange={handleChange}
                 fullWidth
                 variant="outlined"
@@ -231,7 +231,7 @@ export default function UpdateKontenLowonganPage() {
                   Pilih File
                   <input
                     type="file" accept="image/*"
-                    onChange={(e) => handleFileChange(e, 'ImageSampul')}
+                    onChange={(e) => handleFileChange(e, 'gambar_sampul')}
                     hidden
                     className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
                   />
@@ -240,9 +240,9 @@ export default function UpdateKontenLowonganPage() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 1,
-                  color: formData.ImageSampul ? 'success.main' : 'text.secondary'
+                  color: formData.gambar_sampul ? 'success.main' : 'text.secondary'
                 }}>
-                  {(previews.ImageSampul || formData.ImageSampul) ? (
+                  {(previews.gambar_sampul || formData.gambar_sampul) ? (
                   <div className='flex flex-col gap-y-3 items-center'>
                     <Image src={imageSampulSrc} alt="Preview Gambar Sampul" width={200} height={150} />
                     <div className='flex flex-row items-center gap-x-2'>
@@ -258,9 +258,9 @@ export default function UpdateKontenLowonganPage() {
                   </Typography>
                 )}
                 </Box>
-                {errors?.ImageSampul?._errors.length > 0 && (
+                {errors?.gambar_sampul?._errors.length > 0 && (
                   <Typography variant="caption" color="error" className='text-md text-red-700'>
-                    {errors.ImageSampul._errors[0]}
+                    {errors.gambar_sampul._errors[0]}
                   </Typography>
                 )}
               </Box>
@@ -269,8 +269,8 @@ export default function UpdateKontenLowonganPage() {
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Deskripsi Pekerjaan</Typography>
               <TextField
                 placeholder='Tuliskan deskripsi pekerjaan disini'
-                name="Deskripsi"
-                value={formData.Deskripsi || ""}
+                name="deskripsi"
+                value={formData.deskripsi || ""}
                 onChange={handleChange}
                 fullWidth
                 multiline
@@ -278,7 +278,7 @@ export default function UpdateKontenLowonganPage() {
                 variant="outlined"
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.Deskripsi?._errors?.length > 0 && errors.Deskripsi._errors.map((msg: string, i: number) => (
+              {errors?.deskripsi?._errors?.length > 0 && errors.deskripsi._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -286,14 +286,14 @@ export default function UpdateKontenLowonganPage() {
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Batas Lowongan</Typography>
               <input
                 type="date"
-                value={formData.BatasLowongan || ""}
+                value={formData.batas_lowongan || ""}
                 onChange={(e) => {
                   const newDate = e.target.value;
-                  setFormData({ ...formData, BatasLowongan: newDate });
+                  setFormData({ ...formData, batas_lowongan: newDate });
                 }}
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.BatasLowongan?._errors?.length > 0 && errors.BatasLowongan._errors.map((msg: string, i: number) => (
+              {errors?.batas_llowongan?._errors?.length > 0 && errors.batas_llowongan._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -304,14 +304,14 @@ export default function UpdateKontenLowonganPage() {
                   <p className='text-lg text-black'>Rp</p>
                   <TextField
                     variant='standard'
-                    name="Range.min"
-                    value={formData.Range?.min || 0}
+                    name="range.min"
+                    value={formData.range_gaji?.min || 0}
                     onChange={(e) => {
                       setFormData({
                         ...formData,
-                        Range: {
-                          ...formData.Range,
-                          max: formData.Range?.max ?? 0,
+                        range_gaji: {
+                          ...formData.range_gaji,
+                          max: formData.range_gaji?.max ?? 0,
                           min: Number(e.target.value) ?? 0
                         }
                       });
@@ -320,7 +320,7 @@ export default function UpdateKontenLowonganPage() {
                     className='text-black text-sm font-base p-2'
                   />
                 </div>
-                {errors?.Range?.min?._errors?.length > 0 && errors.Range.min._errors.map((msg: string, i: number) => (
+                {errors?.range_gaji?.min?._errors?.length > 0 && errors.range_gaji.min._errors.map((msg: string, i: number) => (
                   <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
                 ))}
                 <Typography variant="body1" sx={{ fontWeight: 600 }} >--</Typography>
@@ -329,14 +329,14 @@ export default function UpdateKontenLowonganPage() {
                   <TextField
                     placeholder='Minimal'
                     variant='standard'
-                    name="Range.max"
-                    value={formData.Range?.max || 0}
+                    name="range_gaji.max"
+                    value={formData.range_gaji?.max || 0}
                     onChange={(e) => {
                       setFormData({
                         ...formData,
-                        Range: {
-                          ...formData.Range,
-                          min: formData.Range?.min ?? 0,
+                        range_gaji: {
+                          ...formData.range_gaji,
+                          min: formData.range_gaji?.min ?? 0,
                           max: Number(e.target.value) ?? 0
                         }
                       });
@@ -345,7 +345,7 @@ export default function UpdateKontenLowonganPage() {
                     className='focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2'
                   />
                 </div>
-                {errors?.Range?.max?.message?.length > 0 && errors.Range.max.message.map((msg: string, i: number) => (
+                {errors?.range_gaji?.max?.message?.length > 0 && errors.range_gaji.max.message.map((msg: string, i: number) => (
                   <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
                 ))}
               </Box>
@@ -359,14 +359,14 @@ export default function UpdateKontenLowonganPage() {
                       type="checkbox"
                       name={type}
                       value={type}
-                      checked={formData.Tipe?.includes(type)}
+                      checked={formData.tipe?.includes(type)}
                       onChange={handleCheckboxChange}
                     />
                     <Typography variant="body2">{type}</Typography>
                   </Box>
                 ))}
               </Box>
-              {errors?.Tipe?._errors?.length > 0 && errors.Tipe?._errors.map((msg: string, i: number) => (
+              {errors?.tipe?._errors?.length > 0 && errors.tipe?._errors.map((msg: string, i: number) => (
                   <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -386,7 +386,7 @@ export default function UpdateKontenLowonganPage() {
                   </Button>
                 </Box>
                 <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
-                  {formData.Syarat?.map((syarat, index) => (
+                  {formData.syarat?.map((syarat, index) => (
                     <li key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
                       <Typography variant="body2" sx={{ ml: 1 }}>{syarat}</Typography>
                       <Button variant='contained' color='error' onClick={() => handleRemoveSyarat(index)} sx={{ ml: 2, minWidth: 0, p: 1 }}>
@@ -396,7 +396,7 @@ export default function UpdateKontenLowonganPage() {
                   ))}
                 </ul>
                 {!!errors.Syarat && (
-                  <Typography variant="caption" color="error" sx={{ mt: 1 }}>{errors.Syarat}</Typography>
+                  <Typography variant="caption" color="error" sx={{ mt: 1 }}>{errors.syarat}</Typography>
                 )}
               </Box>
             </Box>
@@ -404,14 +404,14 @@ export default function UpdateKontenLowonganPage() {
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Nama Perusahaan</Typography>
               <TextField
                 placeholder='Tuliskan nama perusahaan disini'
-                name="Perusahaan"
-                value={formData.Perusahaan || ""}
+                name="perusahaan"
+                value={formData.perusahaan || ""}
                 onChange={handleChange}
                 fullWidth
                 variant="outlined"
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.Perusahaan?._errors?.length > 0 && errors.Perusahaan._errors.map((msg: string, i: number) => (
+              {errors?.perusahaan?._errors?.length > 0 && errors.perusahaan._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -419,14 +419,14 @@ export default function UpdateKontenLowonganPage() {
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Alamat Perusahaan</Typography>
               <TextField
                 placeholder='Tuliskan alamat pekerjaan disini'
-                name="Alamat"
-                value={formData.Alamat || ""}
+                name="alamat"
+                value={formData.alamat || ""}
                 onChange={handleChange}
                 fullWidth
                 variant="outlined"
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.Alamat?._errors?.length > 0 && errors.Alamat._errors.map((msg: string, i: number) => (
+              {errors?.alamat?._errors?.length > 0 && errors.alamat._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -435,14 +435,14 @@ export default function UpdateKontenLowonganPage() {
               <TextField
                 placeholder='Tuliskan link resmi informasi lowongan disini'
                 type='url'
-                name="LinkLowongan"
-                value={formData.LinkLowongan || ""}
+                name="link_lowongan"
+                value={formData.link_lowongan || ""}
                 onChange={handleChange}
                 fullWidth
                 variant="outlined"
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.LinkLowongan?._errors?.length > 0 && errors.LinkLowongan._errors.map((msg: string, i: number) => (
+              {errors?.link_lowongan?._errors?.length > 0 && errors.link_lowongan._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>

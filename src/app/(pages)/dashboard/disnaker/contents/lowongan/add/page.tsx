@@ -16,27 +16,27 @@ import Image from 'next/image';
 
 export default function AddLowonganKerjaPage() {
   const [formData, setFormData] = useState<createLowonganFormData>({
-    Judul: "",
+    judul: "",
     nama_lowongan: "",
-    BatasLowongan: "",
-    LinkLowongan: "",
-    Tipe: ["Tetap"],
-    Deskripsi: "",
-    Perusahaan: "",
-    Alamat: "",
-    Syarat: [],
-    Range: {
+    batas_lowongan: "",
+    link_lowongan: "",
+    tipe: ["Tetap"],
+    deskripsi: "",
+    perusahaan: "",
+    alamat: "",
+    syarat: [],
+    range_gaji: {
       max: "0",
       min: "0"
     },
-    ImageSampul: "",
+    gambar_sampul: "",
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setErrors] = useState<Record<string, any>>({});
   const [newSyarat, setNewSyarat] = useState<string>("");
-  const [files, setFiles] = useState<{ ImageSampul?: File}>({});
-  const [previews, setPreviews] = useState<{ ImageSampul?: string}>({});
+  const [files, setFiles] = useState<{ gambar_sampul?: File}>({});
+  const [previews, setPreviews] = useState<{ gambar_sampul?: string}>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const router = useRouter();
 
@@ -54,7 +54,7 @@ export default function AddLowonganKerjaPage() {
     setErrors({});
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'ImageSampul') => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'gambar_sampul') => {
     const file = e.target.files?.[0];
     const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
     if (file && file.size > MAX_FILE_SIZE) {
@@ -81,7 +81,7 @@ export default function AddLowonganKerjaPage() {
     if (newSyarat.trim() !== "") {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        Syarat: [...prevFormData.Syarat ?? [], newSyarat.trim()]
+        Syarat: [...prevFormData.syarat ?? [], newSyarat.trim()]
       }));
       setNewSyarat(""); // Clear input field after adding
     }
@@ -90,7 +90,7 @@ export default function AddLowonganKerjaPage() {
   const handleRemoveSyarat = (index: number) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      Syarat: prevFormData.Syarat?.filter((_, i) => i !== index)
+      Syarat: prevFormData.syarat?.filter((_, i) => i !== index)
     }));
   };
 
@@ -99,8 +99,8 @@ export default function AddLowonganKerjaPage() {
 
     setFormData(prevFormData => {
       const newType = checked
-        ? [...(prevFormData.Tipe ?? []), name]
-        : (prevFormData.Tipe ?? []).filter(item => item !== name);
+        ? [...(prevFormData.tipe ?? []), name]
+        : (prevFormData.tipe ?? []).filter(item => item !== name);
 
       if (newType.length === 0) {
         // Jangan update state jadi kosong jika tidak diinginkan
@@ -109,7 +109,7 @@ export default function AddLowonganKerjaPage() {
 
       return {
         ...prevFormData,
-        Tipe: newType as [string, ...string[]], // pakai assertion
+        tipe: newType as [string, ...string[]], // pakai assertion
       };
     });
   };
@@ -120,8 +120,8 @@ export default function AddLowonganKerjaPage() {
     
     const newFormData = {
       ...formData,
-      ImageSampul: previews.ImageSampul || "",
-      Range: {max: formData.Range?.max || 0, min: formData.Range?.min || 0}
+      gambar_sampul: previews.gambar_sampul || "",
+      range_gaji: {max: formData.range_gaji?.max || 0, min: formData.range_gaji?.min || 0}
     }
 
     const result = createLowonganSchema.safeParse(newFormData);
@@ -165,14 +165,14 @@ export default function AddLowonganKerjaPage() {
               <TextField
                 placeholder='Tuliskan judul konten lowongan disini'
                 name="Judul"
-                value={formData.Judul}
+                value={formData.judul}
                 onChange={handleChange}
                 fullWidth
                 variant="outlined"
                 size="medium"
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.Judul?._errors?.length > 0 && errors.Judul._errors.map((msg: string, i: number) => (
+              {errors?.judul?._errors?.length > 0 && errors.judul._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -204,9 +204,9 @@ export default function AddLowonganKerjaPage() {
                   Pilih File
                   <input
                     type="file"
-                    name='ImageSampul'
+                    name='gambar_sampul'
                     accept="image/*"
-                    onChange={(e) => handleFileChange(e, 'ImageSampul')}
+                    onChange={(e) => handleFileChange(e, 'gambar_sampul')}
                     hidden
                     className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
                   />
@@ -215,11 +215,11 @@ export default function AddLowonganKerjaPage() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 1,
-                  color: formData.ImageSampul ? 'success.main' : 'text.secondary'
+                  color: formData.gambar_sampul ? 'success.main' : 'text.secondary'
                 }}>
-                  {previews.ImageSampul ? (
+                  {previews.gambar_sampul ? (
                   <div className='flex flex-col gap-y-3 items-center'>
-                    <Image src={previews.ImageSampul} alt="Preview Gambar Sampul" width={200} height={150} />
+                    <Image src={previews.gambar_sampul} alt="Preview Gambar Sampul" width={200} height={150} />
                     <div className='flex flex-row items-center gap-x-2'>
                       <CheckCircleOutlineIcon fontSize="small"  className='text-green-600'/>
                       <Typography variant="body2">
@@ -233,9 +233,9 @@ export default function AddLowonganKerjaPage() {
                   </Typography>
                 )}
                 </Box>
-                {errors?.ImageSampul?._errors.length > 0 && (
+                {errors?.gambar_sampul?._errors.length > 0 && (
                   <Typography variant="caption" color="error" className='text-md text-red-700'>
-                    {errors.ImageSampul._errors[0]}
+                    {errors.gambar_sampul._errors[0]}
                   </Typography>
                 )}
               </Box>
@@ -244,8 +244,8 @@ export default function AddLowonganKerjaPage() {
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Deskripsi Pekerjaan</Typography>
               <TextField
                 placeholder='Tuliskan deskripsi pekerjaan disini'
-                name="Deskripsi"
-                value={formData.Deskripsi}
+                name="deskripsi"
+                value={formData.deskripsi}
                 onChange={handleChange}
                 fullWidth
                 multiline
@@ -253,7 +253,7 @@ export default function AddLowonganKerjaPage() {
                 variant="outlined"
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.Deskripsi?._errors?.length > 0 && errors.Deskripsi._errors.map((msg: string, i: number) => (
+              {errors?.deskripsi?._errors?.length > 0 && errors.deskripsi._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -261,14 +261,14 @@ export default function AddLowonganKerjaPage() {
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Batas Lowongan</Typography>
               <input
                 type="date"
-                value={formData.BatasLowongan}
+                value={formData.batas_lowongan}
                 onChange={(e) => {
                   const newDate = e.target.value;
-                  setFormData({ ...formData, BatasLowongan: newDate });
+                  setFormData({ ...formData, batas_lowongan: newDate });
                 }}
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.BatasLowongan?._errors?.length > 0 && errors.BatasLowongan._errors.map((msg: string, i: number) => (
+              {errors?.batas_lowongan?._errors?.length > 0 && errors.batas_lowongan._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -281,18 +281,18 @@ export default function AddLowonganKerjaPage() {
                     placeholder='Minimal gaji'
                     variant='standard'
                     name="Range.min"
-                    value={formData.Range?.min}
+                    value={formData.range_gaji?.min}
                     onChange={(e) => {
                       setFormData({
                         ...formData,
-                        Range: { ...formData.Range, min: e.target.value }
+                        range_gaji: { ...formData.range_gaji, min: e.target.value }
                       });
                     }}
                     sx={{ minWidth: 120 }}
                     className='text-black text-sm font-base p-2'
                   />
                 </div>
-                {errors?.Range?.min?._errors?.length > 0 && errors.Range.min._errors.map((msg: string, i: number) => (
+                {errors?.range_gaji?.min?._errors?.length > 0 && errors.range_gaji.min._errors.map((msg: string, i: number) => (
                   <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
                 ))}
                 <Typography variant="body1" sx={{ fontWeight: 600 }} >--</Typography>
@@ -301,19 +301,19 @@ export default function AddLowonganKerjaPage() {
                   <TextField
                     placeholder='Maksimal gaji'
                     variant='standard'
-                    name="Range.max"
-                    value={formData.Range?.max}
+                    name="range_gaji.max"
+                    value={formData.range_gaji?.max}
                     onChange={(e) => {
                       setFormData({
                         ...formData,
-                        Range: { ...formData.Range, max: e.target.value }
+                        range_gaji: { ...formData.range_gaji, max: e.target.value }
                       });
                     }}
                     sx={{ minWidth: 120 }}
                     className='focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2'
                   />
                 </div>
-                {errors?.Range?.max?.message?.length > 0 && errors.Range.max.message.map((msg: string, i: number) => (
+                {errors?.range_gaji?.max?.message?.length > 0 && errors.range_gaji.max.message.map((msg: string, i: number) => (
                   <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
                 ))}
               </Box>
@@ -326,14 +326,14 @@ export default function AddLowonganKerjaPage() {
                     <input
                       type="checkbox"
                       name={type}
-                      checked={formData.Tipe?.includes(type)}
+                      checked={formData.tipe?.includes(type)}
                       onChange={handleCheckboxChange}
                     />
                     <Typography variant="body2">{type}</Typography>
                   </Box>
                 ))}
               </Box>
-              {errors?.Tipe?._errors?.length > 0 && errors.Tipe?._errors.map((msg: string, i: number) => (
+              {errors?.tipe?._errors?.length > 0 && errors.tipe?._errors.map((msg: string, i: number) => (
                   <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -353,7 +353,7 @@ export default function AddLowonganKerjaPage() {
                   </Button>
                 </Box>
                 <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
-                  {formData.Syarat?.map((syarat, index) => (
+                  {formData.syarat?.map((syarat, index) => (
                     <li key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
                       <Typography variant="body2" sx={{ ml: 1 }}>{syarat}</Typography>
                       <Button variant='contained' color='error' onClick={() => handleRemoveSyarat(index)} sx={{ ml: 2, minWidth: 0, p: 1 }}>
@@ -362,8 +362,8 @@ export default function AddLowonganKerjaPage() {
                     </li>
                   ))}
                 </ul>
-                {!!errors.Syarat && (
-                  <Typography variant="caption" color="error" sx={{ mt: 1 }}>{errors.Syarat}</Typography>
+                {!!errors.syarat && (
+                  <Typography variant="caption" color="error" sx={{ mt: 1 }}>{errors.syarat}</Typography>
                 )}
               </Box>
             </Box>
@@ -371,14 +371,14 @@ export default function AddLowonganKerjaPage() {
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Nama Perusahaan</Typography>
               <TextField
                 placeholder='Tuliskan nama perusahaan disini'
-                name="Perusahaan"
-                value={formData.Perusahaan}
+                name="perusahaan"
+                value={formData.perusahaan}
                 onChange={handleChange}
                 fullWidth
                 variant="outlined"
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.Perusahaan?._errors?.length > 0 && errors.Perusahaan._errors.map((msg: string, i: number) => (
+              {errors?.perusahaan?._errors?.length > 0 && errors.perusahaan._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -386,14 +386,14 @@ export default function AddLowonganKerjaPage() {
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Alamat Perusahaan</Typography>
               <TextField
                 placeholder='Tuliskan alamat pekerjaan disini'
-                name="Alamat"
-                value={formData.Alamat}
+                name="alamat"
+                value={formData.alamat}
                 onChange={handleChange}
                 fullWidth
                 variant="outlined"
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.Alamat?._errors?.length > 0 && errors.Alamat._errors.map((msg: string, i: number) => (
+              {errors?.alamat?._errors?.length > 0 && errors.alamat._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -402,14 +402,14 @@ export default function AddLowonganKerjaPage() {
               <TextField
                 placeholder='Tuliskan link resmi informasi lowongan disini'
                 type='url'
-                name="LinkLowongan"
-                value={formData.LinkLowongan}
+                name="link_lowongan"
+                value={formData.link_lowongan}
                 onChange={handleChange}
                 fullWidth
                 variant="outlined"
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.LinkLowongan?._errors?.length > 0 && errors.LinkLowongan._errors.map((msg: string, i: number) => (
+              {errors?.link_lowongan?._errors?.length > 0 && errors.link_lowongan._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>

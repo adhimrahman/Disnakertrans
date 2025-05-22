@@ -28,9 +28,9 @@ export default async function LowonganDashboardPage ({ searchParams }: LowonganD
       <SearchSortControls
         sortOptions={[
           { value: "nama_lowongan", label: "Nama Lowongan" },
-          { value: "BatasLowongan", label: "Batas Lowongan" },
+          { value: "batas_lowongan", label: "Batas Lowongan" },
           { value: "tanggal_unggah", label: "Tanggal Unggah" },
-          { value: "Perusahaan", label: "Perusahaan" },
+          { value: "perusahaan", label: "Perusahaan" },
         ]}
       />
       <span className="px-3" />

@@ -12,38 +12,38 @@ import { createLowonganFormData, createLowonganSchema, getLowonganSchema, update
 import { uploadLowonganImage } from "@/cloudinary/upload"; 
 import { Lowongan, LowonganItem } from "@/models/Lowongan";
 
-export async function addLowongan(formData: createLowonganFormData, files: { ImageSampul?: File }) {
-  const gambarSampulUrl = files.ImageSampul ? await uploadLowonganImage(files.ImageSampul) : "";
+export async function addLowongan(formData: createLowonganFormData, files: { gambar_sampul?: File }) {
+  const gambarSampulUrl = files.gambar_sampul ? await uploadLowonganImage(files.gambar_sampul) : "";
   const collectionRef = collection(db, "lowongan");
 
   const data = {
     ...formData,
-    ImageSampul: gambarSampulUrl
+    gambar_sampul: gambarSampulUrl
   }
 
   try {
     const validateData = Validation.validate(createLowonganSchema, data);
-    const batasDate = typeof validateData.BatasLowongan === 'string'
-      ? new Date(validateData.BatasLowongan)
-      : validateData.BatasLowongan;
+    const batasDate = typeof validateData.batas_lowongan === 'string'
+      ? new Date(validateData.batas_lowongan)
+      : validateData.batas_lowongan;
     
     const result = await addDoc(collectionRef, {
-      Judul: validateData.Judul,
-      Deskripsi: validateData.Deskripsi,
+      judul: validateData.judul,
+      deskripsi: validateData.deskripsi,
       nama_lowongan: validateData.nama_lowongan,
-      BatasLowongan: Timestamp.fromDate(batasDate),
-      Alamat: validateData.Alamat,
-      LinkLowongan: validateData.LinkLowongan,
-      Perusahaan: validateData.Perusahaan,
-      Tipe: validateData.Tipe,
-      Syarat: validateData.Syarat,
-      Range: {
-        max: validateData.Range.max,
-        min: validateData.Range.min
+      batas_lowongan: Timestamp.fromDate(batasDate),
+      alamat: validateData.alamat,
+      link_lowongan: validateData.link_lowongan,
+      perusahaan: validateData.perusahaan,
+      tipe: validateData.tipe,
+      syarat: validateData.syarat,
+      range_gaji: {
+        max: validateData.range_gaji.max,
+        min: validateData.range_gaji.min
       },
-      ImageSampul: validateData.ImageSampul,
+      gambar_sampul: validateData.gambar_sampul,
       tanggal_unggah: Timestamp.now(),
-      isDelete: false
+      is_delete: false
     });
 
     const docRef = doc(db, "lowongan", result.id);
@@ -59,13 +59,13 @@ export async function addLowongan(formData: createLowonganFormData, files: { Ima
 
 export async function getLowongan(): Promise<Partial<LowonganItem[]>> {
   const collectionRef = collection(db, "lowongan");
-  const q = query(collectionRef, where("isDelete", "==", false));
+  const q = query(collectionRef, where("is_delete", "==", false));
   const lowonganCollectionSnapshot = await getDocs(q);
 
   const lowonganList = lowonganCollectionSnapshot.docs.map((doc) => {
     const data = doc.data();
     const tanggal = data.tanggal_unggah;
-    const batas = data.BatasLowongan;
+    const batas = data.batas_lowongan;
 
     const tanggalStr = tanggal?.toDate() ? tanggal.toDate().toLocaleDateString("id-ID", {
       day: "2-digit",
@@ -82,13 +82,13 @@ export async function getLowongan(): Promise<Partial<LowonganItem[]>> {
     return {
       id: doc.id,
       nama_lowongan: data.nama_lowongan ?? '',
-      LinkLowongan: data.LinkLowongan ?? '',
+      link_lowongan: data.link_lowongan ?? '',
       link_konten: data.link_konten ?? '',
-      isDelete: data.isDelete ?? false,
-      BatasLowongan: batasStr ?? '',
-      Perusahaan: data.Perusahaan ?? '',
+      is_delete: data.is_delete ?? false,
+      batas_lowongan: batasStr ?? '',
+      perusahaan: data.perusahaan ?? '',
       tanggal_unggah: tanggalStr ?? '',
-      Tipe: data.Tipe ?? [],
+      tipe: data.Tipe ?? [],
     };
   });
 
@@ -102,59 +102,59 @@ export async function getLowonganById (id: string): Promise<Partial<Lowongan> | 
 
   const data = lowonganSnapshot.data();
 
-  const batas = data.BatasLowongan;
+  const batas = data.batas_lowongan;
   const batasStr = batas?.toDate()?.toISOString().substring(0, 10) ?? '';
   
   return {
     id: lowonganSnapshot.id,
-    Judul: data.Judul ?? '',
+    judul: data.judul ?? '',
     nama_lowongan: data.nama_lowongan ?? '',
-    Deskripsi: data.Deskripsi ?? '',
-    ImageSampul: data.ImageSampul ?? null,
-    BatasLowongan: batasStr ?? '',
-    Range: {
-      min: data.Range?.min ?? 0,
-      max: data.Range?.max ?? 0
+    deskripsi: data.deskripsi ?? '',
+    gambar_sampul: data.gambar_sampul ?? null,
+    batas_lowongan: batasStr ?? '',
+    range_gaji: {
+      min: data.range_gaji?.min ?? 0,
+      max: data.range_gaji?.max ?? 0
     },
-    Tipe: data.Tipe ?? [],
-    Syarat: data.Syarat ?? [],
-    Perusahaan: data.Perusahaan ?? '',
-    Alamat: data.Alamat ?? '',
-    LinkLowongan: data.LinkLowongan ?? '',
+    tipe: data.tipe ?? [],
+    syarat: data.syarat ?? [],
+    perusahaan: data.perusahaan ?? '',
+    alamat: data.alamat ?? '',
+    link_lowongan: data.link_lowongan ?? '',
     link_konten: data.link_konten ?? '',
   }
 }
 
-export async function updateLowongan (formData: Partial<Lowongan>, files: { ImageSampul?: File }) {
-  const gambarSampulUrl = files.ImageSampul ? await uploadLowonganImage(files.ImageSampul) : formData.ImageSampul || "";
+export async function updateLowongan (formData: Partial<Lowongan>, files: { gambar_sampul?: File }) {
+  const gambarSampulUrl = files.gambar_sampul ? await uploadLowonganImage(files.gambar_sampul) : formData.gambar_sampul || "";
 
   const docRef = doc(db, "lowongan", formData.id);
   const data = {
     ...formData,
-    ImageSampul: gambarSampulUrl,
+    gambar_sampul: gambarSampulUrl,
   };
 
   try {
     const validateData = Validation.validate(updateLowonganSchema, data);
-    const batasDate = typeof validateData.BatasLowongan === 'string'
-      ? new Date(validateData.BatasLowongan)
-      : validateData.BatasLowongan;
+    const batasDate = typeof validateData.batas_lowongan === 'string'
+      ? new Date(validateData.batas_lowongan)
+      : validateData.batas_lowongan;
     
     const result = await updateDoc(docRef, {
-      Judul: validateData.Judul,
-      Deskripsi: validateData.Deskripsi,
+      judul: validateData.judul,
+      deskripsi: validateData.deskripsi,
       nama_lowongan: validateData.nama_lowongan,
-      BatasLowongan: batasDate ? Timestamp.fromDate(batasDate) : undefined,
-      Alamat: validateData.Alamat,
-      LinkLowongan: validateData.LinkLowongan,
-      Perusahaan: validateData.Perusahaan,
-      Tipe: validateData.Tipe,
-      Syarat: validateData.Syarat,
-      Range: {
-        max: Number(validateData.Range?.max),
-        min: Number(validateData.Range?.min)
+      batas_lowongan: batasDate ? Timestamp.fromDate(batasDate) : undefined,
+      alamat: validateData.alamat,
+      link_lowongan: validateData.link_lowongan,
+      perusahaan: validateData.perusahaan,
+      tipe: validateData.tipe,
+      syarat: validateData.syarat,
+      range_gaji: {
+        max: Number(validateData.range_gaji?.max),
+        min: Number(validateData.range_gaji?.min)
       },
-      ImageSampul: validateData.ImageSampul,
+      gambar_sampul: validateData.gambar_sampul,
       link_konten: validateData.link_konten,
     });
 
@@ -169,16 +169,16 @@ export async function updateLowongan (formData: Partial<Lowongan>, files: { Imag
 export async function deleteLowonganById (lowongan_id: string) {
   const validateDate = Validation.validate(getLowonganSchema, lowongan_id);
   const docRef = doc(db, "lowongan", validateDate);
-  await updateDoc(docRef, { isDelete: true });
+  await updateDoc(docRef, { is_delete: true });
 };
 
 export async function getLowonganByDateAndSort(
-  sortField: keyof LowonganItem = "BatasLowongan",
+  sortField: keyof LowonganItem = "batas_lowongan",
   sortOrder: "asc" | "desc" = "asc"
 ): Promise<LowonganItem[]> {
   const collectionRef = collection(db, "lowongan");
 
-  let q = query(collectionRef, where("isDelete", "==", false));
+  let q = query(collectionRef, where("is_delete", "==", false));
   q = query(q, orderBy(sortField as string, sortOrder));
 
   const snapshot = await getDocs(q);
@@ -191,7 +191,7 @@ export async function getLowonganByDateAndSort(
       year: "numeric",
     }) : null;
 
-    const batas = data.BatasLowongan;
+    const batas = data.batas_lowongan;
     const batasStr = batas?.toDate() ? batas.toDate().toLocaleDateString("id-ID", {
       day: "2-digit",
       month: "short",
@@ -201,13 +201,13 @@ export async function getLowonganByDateAndSort(
     return {
       id: doc.id,
       nama_lowongan: data.nama_lowongan ?? '',
-      LinkLowongan: data.LinkLowongan ?? '',
+      link_lowongan: data.link_lowongan ?? '',
       link_konten: data.link_konten ?? '',
-      isDelete: data.isDelete ?? false,
-      BatasLowongan: batasStr ?? '',
-      Perusahaan: data.Perusahaan ?? '',
+      is_delete: data.is_delete ?? false,
+      batas_lowongan: batasStr ?? '',
+      perusahaan: data.perusahaan ?? '',
       tanggal_unggah: tanggalStr ?? '',
-      Tipe: data.Tipe ?? [],
+      tipe: data.Tipe ?? [],
     };
   });
 };
@@ -224,8 +224,8 @@ export async function getLowonganFilteredByJudulContains(
   const filtered = allData.filter((item) => {
     return (
       item.nama_lowongan.toLowerCase().includes(lowerSearch) ||
-      item.BatasLowongan?.toLowerCase().includes(lowerSearch) ||
-      item.Perusahaan.toLowerCase().includes(lowerSearch) || 
+      item.batas_lowongan?.toLowerCase().includes(lowerSearch) ||
+      item.perusahaan.toLowerCase().includes(lowerSearch) || 
       item.tanggal_unggah?.toLowerCase().includes(lowerSearch)
     );
   });
@@ -236,7 +236,7 @@ export async function getLowonganFilteredByJudulContains(
 export async function fetchLowonganPage (pageNumber: number, pageSize: number) {
   const pageCursors: QueryDocumentSnapshot[] = [];
   const collectionRef = collection(db, "lowongan");
-  let q = query(collectionRef, where("isDelete", "==", false), orderBy("tanggal_unggah"));
+  let q = query(collectionRef, where("is_delete", "==", false), orderBy("tanggal_unggah"));
 
   if (pageNumber === 1) {
     q = query(q, limit(pageSize));
@@ -259,7 +259,7 @@ export async function fetchLowonganPage (pageNumber: number, pageSize: number) {
       year: "numeric",
     }) : null;
 
-    const batas = data.BatasLowongan;
+    const batas = data.batas_lowongan;
     const batasStr = batas?.toDate() ? batas.toDate().toLocaleDateString("id-ID", {
       day: "2-digit",
       month: "short",
@@ -269,13 +269,13 @@ export async function fetchLowonganPage (pageNumber: number, pageSize: number) {
     return {
       id: doc.id,
       nama_lowongan: data.nama_lowongan ?? '',
-      LinkLowongan: data.LinkLowongan ?? '',
+      link_lowongan: data.link_lowongan ?? '',
       link_konten: data.link_konten ?? '',
-      isDelete: data.isDelete ?? false,
-      BatasLowongan: batasStr ?? '',
-      Perusahaan: data.Perusahaan ?? '',
+      is_delete: data.is_delete ?? false,
+      batas_lowongan: batasStr ?? '',
+      perusahaan: data.perusahaan ?? '',
       tanggal_unggah: tanggalStr ?? '',
-      Tipe: data.Tipe ?? [],
+      tipe: data.Tipe ?? [],
     };
   });
 };
