@@ -1,24 +1,35 @@
-import { Timestamp } from "firebase/firestore";
+// import { Timestamp } from "firebase/firestore";
 
 export interface Lowongan {
-  Judul: string | null;
-  tanggal_unggah: Timestamp | null;
-  link_konten: string | null;
+  Judul: string;
+  tanggal_unggah?: string;
+  link_konten: string;
   isDelete: boolean;
-  nama_lowongan: string | null;
+  nama_lowongan: string;
   Syarat: string[];
   Range: {
-    min: number;
-    max: number;
+    min?: number;
+    max?: number;
   };
   ImageSampul: string;
-  Deskripsi: string | null;
-  BatasLowongan: Timestamp | null;
-  Alamat: string | null;
-  LinkLowongan: string | null;
-  Perusahaan: string | null;
+  Deskripsi: string;
+  BatasLowongan: string;
+  Alamat: string;
+  LinkLowongan: string;
+  Perusahaan: string;
   Tipe: string[];
-  
-  // Index signature untuk menangani akses properti dinamis
-  [key: string]: unknown; // Membolehkan akses key lain dengan tipe string
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
+
+export interface LowonganItem {
+  id: string;
+  nama_lowongan: string;
+  Perusahaan: string;
+  BatasLowongan: string;
+  link_konten: string;
+  LinkLowongan: string;
+  tanggal_unggah: string;
+  Tipe: string[];
+  isDelete: boolean;
 }

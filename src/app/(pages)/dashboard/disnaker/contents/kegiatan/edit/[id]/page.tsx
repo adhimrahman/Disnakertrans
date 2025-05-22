@@ -88,8 +88,8 @@ export default function UpdateKontenKegiatanPage() {
 
     const newFormData = {
       ...formData,
-      ImageSampul: previews.ImageSampul || "",
-      ImageDesc: previews.ImageDesc || ""
+      ImageSampul: previews.ImageSampul || formData.ImageSampul ||"",
+      ImageDesc: previews.ImageDesc || formData.ImageDesc ||""
     }
 
     const result = updateKegiatanSchema.safeParse(newFormData);

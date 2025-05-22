@@ -85,7 +85,7 @@ export default function AddKontenKegiatanPage() {
     try {
       const success = await addKegiatan(formData, files);
       if (success) {
-        alert("Kegiatan berhasil ditambahkan!");
+        alert("Konten kegiatan berhasil ditambahkan!");
         router.push("/dashboard/disnaker/contents/kegiatan");
       } else {
         alert("Konten Kegiatan gagal ditambahkan! Mohon periksa kembali.");
@@ -106,7 +106,6 @@ export default function AddKontenKegiatanPage() {
             Tambah Konten Kegiatan
           </Typography>
         </Box>
-        
         <Box component="form" onSubmit={handleSubmit} sx={{ 
           p: 3, 
           display: 'flex', 
@@ -162,9 +161,7 @@ export default function AddKontenKegiatanPage() {
               ))}
             </Box>
           </Stack>
-
           <Divider sx={{ my: 1 }} />
-
           {/* Gambar Sampul */}
           <Box>
             <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}>
@@ -201,7 +198,6 @@ export default function AddKontenKegiatanPage() {
                   hidden
                 />
               </Button>
-
               <Box sx={{ 
                 display: 'flex', 
                 alignItems: 'center', 
