@@ -1,23 +1,23 @@
 // import { Timestamp } from "firebase/firestore";
 
 export interface Lowongan {
-  Judul: string;
-  tanggal_unggah?: string;
+  alamat: string;
+  batas_lowongan: string;
+  deskripsi: string;
+  gambar_sampul: string;
+  judul: string;
   link_konten: string;
-  isDelete: boolean;
+  link_lowongan: string;
   nama_lowongan: string;
-  Syarat: string[];
-  Range: {
+  perusahaan: string;
+  range_gaji: {
     min?: number;
     max?: number;
   };
-  ImageSampul: string;
-  Deskripsi: string;
-  BatasLowongan: string;
-  Alamat: string;
-  LinkLowongan: string;
-  Perusahaan: string;
-  Tipe: string[];
+  syarat: string[];
+  tanggal_unggah?: string;
+  tipe: string[];
+  is_delete: boolean;
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
@@ -25,11 +25,11 @@ export interface Lowongan {
 export interface LowonganItem {
   id: string;
   nama_lowongan: string;
-  Perusahaan: string;
-  BatasLowongan: string;
+  perusahaan: string;
+  batas_lowongan: string;
   link_konten: string;
-  LinkLowongan: string;
+  link_lowongan: string;
   tanggal_unggah: string;
-  Tipe: string[];
-  isDelete: boolean;
+  tipe: string[];
+  is_delete: boolean;
 }

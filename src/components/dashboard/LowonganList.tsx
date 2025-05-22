@@ -42,13 +42,13 @@ export default function LowonganList({ lowongan, pageSize = 10 }: LowonganListPr
               <tr key={item.id} className="text-sm text-gray-800 font-medium hover:bg-blue-50 transition-colors duration-150 ease-in-out">
                 <td className="px-4 py-3">{(currentPage - 1) * 10 + (index + 1)}</td>
                 <td className="px-4 py-3">{item.nama_lowongan || "Tidak ada"}</td>
-                <td className="px-4 py-3">{item.Perusahaan || "Tidak ada"}</td>
-                <td className="px-4 py-3">{item.BatasLowongan || "Tidak ada"}</td>
-                <td className="px-4 py-3">{item.Tipe.join(", ") || "Tidak ada"}</td>
+                <td className="px-4 py-3">{item.perusahaan || "Tidak ada"}</td>
+                <td className="px-4 py-3">{item.batas_lowongan || "Tidak ada"}</td>
+                <td className="px-4 py-3">{item.tipe.join(", ") || "Tidak ada"}</td>
                 <td className="px-4 py-3">
-                  {item.LinkLowongan ? (
+                  {item.link_lowongan ? (
                     <Link
-                      href={item.LinkLowongan ?? ""}
+                      href={item.link_lowongan ?? ""}
                       target="_blank"
                       className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
                       rel="noopener noreferrer"
