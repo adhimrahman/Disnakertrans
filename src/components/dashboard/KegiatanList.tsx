@@ -36,8 +36,8 @@ export default function KegiatanList({ kegiatan, pageSize = 10 }: KegiatanListPr
             visibleRow.map((item, index) => (
               <tr key={item.id} className="hover:bg-blue-50 font-medium transition-colors duration-150 ease-in-out">
                 <td className="px-4 py-3 text-sm text-gray-800 font-medium">{(currentPage - 1) * 10 + (index + 1)}</td>
-                <td className="px-4 py-3 text-sm text-gray-800 font-medium">{item.Judul}</td>
-                <td className="px-4 py-3 text-sm text-gray-800">{item.Tanggal}</td>
+                <td className="px-4 py-3 text-sm text-gray-800 font-medium">{item.judul}</td>
+                <td className="px-4 py-3 text-sm text-gray-800">{item.created_at}</td>
                 <td className="px-4 py-3 text-sm">
                   {item.link ? (
                     <Link

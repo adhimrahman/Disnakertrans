@@ -1,23 +1,21 @@
-import { Timestamp } from "firebase/firestore";
-
 export interface Kegiatan {
-  Judul: string;
-  Deskripsi: string;
-  ImageSampul: string;
-  ImageDesc: string;
+  judul: string;
+  deskripsi: string;
+  gambar_sampul: string;
+  gambar_kegiatan: string;
   link: string;
-  Tanggal?: Timestamp;
+  is_delete: boolean;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any; // Membolehkan akses key lain dengan tipe string
 }
 
 export interface KegiatanItem {
   id: string;
-  Judul: string;
-  Tanggal?: string;
-  ImageSampul?: File | string;
-  Deskripsi: string;
-  ImageDesc?: File | string;
+  judul: string;
+  created_at?: string;
+  gambar_sampul?: File | string;
+  deskripsi: string;
+  gambar_kegiatan?: File | string;
   link: string;
-  isDelete: boolean;
+  is_delete: boolean;
 }

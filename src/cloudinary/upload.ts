@@ -1,79 +1,36 @@
+import { v4 as uuidv4 } from "uuid";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "@/firebase/config";
+
 export async function uploadKegiatanImage(file: File): Promise<string> {
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-
-  if (!cloudName || !uploadPreset) {
-    throw new Error(
-      "Cloudinary credentials are not set in environment variables."
-    );
-  }
-
-  // const max_size_file = 2 * 1024 * 1024; // 2 MB in bytes
-
-  // if (file.size > max_size_file) {
-  //   throw new Error("File exceeds the size limit of 5MB");
-  // }
-
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", uploadPreset);
-  formData.append("folder", "kegiatan");
+  const uniqueFileName = `${uuidv4()}_${file.name}`;
+  const fileRef = ref(storage, `kegiatan/${uniqueFileName}`);
 
   try {
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`,
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
+    // Upload file ke Firebase Storage
+    await uploadBytes(fileRef, file);
 
-    if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Upload failed: ${response.status} ${errText}`);
-    }
-
-    const data = await response.json();
-    return data.secure_url; // Kembalikan URL aman dari Cloudinary
+    // Dapatkan URL download agar bisa diakses publik
+    const downloadUrl = await getDownloadURL(fileRef);
+    return downloadUrl;
   } catch (error) {
-    console.error("Error uploading file to Cloudinary:", error);
+    console.error("Error uploading file to Firebase Storage:", error);
     throw error;
   }
 }
 
 export async function uploadLowonganImage(file: File): Promise<string> {
-  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
-
-  if (!cloudName || !uploadPreset) {
-    throw new Error(
-      "Cloudinary credentials are not set in environment variables."
-    );
-  }
-
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", uploadPreset);
-  formData.append("folder", "lowongan");
-
+  const uniqueFileName = `${uuidv4()}_${file.name}`;
+  const fileRef = ref(storage, `lowongan/${uniqueFileName}`);
   try {
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`,
-      {
-        method: "POST",
-        body: formData,
-      }
-    );
+    // Upload file ke Firebase Storage
+    await uploadBytes(fileRef, file);
 
-    if (!response.ok) {
-      throw new Error("Failed to upload file to Cloudinary");
-    }
-
-    const data = await response.json();
-    return data.secure_url; // Kembalikan URL aman dari Cloudinary
+    // Dapatkan URL download agar bisa diakses publik
+    const downloadUrl = await getDownloadURL(fileRef);
+    return downloadUrl;
   } catch (error) {
-    console.error("Error uploading file to Cloudinary:", error);
+    console.error("Error uploading file to Firebase Storage:", error);
     throw error;
   }
 }
-
