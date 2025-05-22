@@ -4,23 +4,17 @@ import {
   collection, getDocs, Timestamp,
   updateDoc, where, query, doc, orderBy,
   QueryDocumentSnapshot, limit, startAfter,
-  getDoc,
-  setDoc, 
+  getDoc, addDoc, 
 } from "firebase/firestore"
 import { db } from "../config"
 import { Validation } from "@/validation/validation";
-import { createKegiatanSchema, getKegiatanSchema, updateKegiatanSchema } from "@/validation/kegiatan-validation";
+import { createKegiatanFormData, createKegiatanSchema, getKegiatanSchema, updateKegiatanSchema } from "@/validation/kegiatan-validation";
 import { uploadKegiatanImage } from "@/cloudinary/upload";
-import { KegiatanItem } from "@/models/Kegiatan";
+import { Kegiatan, KegiatanItem } from "@/models/Kegiatan";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function addKegiatan (formData: any, files: { ImageSampul?: File, ImageDesc?: File }) {
-  // const data = formDataToObject(formData);
-
+export async function addKegiatan (formData: createKegiatanFormData, files: { ImageSampul?: File, ImageDesc?: File }) {
   const gambarSampulUrl   = files.ImageSampul ? await uploadKegiatanImage(files.ImageSampul) : "";
   const gambarKegiatanUrl = files.ImageDesc ? await uploadKegiatanImage(files.ImageDesc) : "";
-
-
 
   const collectionRef = collection(db, "Kegiatan");
   const data = {
@@ -29,20 +23,8 @@ export async function addKegiatan (formData: any, files: { ImageSampul?: File, I
     ImageDesc: gambarKegiatanUrl
   }
   try {
-    const kegiatanSnapshot = await getDocs(collectionRef);
-    let new_id = `kegiatan_1`;
-    if(!kegiatanSnapshot.empty) {
-      const maxId = kegiatanSnapshot.docs.reduce((max, doc) => {
-        const idNumber = parseInt(doc.id, 10);
-        return idNumber > max ? idNumber : max;
-      }, 0);
-      new_id = `kegiatan_${maxId + 1}`;
-    }
-
     const validatedData = Validation.validate(createKegiatanSchema, data);
-
-    const docRef = doc(collectionRef, String(new_id));
-    const result = await setDoc(docRef, {
+    const result = await addDoc(collectionRef, {
       Judul: validatedData.Judul,
       Deskripsi: validatedData.Deskripsi,
       ImageSampul: validatedData.ImageSampul,
@@ -52,7 +34,9 @@ export async function addKegiatan (formData: any, files: { ImageSampul?: File, I
       updatedAt: Timestamp.now()
     });
 
-    await updateDoc(docRef, { link: `/kegiatan/${docRef.id}` });
+    const docRef = doc(db, "Kegiatan", result.id);
+
+    await updateDoc(docRef, { link: `http://localhost:3000/kegiatan/${docRef.id}` });
     console.log(result);
     return true;
   } catch (error) {
@@ -106,18 +90,17 @@ export async function getKegiatanById (id: string): Promise<KegiatanItem | null>
 
   return {
     id: kegiatanSnapshot.id,
-    Judul: data.Judul || '',
-    Deskripsi: data.Deskripsi || '',
+    Judul: data.Judul ?? '',
+    Deskripsi: data.Deskripsi ?? '',
     ImageSampul: data.ImageSampul, // may be undefined or convert accordingly
     ImageDesc: data.ImageDesc,
-    link: data.link || '',
+    link: data.link ?? '',
     isDelete: data.isDelete ?? false,
     Tanggal: tanggalStr,
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function updateKegiatan(formData: any, files: { ImageSampul?: File, ImageDesc?: File }) {
+export async function updateKegiatan(formData: Partial<Kegiatan>, files: { ImageSampul?: File, ImageDesc?: File }) {
   const gambarSampulUrl = files.ImageSampul ? await uploadKegiatanImage(files.ImageSampul) : formData.ImageSampul || "";
   const gambarKegiatanUrl = files.ImageDesc ? await uploadKegiatanImage(files.ImageDesc) : formData.ImageDesc || "";
 
@@ -126,16 +109,15 @@ export async function updateKegiatan(formData: any, files: { ImageSampul?: File,
     ...formData,
     ImageSampul: gambarSampulUrl,
     ImageDesc: gambarKegiatanUrl
-  }
+  };
+  
   try {
     const validatedData = Validation.validate(updateKegiatanSchema, data);
-    
     const result = await updateDoc(docRef, {
       Judul: validatedData.Judul,
       Deskripsi: validatedData.Deskripsi,
       ImageSampul: validatedData.ImageSampul,
       ImageDesc: validatedData.ImageDesc,
-      updatedAt: Timestamp.now()
     });
 
     console.log(result);
@@ -160,7 +142,6 @@ export async function getKegiatanByDateAndSort(
   const collectionRef = collection(db, "Kegiatan");
 
   let q = query(collectionRef, where("isDelete", "==", false));
-
   q = query(q, orderBy(sortField as string, sortOrder));
 
   const snapshot = await getDocs(q);
@@ -201,7 +182,7 @@ export async function getKegiatanFilteredByJudulContains(
   const filtered = allData.filter(item =>{    
     return (
       item.Judul.toLowerCase().includes(lowerSearch) ||
-      item.Tanggal?.includes(lowerSearch)
+      item.Tanggal?.toLowerCase().includes(lowerSearch)
     )
   });
 
@@ -224,7 +205,6 @@ export async function fetchPage(pageNumber: number, pageSize: number) {
   }
 
   const snapshot = await getDocs(q);
-  
   // Store first doc of this page for future navigation
   pageCursors[pageNumber - 1] = snapshot.docs[0];
 

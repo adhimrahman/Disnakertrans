@@ -14,7 +14,7 @@ interface KegiatanListProps {
 }
 
 export default function KegiatanList({ kegiatan, pageSize = 10 }: KegiatanListProps) {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
   const totalPages = Math.ceil(kegiatan.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
   const visibleRow = kegiatan.slice(startIndex, startIndex + pageSize);
@@ -34,11 +34,10 @@ export default function KegiatanList({ kegiatan, pageSize = 10 }: KegiatanListPr
         <tbody className="divide-y divide-gray-500">
           { visibleRow.length > 0 && kegiatan.length > 0 ? (
             visibleRow.map((item, index) => (
-              <tr key={item.id} className="hover:bg-blue-50 transition-colors duration-150 ease-in-out">
+              <tr key={item.id} className="hover:bg-blue-50 font-medium transition-colors duration-150 ease-in-out">
                 <td className="px-4 py-3 text-sm text-gray-800 font-medium">{(currentPage - 1) * 10 + (index + 1)}</td>
                 <td className="px-4 py-3 text-sm text-gray-800 font-medium">{item.Judul}</td>
-                <td className="px-4 py-3 text-sm text-gray-800">{item.Tanggal}
-                </td>
+                <td className="px-4 py-3 text-sm text-gray-800">{item.Tanggal}</td>
                 <td className="px-4 py-3 text-sm">
                   {item.link ? (
                     <Link

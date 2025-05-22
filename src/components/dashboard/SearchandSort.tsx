@@ -3,12 +3,22 @@
 import { useState, useTransition } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function SearchSortControls() {
+interface SearchSortControlsProps {
+  sortOptions: { value: string; label: string }[];
+  defaultSort?: string;
+  defaultOrder?: 'asc' | 'desc';
+};
+
+export default function SearchSortControls({
+  sortOptions,
+  defaultSort = "Tanggal",
+  defaultOrder = "asc",
+}: SearchSortControlsProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get('search') || '');
-  const [sort, setSort] = useState(searchParams.get('sort') ?? 'Tanggal');
-  const [order, setOrder] = useState(searchParams.get('order') ?? 'asc');
+  const [sort, setSort] = useState(searchParams.get('sort') ?? defaultSort);
+  const [order, setOrder] = useState(searchParams.get('order') ?? defaultOrder);
   const [isPending, startTransition] = useTransition();
 
   function onSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -17,7 +27,7 @@ export default function SearchSortControls() {
     startTransition(() => {
       router.replace(`?search=${val}&sort=${sort}&order=${order}`);
     });
-  }
+  };
 
   function onSortChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const val = e.target.value;
@@ -25,7 +35,7 @@ export default function SearchSortControls() {
     startTransition(() => {
       router.replace(`?search=${search}&sort=${val}&order=${order}`);
     });
-  }
+  };
 
   function onOrderChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const val = e.target.value;
@@ -33,7 +43,7 @@ export default function SearchSortControls() {
     startTransition(() => {
       router.replace(`?search=${search}&sort=${sort}&order=${val}`);
     });
-  }
+  };
 
   return (
     <div className='flex flex-row gap-x-3 items-center'>
@@ -42,15 +52,16 @@ export default function SearchSortControls() {
       />
       <p className='text-black text-sm'>Sort by: </p>
       <select value={sort} onChange={onSortChange} className='text-black border border-gray-400 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm px-3 py-1'>
-        <option value="Judul" className='text-black text-sm'>Judul</option>
-        <option value="Tanggal">Tanggal</option>
+        {sortOptions.map(({ value, label }) => (
+          <option key={value} value={value}>{label}</option>
+        ))}
       </select>
       <p className='text-black text-sm'>secara </p>
       <select value={order} onChange={onOrderChange} className='text-black border border-gray-400 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm px-3 py-1'>
-        <option value="asc">Menaik</option>
-        <option value="desc">Menurun</option>
+        <option value="asc">Menurun</option>
+        <option value="desc">Menaik</option>
       </select>
       {isPending && <p>Loading...</p>}
     </div>
   );
-}
+};

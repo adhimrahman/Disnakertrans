@@ -13,7 +13,7 @@ interface KegiatanDashboardPageProps {
 
 export default async function KegiatanDashboardPage({ searchParams }: KegiatanDashboardPageProps) {
   const resolvedSearchParams = await searchParams; // await it here
-    const {
+  const {
       search = '',
       sort = 'Tanggal',
       order = 'asc',
@@ -26,8 +26,12 @@ export default async function KegiatanDashboardPage({ searchParams }: KegiatanDa
   return (
     <>
       <div className="flex flex-row justify-between items-center">
-        <SearchSortControls />
-        {/* <DatePickerDashboard /> */}
+        <SearchSortControls
+          sortOptions={[
+            { value: "Tanggal", label: "Tanggal" },
+            { value: "Judul", label: "Judul" },
+          ]}
+        />
       </div>
       <span className="px-3" />
       <KegiatanList kegiatan={kegiatan} />
