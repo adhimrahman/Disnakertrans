@@ -11,16 +11,16 @@ import { useParams, useRouter } from 'next/navigation';
 
 export default function UpdateKontenKegiatanPage() {
   const [formData, setFormData] = useState<Partial<updateKegiatanFormData>>({
-    Judul: "",
-    Deskripsi: "",
-    ImageSampul: "",
-    ImageDesc: "",
+    judul: "",
+    deskripsi: "",
+    gambar_sampul: "",
+    gambar_kegiatan: "",
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setErrors] = useState<Record<string, any>>({});
-  const [files, setFiles] = useState<{ ImageSampul?: File; ImageDesc?: File }>({});
-  const [previews, setPreviews] = useState<{ ImageSampul?: string; ImageDesc?: string }>({});
+  const [files, setFiles] = useState<{ gambar_sampul?: File; gambar_kegiatan?: File }>({});
+  const [previews, setPreviews] = useState<{ gambar_sampul?: string; gambar_kegiatan?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { id } = useParams();
   const router = useRouter();
@@ -31,10 +31,10 @@ export default function UpdateKontenKegiatanPage() {
       if (data) {
         setFormData({
           id: id as string,
-          Judul: data.Judul,
-          Deskripsi: data.Deskripsi,
-          ImageSampul: data.ImageSampul as string,
-          ImageDesc: data.ImageDesc as string
+          judul: data.judul,
+          deskripsi: data.deskripsi,
+          gambar_sampul: data.gambar_sampul as string,
+          gambar_kegiatan: data.gambar_kegiatan as string
         });
       }
     }
@@ -43,8 +43,8 @@ export default function UpdateKontenKegiatanPage() {
 
   useEffect(() => {
   return () => {
-    if (previews.ImageSampul) URL.revokeObjectURL(previews.ImageSampul);
-    if (previews.ImageDesc) URL.revokeObjectURL(previews.ImageDesc);
+    if (previews.gambar_sampul) URL.revokeObjectURL(previews.gambar_sampul);
+    if (previews.gambar_kegiatan) URL.revokeObjectURL(previews.gambar_kegiatan);
   };
 }, [previews]);
 
@@ -62,7 +62,7 @@ export default function UpdateKontenKegiatanPage() {
     setErrors({});
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'ImageSampul' | 'ImageDesc') => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'gambar_sampul' | 'gambar_kegiatan') => {
     const file = e.target.files?.[0];
     const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
 
@@ -88,8 +88,8 @@ export default function UpdateKontenKegiatanPage() {
 
     const newFormData = {
       ...formData,
-      ImageSampul: previews.ImageSampul || formData.ImageSampul ||"",
-      ImageDesc: previews.ImageDesc || formData.ImageDesc ||""
+      gambar_sampul: previews.gambar_sampul || formData.gambar_sampul ||"",
+      gambar_kegiatan: previews.gambar_kegiatan || formData.gambar_kegiatan ||""
     }
 
     const result = updateKegiatanSchema.safeParse(newFormData);
@@ -115,8 +115,8 @@ export default function UpdateKontenKegiatanPage() {
     }
   };
 
-  const imageSampulSrc = previews.ImageSampul || formData.ImageSampul || "";
-  const imageKegiatanSrc = previews.ImageDesc || formData.ImageDesc || "";
+  const imageSampulSrc = previews.gambar_sampul || formData.gambar_sampul || "";
+  const imageKegiatanSrc = previews.gambar_kegiatan || formData.gambar_kegiatan || "";
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
@@ -142,7 +142,7 @@ export default function UpdateKontenKegiatanPage() {
               <TextField
                 placeholder='Tuliskan judul konten kegiatan disini'
                 name="Judul"
-                value={formData.Judul || ""}
+                value={formData.judul || ""}
                 onChange={handleChange}
                 fullWidth
                 variant="outlined"
@@ -165,7 +165,7 @@ export default function UpdateKontenKegiatanPage() {
               <TextField
                 placeholder='Tuliskan deskripsi pekerjaan disini'
                 name="Deskripsi"
-                value={formData.Deskripsi || ""}
+                value={formData.deskripsi || ""}
                 onChange={handleChange}
                 fullWidth
                 multiline
@@ -217,7 +217,7 @@ export default function UpdateKontenKegiatanPage() {
                   type="file"
                   name='ImageSampul'
                   accept="image/*"
-                  onChange={(e) => handleFileChange(e, 'ImageSampul')}
+                  onChange={(e) => handleFileChange(e, 'gambar_sampul')}
                   hidden
                 />
               </Button>
@@ -226,9 +226,9 @@ export default function UpdateKontenKegiatanPage() {
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: 1,
-                color: formData.ImageSampul ? 'success.main' : 'text.secondary'
+                color: formData.gambar_sampul ? 'success.main' : 'text.secondary'
               }}>
-                {(previews.ImageSampul || formData.ImageSampul) ? (
+                {(previews.gambar_sampul || formData.gambar_sampul) ? (
                   <div className='flex flex-col gap-y-3 items-center'>
                     <Image src={imageSampulSrc} alt="Preview Gambar Sampul" width={200} height={150} />
                     <div className='flex flex-row items-center gap-x-2'>
@@ -244,9 +244,9 @@ export default function UpdateKontenKegiatanPage() {
                   </Typography>
                 )}
               </Box>
-              {errors?.ImageSampul?._errors.length > 0 && (
+              {errors?.gambar_sampul?._errors.length > 0 && (
                 <Typography variant="caption" color="error" className='text-md text-red-700'>
-                  {errors.ImageSampul._errors[0]}
+                  {errors.gambar_sampul._errors[0]}
                 </Typography>
               )}
             </Box>
@@ -281,10 +281,10 @@ export default function UpdateKontenKegiatanPage() {
               >
                 Pilih File
                 <input
-                  name='ImageDesc'
+                  name='gambar_deskripsi'
                   type="file"
                   accept="image/*"
-                  onChange={(e) => handleFileChange(e, 'ImageDesc')}
+                  onChange={(e) => handleFileChange(e, 'gambar_kegiatan')}
                   hidden
                 />
               </Button>
@@ -293,9 +293,9 @@ export default function UpdateKontenKegiatanPage() {
                 display: 'flex', 
                 alignItems: 'center', 
                 gap: 1,
-                color: formData.ImageDesc ? 'success.main' : 'text.secondary'
+                color: formData.gambar_kegiatan ? 'success.main' : 'text.secondary'
               }}>
-                {(previews.ImageDesc || formData.ImageDesc) ? (
+                {(previews.gambar_kegiatan || formData.gambar_kegiatan) ? (
                   <div className='flex flex-col gap-y-3 items-center'>
                     <Image src={imageKegiatanSrc} alt="Preview Gambar Sampul" width={200} height={150} />
                     <div className='flex flex-row items-center gap-x-2'>
@@ -311,9 +311,9 @@ export default function UpdateKontenKegiatanPage() {
                   </Typography>
                 )}
               </Box>
-              {errors?.ImageDesc?._errors.length > 0 && (
+              {errors?.gambar_kegiatan?._errors.length > 0 && (
               <Typography variant="caption" color="error" className='text-md text-red-700'>
-                {errors.ImageDesc._errors[0]}
+                {errors.gambar_kegiatan._errors[0]}
               </Typography>
             )}
             </Box>

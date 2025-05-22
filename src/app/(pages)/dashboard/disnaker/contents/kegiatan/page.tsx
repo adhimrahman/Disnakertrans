@@ -15,7 +15,7 @@ export default async function KegiatanDashboardPage({ searchParams }: KegiatanDa
   const resolvedSearchParams = await searchParams; // await it here
   const {
       search = '',
-      sort = 'Tanggal',
+      sort = 'created_at',
       order = 'asc',
   } = resolvedSearchParams || {};
   
@@ -28,8 +28,8 @@ export default async function KegiatanDashboardPage({ searchParams }: KegiatanDa
       <div className="flex flex-row justify-between items-center">
         <SearchSortControls
           sortOptions={[
-            { value: "Tanggal", label: "Tanggal" },
-            { value: "Judul", label: "Judul" },
+            { value: "created_at", label: "Tanggal" },
+            { value: "judul", label: "Judul" },
           ]}
         />
       </div>

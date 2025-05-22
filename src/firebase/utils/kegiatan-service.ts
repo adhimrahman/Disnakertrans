@@ -12,29 +12,29 @@ import { createKegiatanFormData, createKegiatanSchema, getKegiatanSchema, update
 import { uploadKegiatanImage } from "@/cloudinary/upload";
 import { Kegiatan, KegiatanItem } from "@/models/Kegiatan";
 
-export async function addKegiatan (formData: createKegiatanFormData, files: { ImageSampul?: File, ImageDesc?: File }) {
-  const gambarSampulUrl   = files.ImageSampul ? await uploadKegiatanImage(files.ImageSampul) : "";
-  const gambarKegiatanUrl = files.ImageDesc ? await uploadKegiatanImage(files.ImageDesc) : "";
+export async function addKegiatan (formData: createKegiatanFormData, files: { gambar_sampul?: File, gambar_kegiatan?: File }) {
+  const gambarSampulUrl   = files.gambar_sampul ? await uploadKegiatanImage(files.gambar_sampul) : "";
+  const gambarKegiatanUrl = files.gambar_kegiatan ? await uploadKegiatanImage(files.gambar_kegiatan) : "";
 
-  const collectionRef = collection(db, "Kegiatan");
+  const collectionRef = collection(db, "kegiatan");
   const data = {
     ...formData,
-    ImageSampul: gambarSampulUrl,
-    ImageDesc: gambarKegiatanUrl
+    gambar_sampul: gambarSampulUrl,
+    gambar_kegiatan: gambarKegiatanUrl
   }
   try {
     const validatedData = Validation.validate(createKegiatanSchema, data);
     const result = await addDoc(collectionRef, {
-      Judul: validatedData.Judul,
-      Deskripsi: validatedData.Deskripsi,
-      ImageSampul: validatedData.ImageSampul,
-      ImageDesc: validatedData.ImageDesc,
-      isDelete: false,
-      Tanggal: Timestamp.now(),
-      updatedAt: Timestamp.now()
+      judul: validatedData.judul,
+      deskripsi: validatedData.deskripsi,
+      gambar_sampul: validatedData.gambar_sampul,
+      gambar_kegiatan: validatedData.gambar_kegiatan,
+      is_delete: false,
+      created_at: Timestamp.now(),
+      updated_tt: Timestamp.now()
     });
 
-    const docRef = doc(db, "Kegiatan", result.id);
+    const docRef = doc(db, "kegiatan", result.id);
 
     await updateDoc(docRef, { link: `http://localhost:3000/kegiatan/${docRef.id}` });
     console.log(result);
@@ -46,13 +46,13 @@ export async function addKegiatan (formData: createKegiatanFormData, files: { Im
 }
 
 export async function getKegiatan (): Promise<KegiatanItem[]> {
-  const collectionRef = collection(db, "Kegiatan");
-  const q = query(collectionRef, where("isDelete", "==", false));
+  const collectionRef = collection(db, "kegiatan");
+  const q = query(collectionRef, where("is_delete", "==", false));
   const kegiatanCollectionSnapshot = await getDocs(q);
 
   const kegiatanList = kegiatanCollectionSnapshot.docs.map((doc) => {
     const data = doc.data();
-    const tanggal = data.Tanggal;
+    const tanggal = data.created_at;
 
     const tanggalStr = tanggal?.toDate() ? tanggal.toDate().toLocaleDateString("id-ID", {
         day: "2-digit",
@@ -62,13 +62,13 @@ export async function getKegiatan (): Promise<KegiatanItem[]> {
     
     return {
       id: doc.id,
-      Judul: data.Judul || '',
-      Deskripsi: data.Deskripsi || '',
-      ImageSampul: data.ImageSampul, // may be undefined or convert accordingly
-      ImageDesc: data.ImageDesc,
+      judul: data.judul || '',
+      deskripsi: data.deskripsi || '',
+      gambar_sampul: data.gambar_sampul, // may be undefined or convert accordingly
+      gambar_kegiatan: data.gambar_kegiatan,
       link: data.link || '',
-      isDelete: data.isDelete ?? false,
-      Tanggal: tanggalStr,
+      is_delete: data.isDelete ?? false,
+      created_at: tanggalStr,
     }
   });
 
@@ -76,12 +76,12 @@ export async function getKegiatan (): Promise<KegiatanItem[]> {
 };
 
 export async function getKegiatanById (id: string): Promise<KegiatanItem | null> {
-  const docRef = doc(db, "Kegiatan", id);
+  const docRef = doc(db, "kegiatan", id);
   const kegiatanSnapshot = await getDoc(docRef);
   if (!kegiatanSnapshot.exists()) return null;
 
   const data = kegiatanSnapshot.data();
-  const tanggal = data.Tanggal;
+  const tanggal = data.created_at;
   const tanggalStr = tanggal?.toDate() ? tanggal.toDate().toLocaleDateString("id-ID", {
         day: "2-digit",
         month: "short",
@@ -90,34 +90,34 @@ export async function getKegiatanById (id: string): Promise<KegiatanItem | null>
 
   return {
     id: kegiatanSnapshot.id,
-    Judul: data.Judul ?? '',
-    Deskripsi: data.Deskripsi ?? '',
-    ImageSampul: data.ImageSampul, // may be undefined or convert accordingly
-    ImageDesc: data.ImageDesc,
+    judul: data.judul ?? '',
+    deskripsi: data.deskripsi ?? '',
+    gambar_sampul: data.gambar_sampul, // may be undefined or convert accordingly
+    gambar_kegiatan: data.gambar_kegiatan,
     link: data.link ?? '',
-    isDelete: data.isDelete ?? false,
-    Tanggal: tanggalStr,
+    is_delete: data.is_delete ?? false,
+    created_at: tanggalStr,
   }
 };
 
-export async function updateKegiatan(formData: Partial<Kegiatan>, files: { ImageSampul?: File, ImageDesc?: File }) {
-  const gambarSampulUrl = files.ImageSampul ? await uploadKegiatanImage(files.ImageSampul) : formData.ImageSampul || "";
-  const gambarKegiatanUrl = files.ImageDesc ? await uploadKegiatanImage(files.ImageDesc) : formData.ImageDesc || "";
+export async function updateKegiatan(formData: Partial<Kegiatan>, files: { gambar_sampul?: File, gambar_kegiatan?: File }) {
+  const gambarSampulUrl = files.gambar_sampul ? await uploadKegiatanImage(files.gambar_sampul) : formData.gambar_sampul || "";
+  const gambarKegiatanUrl = files.gambar_kegiatan ? await uploadKegiatanImage(files.gambar_kegiatan) : formData.gambar_kegiatan || "";
 
-  const docRef = doc(db, "Kegiatan", formData.id);
+  const docRef = doc(db, "kegiatan", formData.id);
   const data = {
     ...formData,
-    ImageSampul: gambarSampulUrl,
-    ImageDesc: gambarKegiatanUrl
+    gambar_sampul: gambarSampulUrl,
+    gambar_kegiatan: gambarKegiatanUrl
   };
   
   try {
     const validatedData = Validation.validate(updateKegiatanSchema, data);
     const result = await updateDoc(docRef, {
-      Judul: validatedData.Judul,
-      Deskripsi: validatedData.Deskripsi,
-      ImageSampul: validatedData.ImageSampul,
-      ImageDesc: validatedData.ImageDesc,
+      judul: validatedData.judul,
+      deskripsi: validatedData.deskripsi,
+      gambar_sampul: validatedData.gambar_sampul,
+      gambar_kegiatan: validatedData.gambar_kegiatan,
     });
 
     console.log(result);
@@ -130,25 +130,25 @@ export async function updateKegiatan(formData: Partial<Kegiatan>, files: { Image
 
 export async function deleteKegiatanById (kegiatan_id: string) {
   const validatedData = Validation.validate(getKegiatanSchema, kegiatan_id);
-  const docRef = doc(db, "Kegiatan", validatedData);
+  const docRef = doc(db, "kegiatan", validatedData);
 
-  await updateDoc(docRef, { isDelete: true });
+  await updateDoc(docRef, { is_delete: true });
 }
 
 export async function getKegiatanByDateAndSort(
-  sortField: keyof KegiatanItem = "Tanggal",
+  sortField: keyof KegiatanItem = "created_at",
   sortOrder: "asc" | "desc" = "asc"
 ): Promise<KegiatanItem[]> {
-  const collectionRef = collection(db, "Kegiatan");
+  const collectionRef = collection(db, "kegiatan");
 
-  let q = query(collectionRef, where("isDelete", "==", false));
+  let q = query(collectionRef, where("is_delete", "==", false));
   q = query(q, orderBy(sortField as string, sortOrder));
 
   const snapshot = await getDocs(q);
 
   return snapshot.docs.map(doc => {
     const data = doc.data();
-    const tanggal = data.Tanggal;
+    const tanggal = data.created_at;
     const tanggalStr = tanggal?.toDate() ? tanggal.toDate().toLocaleDateString("id-ID", {
         day: "2-digit",
         month: "short",
@@ -157,20 +157,20 @@ export async function getKegiatanByDateAndSort(
 
     return {
       id: doc.id,
-      Judul: data.Judul || '',
-      Deskripsi: data.Deskripsi || '',
-      ImageSampul: data.ImageSampul,
-      ImageDesc: data.ImageDesc,
-      link: data.link || '',
-      isDelete: data.isDelete ?? false,
-      Tanggal: tanggalStr,
+      judul: data.judul ?? '',
+      deskripsi: data.deskripsi ?? '',
+      gambar_sampul: data.gambar_sampul,
+      gambar_kegiatan: data.gambar_kegiatan,
+      link: data.link ?? '',
+      is_delete: data.is_delete ?? false,
+      created_at: tanggalStr,
     };
   });
 }
 
 export async function getKegiatanFilteredByJudulContains(
   search: string,
-  sortField: keyof KegiatanItem = "Tanggal",
+  sortField: keyof KegiatanItem = "created_at",
   sortOrder: "asc" | "desc" = "asc"
 ): Promise<KegiatanItem[]> {
   const allData = await getKegiatanByDateAndSort(sortField, sortOrder);
@@ -181,8 +181,8 @@ export async function getKegiatanFilteredByJudulContains(
 
   const filtered = allData.filter(item =>{    
     return (
-      item.Judul.toLowerCase().includes(lowerSearch) ||
-      item.Tanggal?.toLowerCase().includes(lowerSearch)
+      item.judul.toLowerCase().includes(lowerSearch) ||
+      item.created_at?.toLowerCase().includes(lowerSearch)
     )
   });
 
@@ -192,8 +192,8 @@ export async function getKegiatanFilteredByJudulContains(
 export async function fetchPage(pageNumber: number, pageSize: number) {
   // Store the first document snapshot of each page
   const pageCursors: QueryDocumentSnapshot[] = [];
-  const collectionRef = collection(db, "Kegiatan");
-  let q = query(collectionRef, where("isDelete", "==", false), orderBy("Judul"));
+  const collectionRef = collection(db, "kegiatan");
+  let q = query(collectionRef, where("is_delete", "==", false), orderBy("judul"));
 
   if (pageNumber === 1) {
     q = query(q, limit(pageSize));
@@ -210,7 +210,7 @@ export async function fetchPage(pageNumber: number, pageSize: number) {
 
   return snapshot.docs.map(doc => {
     const data = doc.data();
-    const tanggal = data.Tanggal;
+    const tanggal = data.created_at;
     const tanggalStr = tanggal?.toDate() ? tanggal.toDate().toLocaleDateString("id-ID", {
         day: "2-digit",
         month: "short",
@@ -219,13 +219,13 @@ export async function fetchPage(pageNumber: number, pageSize: number) {
     
     return {
       id: doc.id,
-      Judul: data.Judul || '',
-      Deskripsi: data.Deskripsi || '',
-      ImageSampul: data.ImageSampul,
-      ImageDesc: data.ImageDesc,
-      link: data.link || '',
-      isDelete: data.isDelete ?? false,
-      Tanggal: tanggalStr,
+      judul: data.judul ?? '',
+      deskripsi: data.deskripsi ?? '',
+      gambar_sampul: data.gambar_sampul,
+      gambar_kegiatan: data.gambar_kegiatan,
+      link: data.link ?? '',
+      is_delete: data.is_delete ?? false,
+      created_at: tanggalStr,
     };
   });
 }
