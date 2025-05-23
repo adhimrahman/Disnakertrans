@@ -1,0 +1,27 @@
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/firebase/config";
+import { cache } from "react";
+
+export type KegiatanItem = {
+    id: string;
+    Judul: string;
+    Deskripsi: string;
+    ImageSampul: string;
+	Tanggal?: string;
+    ImageDesc?: string;
+};
+
+export const getKegiatan = cache(async (): Promise<KegiatanItem[]> => {
+    const snapshot = await getDocs(collection(db, "kegiatan"));
+    const data = snapshot.docs.map((doc) => {
+        const docData = doc.data();
+        return {
+            id: doc.id,
+            Judul: docData.Judul ?? "Tidak ada Judul",
+            Deskripsi: docData.Deskripsi ?? "Tidak ada Deskripsi",
+            ImageSampul: docData.ImageSampul ?? "/images/placeholder.jpg",
+            Tanggal: docData.Tanggal?.toDate().toISOString() ?? "",
+        };
+    });
+    return data;
+});

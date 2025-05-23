@@ -6,39 +6,40 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Kegiatan from "@/components/home/Kegiatan";
-import LowonganCarousel from "@/components/home/Lowongan";
-import ContactHighlight from "@/components/ContactHightlight";
+import Lowongan from "@/components/home/Lowongan";
+import ContactHighlight from "@/components/ui/ContactHightlight";
 import InfografisSection from "@/components/home/InfografisSection";
 import HeroCarousel from "@/components/home/Carousel";
+import CustomButton from "@/components/ui/CustomButton";
 
 import kami from "../../public/images/kami.jpg"
 import Job1 from "../../public/images/Job1.png"
 import Job2 from "../../public/images/Job2.png"
+import { getKegiatan } from "@/lib/getKegiatan";
 
-export default function HomePage() {
+export default async function HomePage() {
+	const kegiatan = await getKegiatan();
 	return (
 		<div className="min-h-screen">
 			<Navbar />
 
 			<HeroCarousel />
 
-			<section className="mx-auto px-4 lg:px-40 py-3 flex flex-col lg:flex-row items-center justify-between bg-gray-50">
+			<section className="mx-auto px-4 lg:px-40 py-14 lg:py-3 flex flex-col lg:flex-row items-center justify-between bg-gray-50">
 				<div className="lg:w-1/2 text-left">
-					<h2 className="text-xl sm:text-2xl lg:text-4xl font-bold text-gray-900 capitalize">
+					<h2 className="text-xl sm:text-2xl l-+
+					g:text-4xl font-bold text-gray-900 capitalize">
 						selamat datang di
 					</h2>
 					<h1 className="text-2xl sm:text-3xl lg:text-5xl font-extrabold text-black mt-2 uppercase">
 						portal informasi disnaker kabupaten gowa
 					</h1>
 					<Link href='/login' passHref>
-					<button className="bg-red-500 text-white px-6 py-3 rounded-lg text-base sm:text-lg font-semibold hover:bg-red-700 mt-6
-					transition hover:cursor-pointer capitalize">
-						Login
-					</button>
+						<CustomButton text="Login" px={6} py={3} className="font-semibold mt-6 text-base sm:text-lg " />
 					</Link>
 				</div>
 	
-				<Image src={Job1} alt="Illustrasi Pekerja" className="lg:w-1/2 p-2 w-full max-w-xs sm:max-w-md lg:max-w-lg mt-10 lg:mt-0 flex justify-center" />
+				<Image src={Job1} alt="Illustrasi Pekerja" className="lg:w-1/2 p-2 max-w-xs sm:max-w-md lg:max-w-lg mt-6 lg:mt-0 hidden lg:flex justify-center" />
 			</section>
 			
 			<section className="py-20 text-white bg-darkBlue">
@@ -61,9 +62,9 @@ export default function HomePage() {
 				</div>
 			</section>
 
-			<Kegiatan />
+			<Kegiatan kegiatan={kegiatan} />
 
-			<LowonganCarousel />
+			<Lowongan />
 			
 			<InfografisSection />
 			
@@ -81,8 +82,8 @@ export default function HomePage() {
 						</p>
 					</div>
 
-					<div className="lg:w-1/2 flex justify-center">
-						<Image src={kami} alt="Ilustrasi Tentang Kami" className="h-[460px] w-auto object-cover rounded-3xl shadow-lg hover:scale-105 transition duration-300" />
+					<div className="lg:w-1/2 hidden lg:flex justify-center">
+						<Image src={kami} alt="Ilustrasi Tentang Kami" className="hidden lg:flex h-[460px] w-auto object-cover rounded-3xl shadow-lg hover:scale-105 transition duration-300" />
 					</div>
 				</div>
 			</section>
