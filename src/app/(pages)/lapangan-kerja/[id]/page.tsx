@@ -1,312 +1,33 @@
-"use client";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
-import { doc, getDoc, collection, getDocs, Timestamp } from "firebase/firestore";
-import { db } from "@/firebase/config";
-import Link from "next/link";
+import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import ContactHighlight from "@/components/ContactHightlight";
+import ContactHighlight from "@/components/ui/ContactHightlight";
+import { getLowongan } from "@/lib/getLowongan";
+import { getLowonganById } from "@/lib/getLowonganById";
+import LowonganDetail from "@/components/ClientCompo/LowonganDetail";
 
-type LowonganItem = {
-	id: string;
-	Judul: string;
-	Perusahaan: string;
-	Tipe: string[];
-	Range: {
-		min: number;
-		max: number;
+export async function generateMetadata({ params }: { params: { id: string } }) {
+	const data = await getLowonganById(params.id);
+	if (!data) return { title: "Lowongan Tidak Ditemukan" };
+
+	return {
+		title: `Disnakertrans - ${data.Judul}`,
+		description: data.Deskripsi?.slice(0, 150),
 	};
-	Alamat: string;
-	ImageSampul: string;
-	Deskripsi: string;
-	Syarat: string[];
-	BatasLowongan: Timestamp;
-	LinkLowongan: string;
-};
-
-function formatRupiah(value: number) {
-	return new Intl.NumberFormat("id-ID", {
-		style: "currency",
-		currency: "IDR",
-		minimumFractionDigits: 0,
-	}).format(value);
 }
 
-function formatTanggal(timestamp: Timestamp | undefined) {
-	if (!timestamp) return "-";
-	const date = timestamp.toDate();
-	return date.toLocaleDateString("id-ID", {
-		day: "2-digit",
-		month: "long",
-		year: "numeric",
-		hour: "2-digit",
-		minute: "2-digit",
-		timeZone: "Asia/Makassar",
-		timeZoneName: "short",
-	}).replace("Waktu Indonesia Tengah", "WITA");
-}
-
-export default function LowonganDetail() {
-	const { id } = useParams();
-	const [data, setData] = useState<LowonganItem | null>(null);
-	const [semuaLowongan, setSemuaLowongan] = useState<LowonganItem[]>([]);
-
-	useEffect(() => {
-		const fetchData = async () => {
-		if (!id) return;
-		const docRef = doc(db, "lowongan", id as string);
-		const docSnap = await getDoc(docRef);
-		if (docSnap.exists()) {
-			setData({ id: docSnap.id, ...docSnap.data() } as LowonganItem);
-		}
-		};
-
-		const fetchSemuaLowongan = async () => {
-		const querySnapshot = await getDocs(collection(db, "lowongan"));
-		const allData = querySnapshot.docs.map((doc) => ({
-			id: doc.id,
-			...doc.data(),
-		})) as LowonganItem[];
-		setSemuaLowongan(allData);
-		};
-
-		fetchData();
-		fetchSemuaLowongan();
-	}, [id]);
-
-	const isLoading = semuaLowongan.length === 0;
-
-	const indexSekarang = semuaLowongan.findIndex((item) => item.id === id);
-	const lowonganSebelumnya = semuaLowongan[indexSekarang - 1];
-	const lowonganBerikutnya = semuaLowongan[indexSekarang + 1];
+export default async function LowonganDetailPage({ params }: { params: { id: string } }) {
+	const lowongan = await getLowonganById(params.id);
+	const semuaLowongan = await getLowongan();
+	
+	if (!lowongan) return notFound();
 
 	return (
-		<>
-		{isLoading ? (
 		<div className="bg-white min-h-screen flex flex-col">
 			<Navbar />
-			<div className="container mx-auto max-w-6xl px-4 pt-28">
-				<div className="animate-pulse space-y-4">
-					<div className="h-6 w-1/3 bg-gray-300 rounded" />
-					<div className="h-10 w-2/3 bg-gray-300 rounded" />
-					<div className="h-64 md:h-[420px] bg-gray-200 rounded-xl" />
-					<div className="space-y-2">
-					<div className="h-4 w-full bg-gray-200 rounded" />
-					<div className="h-4 w-5/6 bg-gray-200 rounded" />
-					<div className="h-4 w-4/6 bg-gray-200 rounded" />
-					</div>
-					<div className="h-64 md:h-[420px] bg-gray-200 rounded-xl" />
-					<div className="grid md:grid-cols-2 gap-6 pt-6">
-					{[1, 2].map((_, i) => (
-						<div key={i} className="flex gap-4 p-4 bg-gray-100 rounded-lg mb-16">
-							<div className="w-32 h-20 bg-gray-300 rounded" />
-							<div className="flex flex-col space-y-2 flex-1">
-								<div className="h-4 bg-gray-300 rounded w-1/2" />
-								<div className="h-3 bg-gray-300 rounded w-3/4" />
-							</div>
-						</div>
-					))}
-					</div>
-				</div>
-			</div>
-			<Footer />
-		</div>
-		) : (
-		<div className="bg-white min-h-screen flex flex-col">
-			<Navbar />
-
-			<div className="container mx-auto max-w-6xl px-4 pt-28">
-				<nav className="text-sm text-gray-800 mb-6" aria-label="Breadcrumb">
-					<ol className="list-reset flex">
-						<li><Link href="/" className="hover:underline text-blue-600 capitalize">Beranda</Link></li>
-						<li><span className="mx-2">/</span></li>
-						<li><Link href="/lowongan" className="hover:underline text-blue-600 capitalize">Lowongan</Link></li>
-						<li><span className="mx-2">/</span></li>
-						<li className="text-black line-clamp-1 capitalize" title={data?.Judul ?? "Judul Lowongan"}>
-							{data?.Judul ?? "Judul Lowongan"}
-						</li>
-					</ol>
-				</nav>
-			</div>
-
-			<main className="container mx-auto max-w-6xl px-4 pt-2 pb-10 grid grid-cols-1 md:grid-cols-3 gap-8">
-				<div className="md:col-span-2">
-					<h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-5 capitalize">
-						Lowongan Kerja
-					</h1>
-
-					<div className="relative w-full h-64 md:h-[420px] mb-8 rounded-xl overflow-hidden shadow-sm">
-						{data?.ImageSampul ? (
-							<Image src={data.ImageSampul} alt={data.Judul} fill className="object-cover" />
-						) : (
-							<div className="w-full h-full bg-gray-200 flex items-center justify-center">
-								<span className="text-gray-400">Tidak ada gambar</span>
-							</div>
-						)}
-					</div>
-
-					<article className="prose prose-lg prose-slate text-gray-900 max-w-none text-justify mb-10">
-						<h2 className="text-xl font-bold text-gray-800 mb-4">Deskripsi Pekerjaan</h2>
-						<p className="whitespace-pre-line">{data?.Deskripsi ?? "Deskripsi Lowongan"}</p>
-					</article>
-
-					{data?.Syarat && data.Syarat.length > 0 && (
-						<article className="prose prose-lg prose-slate text-gray-900 max-w-none text-justify mb-10">
-							<h2 className="text-xl font-bold text-gray-800 mb-4">Persyaratan</h2>
-							<ul className="list-disc pl-5 space-y-2">
-								{data.Syarat.map((syarat, index) => (
-									<li key={index}>{syarat}</li>
-								))}
-							</ul>
-						</article>
-					)}
-
-					{data?.LinkLowongan && (
-						<div className="mt-8 mb-12">
-							<Link href={data.LinkLowongan} target="_blank" rel="noopener noreferrer"
-							className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all transform hover:scale-105 shadow-md">
-								Lamar Sekarang
-							</Link>
-							<p className="text-sm text-gray-500 mt-2">
-								atau akses informasi selengkapnya di <a href={data.LinkLowongan} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">sini</a>
-							</p>
-						</div>
-					)}
-
-					<div className="grid md:grid-cols-2 gap-6 border-t border-gray-200 pt-9">
-						{lowonganSebelumnya && (
-							<Link href={`/lapangan-kerja/${lowonganSebelumnya.id}`} className="flex gap-4 group hover:bg-gray-200 p-4 rounded-lg transition-all">
-								<div className="relative w-32 h-20 flex-shrink-0 rounded-md overflow-hidden">
-									{lowonganSebelumnya.ImageSampul ? (
-										<Image src={lowonganSebelumnya.ImageSampul} alt={lowonganSebelumnya.Judul} fill className="object-cover" />
-									) : (
-										<div className="w-full h-full bg-gray-200" />
-									)}
-								</div>
-								<div className="flex flex-col">
-									<span className="text-xs text-gray-500">← Lowongan Sebelumnya</span>
-									<h3 className="text-sm font-semibold text-gray-800 group-hover:text-blue-700 capitalize pt-2">
-										{lowonganSebelumnya.Judul}
-									</h3>
-									<p className="text-xs text-gray-600 mt-1">
-										{lowonganSebelumnya.Perusahaan}
-									</p>
-								</div>
-							</Link>
-						)}
-						
-						{lowonganBerikutnya && (
-							<Link href={`/lapangan-kerja/${lowonganBerikutnya.id}`} className="flex gap-4 group hover:bg-gray-200 p-4 rounded-lg transition-all text-right md:flex-row-reverse md:text-right">
-								<div className="relative w-32 h-20 flex-shrink-0 rounded-md overflow-hidden">
-									{lowonganBerikutnya.ImageSampul ? (
-										<Image src={lowonganBerikutnya.ImageSampul} alt={lowonganBerikutnya.Judul} fill className="object-cover" />
-									) : (
-										<div className="w-full h-full bg-gray-200" />
-									)}
-								</div>
-								<div className="flex flex-col">
-									<span className="text-xs text-gray-500">Lowongan Berikutnya →</span>
-									<h3 className="text-sm font-semibold text-gray-800 group-hover:text-blue-700 capitalize pt-2">
-										{lowonganBerikutnya.Judul}
-									</h3>
-									<p className="text-xs text-gray-600 mt-1">
-										{lowonganBerikutnya.Perusahaan}
-									</p>
-								</div>
-							</Link>
-						)}
-					</div>
-				</div>
-
-				{/* Sidebar: Lowongan Lainnya */}
-				<aside className="md:col-span-1 pl-0 md:pl-4 lg:pl-12 pt-4 md:pt-0">
-					<div className="bg-gray-50 p-6 rounded-lg mb-8 shadow-sm">
-						<h2 className="text-xl font-semibold text-gray-800 mb-4">Informasi Lowongan</h2>
-						<ul className="space-y-4">
-							<li className="flex items-start">
-								<span className="text-blue-600 mr-3">🏢</span>
-								<div>
-									<p className="text-sm text-gray-700">Perusahaan</p>
-									<p className="text-gray-500 font-medium">{data?.Perusahaan}</p>
-								</div>
-							</li>
-							<li className="flex items-start">
-								<span className="text-blue-600 mr-3">💰</span>
-								<div>
-									<p className="text-sm text-gray-700">Gaji</p>
-									<p className="text-gray-500 font-medium">
-										{data?.Range ? `${formatRupiah(data.Range.min)} - ${formatRupiah(data.Range.max)}` : "-"}
-									</p>
-								</div>
-							</li>
-							<li className="flex items-start">
-								<span className="text-blue-600 mr-3">📍</span>
-								<div>
-									<p className="text-sm text-gray-700">Lokasi</p>
-									<p className="text-gray-500 font-medium">{data?.Alamat}</p>
-								</div>
-							</li>
-							<li className="flex items-start">
-								<span className="text-blue-600 mr-3">📅</span>
-								<div>
-									<p className="text-sm text-gray-700">Batas Akhir</p>
-									<p className="text-gray-500 font-medium">{formatTanggal(data?.BatasLowongan)}</p>
-								</div>
-							</li>
-							<li className="flex items-start">
-								<span className="text-blue-600 mr-3">🔖</span>
-								<div>
-									<p className="text-sm text-gray-700">Tipe Pekerjaan</p>
-									<div className="flex flex-wrap gap-1 mt-1">
-										{data?.Tipe && data.Tipe.map((tipe, idx) => (
-											<span key={idx} className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-												{tipe}
-											</span>
-										))}
-									</div>
-								</div>
-							</li>
-						</ul>
-					</div>
-
-					<h2 className="text-xl font-semibold text-gray-800 mb-4 underline">Lowongan Lainnya</h2>
-					<div className="space-y-6">
-						{semuaLowongan.filter((item) => item.id !== id).slice(0, 3).map((item) => (
-						<Link className="block rounded-xl overflow-hidden shadow hover:shadow-md transition bg-white border border-gray-200 hover:scale-105" key={item.id} href={`/lapangan-kerja/${item.id}`}>
-							<div className="relative w-full h-36">
-								{item.ImageSampul ? (
-									<Image src={item.ImageSampul} alt={item.Judul} fill className="object-cover" />
-								) : (
-									<div className="w-full h-full bg-gray-200" />
-								)}
-							</div>
-							<div className="p-4">
-								<h3 className="text-base font-semibold text-gray-800 line-clamp-2 capitalize">
-									{item.Judul}
-								</h3>
-								<p className="text-sm text-blue-600 font-medium mt-1">
-									{item.Perusahaan}
-								</p>
-								<div className="flex justify-between items-center mt-2">
-									<p className="text-xs text-gray-500">
-										{formatRupiah(item.Range.min)} - {formatRupiah(item.Range.max)}
-									</p>
-									<p className="text-xs text-gray-500">
-										{item.Alamat}
-									</p>
-								</div>
-							</div>
-						</Link>
-						))}
-					</div>
-				</aside>
-			</main>
+			<LowonganDetail lowongan={lowongan} semuaLowongan={semuaLowongan} />
 			<ContactHighlight />
 			<Footer />
 		</div>
-		)}
-		</>
 	);
 }

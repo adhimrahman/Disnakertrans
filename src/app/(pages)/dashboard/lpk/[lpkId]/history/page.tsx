@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { collection, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "@/firebase/config";
 import { BsBriefcaseFill } from "react-icons/bs";
-import Card from "@/components/dashboard/Card";
+import Card from "@/components/Dashboard/Card";
 import { HiOutlineArrowSmLeft, HiOutlineArrowSmRight } from "react-icons/hi";
 import dayjs from "dayjs";
 import "dayjs/locale/id";
