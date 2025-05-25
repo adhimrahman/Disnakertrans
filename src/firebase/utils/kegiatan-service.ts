@@ -9,7 +9,7 @@ import {
 import { db } from "../config"
 import { Validation } from "@/validation/validation";
 import { createKegiatanFormData, createKegiatanSchema, getKegiatanSchema, updateKegiatanSchema } from "@/validation/kegiatan-validation";
-import { uploadKegiatanImage } from "@/cloudinary/upload";
+import { uploadKegiatanImage } from "@/firebase/uploadToStorage";
 import { Kegiatan, KegiatanItem } from "@/models/Kegiatan";
 
 export async function addKegiatan (formData: createKegiatanFormData, files: { gambar_sampul?: File, gambar_kegiatan?: File }) {
@@ -29,9 +29,9 @@ export async function addKegiatan (formData: createKegiatanFormData, files: { ga
       deskripsi: validatedData.deskripsi,
       gambar_sampul: validatedData.gambar_sampul,
       gambar_kegiatan: validatedData.gambar_kegiatan,
-      is_delete: false,
+      is_deleted: false,
       created_at: Timestamp.now(),
-      updated_tt: Timestamp.now()
+      updated_at: Timestamp.now()
     });
 
     const docRef = doc(db, "kegiatan", result.id);
@@ -47,7 +47,7 @@ export async function addKegiatan (formData: createKegiatanFormData, files: { ga
 
 export async function getKegiatan (): Promise<KegiatanItem[]> {
   const collectionRef = collection(db, "kegiatan");
-  const q = query(collectionRef, where("is_delete", "==", false));
+  const q = query(collectionRef, where("is_deleted", "==", false));
   const kegiatanCollectionSnapshot = await getDocs(q);
 
   const kegiatanList = kegiatanCollectionSnapshot.docs.map((doc) => {
@@ -67,7 +67,7 @@ export async function getKegiatan (): Promise<KegiatanItem[]> {
       gambar_sampul: data.gambar_sampul, // may be undefined or convert accordingly
       gambar_kegiatan: data.gambar_kegiatan,
       link: data.link || '',
-      is_delete: data.isDelete ?? false,
+      is_deleted: data.is_deleted ?? true,
       created_at: tanggalStr,
     }
   });
@@ -95,7 +95,7 @@ export async function getKegiatanById (id: string): Promise<KegiatanItem | null>
     gambar_sampul: data.gambar_sampul, // may be undefined or convert accordingly
     gambar_kegiatan: data.gambar_kegiatan,
     link: data.link ?? '',
-    is_delete: data.is_delete ?? false,
+    is_deleted: data.is_deleted ?? true,
     created_at: tanggalStr,
   }
 };
@@ -118,6 +118,7 @@ export async function updateKegiatan(formData: Partial<Kegiatan>, files: { gamba
       deskripsi: validatedData.deskripsi,
       gambar_sampul: validatedData.gambar_sampul,
       gambar_kegiatan: validatedData.gambar_kegiatan,
+      updated_at: Timestamp.now()
     });
 
     console.log(result);
@@ -132,7 +133,7 @@ export async function deleteKegiatanById (kegiatan_id: string) {
   const validatedData = Validation.validate(getKegiatanSchema, kegiatan_id);
   const docRef = doc(db, "kegiatan", validatedData);
 
-  await updateDoc(docRef, { is_delete: true });
+  await updateDoc(docRef, { is_deleted: true });
 }
 
 export async function getKegiatanByDateAndSort(
@@ -141,7 +142,7 @@ export async function getKegiatanByDateAndSort(
 ): Promise<KegiatanItem[]> {
   const collectionRef = collection(db, "kegiatan");
 
-  let q = query(collectionRef, where("is_delete", "==", false));
+  let q = query(collectionRef, where("is_deleted", "==", false));
   q = query(q, orderBy(sortField as string, sortOrder));
 
   const snapshot = await getDocs(q);
@@ -162,7 +163,7 @@ export async function getKegiatanByDateAndSort(
       gambar_sampul: data.gambar_sampul,
       gambar_kegiatan: data.gambar_kegiatan,
       link: data.link ?? '',
-      is_delete: data.is_delete ?? false,
+      is_deleted: data.is_deleted ?? true,
       created_at: tanggalStr,
     };
   });
@@ -193,7 +194,7 @@ export async function fetchPage(pageNumber: number, pageSize: number) {
   // Store the first document snapshot of each page
   const pageCursors: QueryDocumentSnapshot[] = [];
   const collectionRef = collection(db, "kegiatan");
-  let q = query(collectionRef, where("is_delete", "==", false), orderBy("judul"));
+  let q = query(collectionRef, where("is_deleted", "==", false), orderBy("judul"));
 
   if (pageNumber === 1) {
     q = query(q, limit(pageSize));
@@ -224,7 +225,7 @@ export async function fetchPage(pageNumber: number, pageSize: number) {
       gambar_sampul: data.gambar_sampul,
       gambar_kegiatan: data.gambar_kegiatan,
       link: data.link ?? '',
-      is_delete: data.is_delete ?? false,
+      is_deleted: data.is_deleted ?? true,
       created_at: tanggalStr,
     };
   });

@@ -2,7 +2,7 @@
 
 export interface Lowongan {
   alamat: string;
-  batas_lowongan: string;
+  tenggat_lowongan: string;
   deskripsi: string;
   gambar_sampul: string;
   judul: string;
@@ -11,13 +11,13 @@ export interface Lowongan {
   nama_lowongan: string;
   perusahaan: string;
   range_gaji: {
-    min?: number;
-    max?: number;
+    min?: string;
+    max?: string;
   };
   syarat: string[];
-  tanggal_unggah?: string;
+  created_at?: string;
   tipe: string[];
-  is_delete: boolean;
+  is_deleted: boolean;
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
@@ -26,10 +26,10 @@ export interface LowonganItem {
   id: string;
   nama_lowongan: string;
   perusahaan: string;
-  batas_lowongan: string;
+  tenggat_lowongan: string;
   link_konten: string;
   link_lowongan: string;
-  tanggal_unggah: string;
+  created_at: string;
   tipe: string[];
-  is_delete: boolean;
+  is_deleted: boolean;
 }

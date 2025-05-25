@@ -18,7 +18,7 @@ export default function AddLowonganKerjaPage() {
   const [formData, setFormData] = useState<createLowonganFormData>({
     judul: "",
     nama_lowongan: "",
-    batas_lowongan: "",
+    tenggat_lowongan: "",
     link_lowongan: "",
     tipe: ["Tetap"],
     deskripsi: "",
@@ -81,7 +81,7 @@ export default function AddLowonganKerjaPage() {
     if (newSyarat.trim() !== "") {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        Syarat: [...prevFormData.syarat ?? [], newSyarat.trim()]
+        syarat: [...prevFormData.syarat ?? [], newSyarat.trim()]
       }));
       setNewSyarat(""); // Clear input field after adding
     }
@@ -90,7 +90,7 @@ export default function AddLowonganKerjaPage() {
   const handleRemoveSyarat = (index: number) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      Syarat: prevFormData.syarat?.filter((_, i) => i !== index)
+      syarat: prevFormData.syarat?.filter((_, i) => i !== index)
     }));
   };
 
@@ -164,7 +164,7 @@ export default function AddLowonganKerjaPage() {
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Judul Konten</Typography>
               <TextField
                 placeholder='Tuliskan judul konten lowongan disini'
-                name="Judul"
+                name="judul"
                 value={formData.judul}
                 onChange={handleChange}
                 fullWidth
@@ -260,15 +260,16 @@ export default function AddLowonganKerjaPage() {
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Batas Lowongan</Typography>
               <input
+                name="tenggat_lowongan"
                 type="date"
-                value={formData.batas_lowongan}
+                value={formData.tenggat_lowongan}
                 onChange={(e) => {
                   const newDate = e.target.value;
-                  setFormData({ ...formData, batas_lowongan: newDate });
+                  setFormData({ ...formData, tenggat_lowongan: newDate });
                 }}
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.batas_lowongan?._errors?.length > 0 && errors.batas_lowongan._errors.map((msg: string, i: number) => (
+              {errors?.tenggat_lowongan?._errors?.length > 0 && errors.tenggat_lowongan._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -280,7 +281,7 @@ export default function AddLowonganKerjaPage() {
                   <TextField
                     placeholder='Minimal gaji'
                     variant='standard'
-                    name="Range.min"
+                    name="range_gaji.min"
                     value={formData.range_gaji?.min}
                     onChange={(e) => {
                       setFormData({
@@ -292,9 +293,6 @@ export default function AddLowonganKerjaPage() {
                     className='text-black text-sm font-base p-2'
                   />
                 </div>
-                {errors?.range_gaji?.min?._errors?.length > 0 && errors.range_gaji.min._errors.map((msg: string, i: number) => (
-                  <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
-                ))}
                 <Typography variant="body1" sx={{ fontWeight: 600 }} >--</Typography>
                 <div className="flex flex-row gap-x-4 items-baseline">
                   <p className='text-lg text-black'>Rp</p>
@@ -313,7 +311,7 @@ export default function AddLowonganKerjaPage() {
                     className='focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2'
                   />
                 </div>
-                {errors?.range_gaji?.max?.message?.length > 0 && errors.range_gaji.max.message.map((msg: string, i: number) => (
+                {(errors?.range_gaji?.max?.message?.length > 0 || errors?.range_gaji?.min?.message?.length > 0) && errors.range_gaji.max.message.map((msg: string, i: number) => (
                   <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
                 ))}
               </Box>

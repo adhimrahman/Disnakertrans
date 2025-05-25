@@ -19,8 +19,8 @@ export default function UpdateKontenLowonganPage() {
     deskripsi: "",
     gambar_sampul: "",
     alamat: "",
-    batas_lowongan: "",
-    range_gaji: { max: 0, min: 0 },
+    tenggat_lowongan: "",
+    range_gaji: { max: "0", min: "0" },
     tipe: [],
     syarat: [],
     perusahaan: "",
@@ -47,16 +47,16 @@ export default function UpdateKontenLowonganPage() {
           nama_lowongan: data.nama_lowongan,
           gambar_sampul: data.gambar_sampul as string,
           deskripsi: data.deskripsi,
-          batas_lowongan: data.batas_lowongn as string,
+          tenggat_lowongan: data.tenggat_lowongan as string,
           range_gaji: {
-            max: data.Range?.max ?? 0,
-            min: data.Range?.min ?? 0
+            max: String(data.range_gaji?.max) ?? 0,
+            min: String(data.range_gaji?.min) ?? 0
           },
-          tipe: data.Tipe,
-          syarat: data.Syarat,
-          perusahaan: data.Perusahaan,
-          alamat: data.Alamat,
-          link_lowongan: data.LinkLowongan,
+          tipe: data.tipe,
+          syarat: data.syarat,
+          perusahaan: data.perusahaan,
+          alamat: data.alamat,
+          link_lowongan: data.link_lowongan,
           link_konten: data.link_konten
         });
       }
@@ -112,7 +112,7 @@ export default function UpdateKontenLowonganPage() {
     if (newSyarat.trim() !== "") {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        Syarat: [...prevFormData.syarat ?? [], newSyarat.trim()]
+        syarat: [...prevFormData.syarat ?? [], newSyarat.trim()]
       }));
       setNewSyarat(""); // Clear input field after adding
     }
@@ -121,13 +121,12 @@ export default function UpdateKontenLowonganPage() {
   const handleRemoveSyarat = (index: number) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      Syarat: prevFormData.syarat?.filter((_, i) => i !== index)
+      syarat: prevFormData.syarat?.filter((_, i) => i !== index)
     }));
   };
   
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    
     setFormData(prevFormData => {
       const newTipe = checked
         ? [...prevFormData.tipe ?? [], name] // Add the selected type to the array
@@ -135,7 +134,7 @@ export default function UpdateKontenLowonganPage() {
     
       return {
         ...prevFormData,
-        Tipe: newTipe,
+        tipe: newTipe,
       };
     });
   };
@@ -146,7 +145,7 @@ export default function UpdateKontenLowonganPage() {
 
     const newFormData = {
       ...formData,
-      ImageSampul: previews.gambar_sampul || formData.gambar_sampul ||"",
+      gambar_sampul: previews.gambar_sampul || formData.gambar_sampul ||"",
     }
 
     const result = updateLowonganSchema.safeParse(newFormData);
@@ -230,6 +229,7 @@ export default function UpdateKontenLowonganPage() {
                 }}>
                   Pilih File
                   <input
+                    name="gambar_sampul"
                     type="file" accept="image/*"
                     onChange={(e) => handleFileChange(e, 'gambar_sampul')}
                     hidden
@@ -286,14 +286,14 @@ export default function UpdateKontenLowonganPage() {
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Batas Lowongan</Typography>
               <input
                 type="date"
-                value={formData.batas_lowongan || ""}
+                value={formData.tenggat_lowongan || ""}
                 onChange={(e) => {
                   const newDate = e.target.value;
-                  setFormData({ ...formData, batas_lowongan: newDate });
+                  setFormData({ ...formData, tenggat_lowongan: newDate });
                 }}
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.batas_llowongan?._errors?.length > 0 && errors.batas_llowongan._errors.map((msg: string, i: number) => (
+              {errors?.tenggat_lowongan?._errors?.length > 0 && errors.tenggat_lowongan._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -304,15 +304,15 @@ export default function UpdateKontenLowonganPage() {
                   <p className='text-lg text-black'>Rp</p>
                   <TextField
                     variant='standard'
-                    name="range.min"
+                    name="range_gaji.min"
                     value={formData.range_gaji?.min || 0}
                     onChange={(e) => {
                       setFormData({
                         ...formData,
                         range_gaji: {
                           ...formData.range_gaji,
-                          max: formData.range_gaji?.max ?? 0,
-                          min: Number(e.target.value) ?? 0
+                          min: String(e.target.value) ?? 0,
+                          max: String(formData.range_gaji?.max) ?? 0
                         }
                       });
                     }}
@@ -336,8 +336,8 @@ export default function UpdateKontenLowonganPage() {
                         ...formData,
                         range_gaji: {
                           ...formData.range_gaji,
-                          min: formData.range_gaji?.min ?? 0,
-                          max: Number(e.target.value) ?? 0
+                          min: String(formData.range_gaji?.min) ?? 0,
+                          max: String(e.target.value) ?? 0
                         }
                       });
                     }}
@@ -376,6 +376,7 @@ export default function UpdateKontenLowonganPage() {
                 <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
                   <TextField
                     placeholder='Tuliskan syarat pekerjaan disini'
+                    name='syarat'
                     fullWidth
                     value={newSyarat}
                     onChange={handleSyaratChange}

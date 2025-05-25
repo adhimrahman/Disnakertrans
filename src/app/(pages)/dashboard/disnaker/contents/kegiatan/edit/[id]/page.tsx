@@ -126,7 +126,6 @@ export default function UpdateKontenKegiatanPage() {
             Tambah Konten Kegiatan
           </Typography>
         </Box>
-        
         <Box component="form" onSubmit={handleSubmit} sx={{ 
           p: 3, 
           display: 'flex', 
@@ -141,7 +140,7 @@ export default function UpdateKontenKegiatanPage() {
               </Typography>
               <TextField
                 placeholder='Tuliskan judul konten kegiatan disini'
-                name="Judul"
+                name="judul"
                 value={formData.judul || ""}
                 onChange={handleChange}
                 fullWidth
@@ -164,7 +163,7 @@ export default function UpdateKontenKegiatanPage() {
               </Typography>
               <TextField
                 placeholder='Tuliskan deskripsi pekerjaan disini'
-                name="Deskripsi"
+                name="deskripsi"
                 value={formData.deskripsi || ""}
                 onChange={handleChange}
                 fullWidth
@@ -182,9 +181,7 @@ export default function UpdateKontenKegiatanPage() {
               ))}
             </Box>
           </Stack>
-
           <Divider sx={{ my: 1 }} />
-
           {/* Gambar Sampul */}
           <Box>
             <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}>
@@ -215,13 +212,12 @@ export default function UpdateKontenKegiatanPage() {
                 Pilih File
                 <input
                   type="file"
-                  name='ImageSampul'
+                  name='gambar_sampul'
                   accept="image/*"
                   onChange={(e) => handleFileChange(e, 'gambar_sampul')}
                   hidden
                 />
               </Button>
-
               <Box sx={{ 
                 display: 'flex', 
                 alignItems: 'center', 
@@ -251,7 +247,6 @@ export default function UpdateKontenKegiatanPage() {
               )}
             </Box>
           </Box>
-
           {/* Gambar Kegiatan */}
           <Box>
             <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}>
@@ -288,7 +283,6 @@ export default function UpdateKontenKegiatanPage() {
                   hidden
                 />
               </Button>
-
               <Box sx={{ 
                 display: 'flex', 
                 alignItems: 'center', 
@@ -318,9 +312,7 @@ export default function UpdateKontenKegiatanPage() {
             )}
             </Box>
           </Box>
-
           <Divider sx={{ my: 1 }} />
-
           {/* Submit Button */}
           <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
             <Button

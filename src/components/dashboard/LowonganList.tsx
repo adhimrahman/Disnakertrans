@@ -21,19 +21,17 @@ export default function LowonganList({ lowongan, pageSize = 10 }: LowonganListPr
 
   return (
     <>
-      <table className="min-w-full table-auto">
+      <table className="min-w-full table-auto shadow-md">
         <thead className="bg-gray-100 text-sm font-medium">
           <tr className="text-white bg-steelBlue">
             <th className="px-4 py-3 text-left">No</th>
             <th className="px-4 py-3 min-w-[180px] text-left">Nama Lowongan</th>
-            <th className="px-4 py-3 min-w-[180px] text-left">Perusahaan</th>
-            <th className="px-4 py-3 min-w-[180px] text-left">Batas Lowongan</th>
-            <th className="px-4 py-3 text-left min-w-[180px]">Tipe</th>
+            <th className="px-4 py-3 min-w-[120px] text-left">Perusahaan</th>
+            <th className="px-4 py-3 min-w-[140px] text-left">Batas Lowongan</th>
             <th className="px-4 py-3 text-left">Link Lowongan</th>
-            <th className="px-4 py-3 min-w-[180px] text-left">Tanggal Unggah</th>
+            <th className="px-4 py-3 min-w-[120px] text-left">Tanggal Unggah</th>
             <th className="px-4 py-3 text-left">Link Konten</th>
             <th className="px-4 py-3 text-left">Aksi</th>
-            <th className="px-4 py-3 text-left"></th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-500">
@@ -43,8 +41,7 @@ export default function LowonganList({ lowongan, pageSize = 10 }: LowonganListPr
                 <td className="px-4 py-3">{(currentPage - 1) * 10 + (index + 1)}</td>
                 <td className="px-4 py-3">{item.nama_lowongan || "Tidak ada"}</td>
                 <td className="px-4 py-3">{item.perusahaan || "Tidak ada"}</td>
-                <td className="px-4 py-3">{item.batas_lowongan || "Tidak ada"}</td>
-                <td className="px-4 py-3">{item.tipe.join(", ") || "Tidak ada"}</td>
+                <td className="px-4 py-3">{item.tenggat_lowongan || "Tidak ada"}</td>
                 <td className="px-4 py-3">
                   {item.link_lowongan ? (
                     <Link
@@ -63,7 +60,7 @@ export default function LowonganList({ lowongan, pageSize = 10 }: LowonganListPr
                     <span className="text-gray-500">Tidak ada</span>
                   )}
                 </td>
-                <td className="px-4 py-3">{item.tanggal_unggah}</td>
+                <td className="px-4 py-3">{item.created_at}</td>
                 <td className="px-4 py-3">
                   {item.link_konten ? (
                     <Link
@@ -97,7 +94,11 @@ export default function LowonganList({ lowongan, pageSize = 10 }: LowonganListPr
                     <button
                       type="button"
                       className="inline-flex items-center px-3 py-1.5 bg-red-50 border border-red-300 rounded-md font-medium text-red-700 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150 ease-in-out"
-                      onClick={() => deleteLowonganById(item.id)}
+                      onClick={() => {
+                        deleteLowonganById(item.id).then(() => {
+                          window.location.reload();
+                        });
+                      }}
                     >
                       <IoTrash className="w-4 h-4 mr-1"/>
                       Hapus
