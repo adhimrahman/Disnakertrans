@@ -21,7 +21,7 @@ export default function KegiatanList({ kegiatan, pageSize = 10 }: KegiatanListPr
   
   return (
     <>
-      <table className="min-w-full table-auto">
+      <table className="min-w-full table-auto shadow-md">
         <thead className="bg-gray-100 text-sm font-medium">
           <tr>
             <th className="px-4 py-3 text-left text-white bg-steelBlue">No</th>
@@ -36,12 +36,12 @@ export default function KegiatanList({ kegiatan, pageSize = 10 }: KegiatanListPr
             visibleRow.map((item, index) => (
               <tr key={item.id} className="hover:bg-blue-50 font-medium transition-colors duration-150 ease-in-out">
                 <td className="px-4 py-3 text-sm text-gray-800 font-medium">{(currentPage - 1) * 10 + (index + 1)}</td>
-                <td className="px-4 py-3 text-sm text-gray-800 font-medium">{item.judul}</td>
-                <td className="px-4 py-3 text-sm text-gray-800">{item.created_at}</td>
+                <td className="px-4 py-3 text-sm text-gray-800 font-medium">{item.judul || "Tidak ada"}</td>
+                <td className="px-4 py-3 text-sm text-gray-800">{item.created_at || "Tidak ada"}</td>
                 <td className="px-4 py-3 text-sm">
                   {item.link ? (
                     <Link
-                      href={item.link || ""}
+                      href={item.link || "Tidak ada"}
                       className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
                       target="_blank" 
                       rel="noopener noreferrer"
@@ -71,7 +71,11 @@ export default function KegiatanList({ kegiatan, pageSize = 10 }: KegiatanListPr
                     <button
                       type="button"
                       className="inline-flex items-center px-3 py-1.5 bg-red-50 border border-red-300 rounded-md font-medium text-red-700 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150 ease-in-out"
-                      onClick={() => deleteKegiatanById(item.id)}
+                      onClick={() => {
+                        deleteKegiatanById(item.id).then(() => {
+                          window.location.reload();
+                        });
+                      }}
                     >
                       <IoTrash className="w-4 h-4 mr-1"/>
                       Hapus

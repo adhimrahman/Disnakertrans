@@ -24,17 +24,15 @@ export default async function KegiatanDashboardPage({ searchParams }: KegiatanDa
   : await getKegiatanByDateAndSort(sort, order);
 
   return (
-    <>
-      <div className="flex flex-row justify-between items-center">
-        <SearchSortControls
-          sortOptions={[
-            { value: "created_at", label: "Tanggal" },
-            { value: "judul", label: "Judul" },
-          ]}
-        />
-      </div>
+    <div className="flex flex-col gap-y-4 bg-white rounded-md p-4">
+      <SearchSortControls
+        sortOptions={[
+          { value: "created_at", label: "Tanggal" },
+          { value: "judul", label: "Judul" },
+        ]}
+      />
       <span className="px-3" />
       <KegiatanList kegiatan={kegiatan} />
-    </>
+    </div>
   );
 }

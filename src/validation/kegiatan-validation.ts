@@ -1,8 +1,8 @@
 import { z } from "zod";
 
 export const createKegiatanSchema = z.object({
-  judul: z.string().min(3, "Judul harus diisi").max(30, "Judul maksimal 30 karakter"),
-  deskripsi: z.string().min(3, "Deskripsi harus diisi").max(1000, "Deskripsi maksimal 1000 karakter"),
+  judul: z.string().nonempty("Judul harus diisi").min(3, "Judul harus jelas").max(30, "Judul maksimal 30 karakter"),
+  deskripsi: z.string().nonempty("Deskripsi harus diisi").min(3, "Deskripsi harus jelas").max(1000, "Deskripsi maksimal 1000 karakter"),
   gambar_sampul: z.string().url("Gambar Sampul harus diisi"),
   gambar_kegiatan: z.string().url("Gambar Kegiatan harus diisi"),
 });

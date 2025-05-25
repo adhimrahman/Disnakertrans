@@ -15,7 +15,7 @@ export default async function LowonganDashboardPage ({ searchParams }: LowonganD
   const resolvedSearchParams = await searchParams; // await it here
   const {
     search = '',
-    sort = 'tanggal_unggah',
+    sort = 'created_at',
     order = 'asc',
   } = resolvedSearchParams || {};
 
@@ -24,17 +24,16 @@ export default async function LowonganDashboardPage ({ searchParams }: LowonganD
   : await getLowonganByDateAndSort(sort, order);
   
   return (
-    <>
+    <div className="min-w-full flex flex-col gap-y-4 bg-white rounded-md p-4">
       <SearchSortControls
         sortOptions={[
-          { value: "nama_lowongan", label: "Nama Lowongan" },
-          { value: "batas_lowongan", label: "Batas Lowongan" },
-          { value: "tanggal_unggah", label: "Tanggal Unggah" },
+          { value: "tenggat_lowongan", label: "Batas Lowongan" },
+          { value: "created_at", label: "Tanggal Unggah" },
           { value: "perusahaan", label: "Perusahaan" },
         ]}
       />
       <span className="px-3" />
       <LowonganList lowongan={lowongan} />
-    </>
+    </div>
   );
 }

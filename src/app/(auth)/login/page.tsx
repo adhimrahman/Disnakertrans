@@ -46,43 +46,11 @@ export default function LoginPage() {
 							</button>
 						</div>
 
-<<<<<<< HEAD
-      if (docSnap.exists()) {
-        const userData = docSnap.data();
-        if (userData.role === "disnaker") {
-          setShowSuccess(true); // Show success message after successful login
-          setTimeout(() => {
-            router.push("/dashboard/disnaker");
-          }, 3000); // Delay navigation by 3 seconds
-        } else if (userData.role === "lpk") {
-          const lpkId = userData.lpkId; // Ambil lpkId dari data pengguna
-          if (!lpkId) {
-            setError("ID LPK tidak ditemukan.");
-            return;
-          }
-          setShowSuccess(true); // Show success message after successful login
-          setTimeout(() => {
-            router.push(`/dashboard/lpk/${lpkId}`);
-          }, 5000); // Delay navigation by 5 seconds
-        } else {
-          setError("Role tidak valid.");
-        }
-      } else {
-        setError("Data pengguna tidak ditemukan.");
-      }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      console.error("Login error", err.message);
-      setError("Email atau password salah.");
-    }
-  };
-=======
 						<div className="text-center">
 							<Image src="/images/Logo.png" alt="Logo" width={60} height={60} className="mx-auto mb-2 pb-2" />
 							<h2 className="text-2xl lg:text-3xl font-bold text-gray-100">Masuk ke Akun Anda</h2>
 							<p className="text-sm text-gray-100">Admin Disnaker & LPK Gowa</p>
 						</div>
->>>>>>> 819afce2ced0aed825c6934e67b559df9d1774cc
 
 						<LoginForm />
 						<ToastContainer position="top-right" autoClose={3000} />
