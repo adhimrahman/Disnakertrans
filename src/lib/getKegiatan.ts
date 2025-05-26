@@ -9,6 +9,8 @@ export type KegiatanItem = {
     ImageSampul: string;
 	Tanggal?: string;
     ImageDesc?: string;
+    Created?: string;
+    Updated?: string;
 };
 
 export const getKegiatan = cache(async (): Promise<KegiatanItem[]> => {
@@ -17,10 +19,11 @@ export const getKegiatan = cache(async (): Promise<KegiatanItem[]> => {
         const docData = doc.data();
         return {
             id: doc.id,
-            Judul: docData.Judul ?? "Tidak ada Judul",
-            Deskripsi: docData.Deskripsi ?? "Tidak ada Deskripsi",
-            ImageSampul: docData.ImageSampul ?? "/images/placeholder.jpg",
-            Tanggal: docData.Tanggal?.toDate().toISOString() ?? "",
+            Judul: docData.judul ?? "Tidak ada Judul",
+            Deskripsi: docData.deskripsi ?? "Tidak ada Deskripsi",
+            ImageSampul: docData.gambar_sampul ?? "/images/placeholder.jpg",
+            Created: docData.created_at?.toDate().toISOString() ?? "",
+            Updated: docData.updated_at?.toDate().toISOString() ?? "",
         };
     });
     return data;

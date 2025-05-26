@@ -11,12 +11,15 @@ import ContactHighlight from "@/components/ui/ContactHightlight";
 import InfografisSection from "@/components/Home/InfografisSection";
 import HeroCarousel from "@/components/Home/Carousel";
 import CustomButton from "@/components/ui/CustomButton";
+import { getKegiatan } from "@/lib/getKegiatan";
 
 import kami from "../../public/images/kami.jpg"
 import Job1 from "../../public/images/Job1.png"
 import Job2 from "../../public/images/Job2.png"
 
-export default function HomePage() {
+export default async function HomePage() {
+	const kegiatan = await getKegiatan();
+
 	return (
 		<div className="min-h-screen">
 			<Navbar />
@@ -60,7 +63,7 @@ export default function HomePage() {
 				</div>
 			</section>
 
-			<Kegiatan />
+			<Kegiatan kegiatan={kegiatan} />
 
 			<Lowongan />
 			
