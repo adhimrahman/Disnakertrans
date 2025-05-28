@@ -17,7 +17,7 @@ export async function getLowonganById(id: string): Promise<LowonganItem | null> 
 			min: docData.range_gaji?.min ?? 0,
 			max: docData.range_gaji?.max ?? 0,
 		},
-		Alamat: docData.Alamat ?? "Tidak ada Alamat",
+		Alamat: docData.alamat ?? "Tidak ada Alamat",
 		ImageSampul: docData.gambar_sampul ?? "/images/placeholder.jpg",
 		Deskripsi: docData.deskripsi ?? "Tidak ada Deskripsi",
 		Syarat: docData.syarat ?? ["null"],
