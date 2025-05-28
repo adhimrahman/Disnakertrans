@@ -46,7 +46,7 @@ export default function LowonganDetail({ lowongan, semuaLowongan }: Props) {
                 <ol className="list-reset flex">
                     <li><Link href="/" className="hover:underline text-blue-600 capitalize">Beranda</Link></li>
                     <li><span className="mx-2">/</span></li>
-                    <li><Link href="/lowongan" className="hover:underline text-blue-600 capitalize">Lowongan</Link></li>
+                    <li><Link href="/lapangan-kerja" className="hover:underline text-blue-600 capitalize">Lowongan</Link></li>
                     <li><span className="mx-2">/</span></li>
                     <li className="text-black line-clamp-1 capitalize" title={lowongan?.Judul ?? "Judul Lowongan"}>
                         {lowongan?.Judul ?? "Judul Lowongan"}
