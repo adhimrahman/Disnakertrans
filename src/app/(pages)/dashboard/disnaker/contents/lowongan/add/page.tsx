@@ -1,41 +1,42 @@
 'use client';
 
-import { collection, getDocs, setDoc, doc, Timestamp } from 'firebase/firestore';
-import { db } from '@/firebase/config';
 import Form from 'next/form';
 import React, { useState } from 'react';
 import { TextField, Button, Card, Container, Divider, CircularProgress, Typography, Box, Stack } from '@mui/material';
 import { IoTrash } from "react-icons/io5";
 import { GoPlus } from "react-icons/go";
-import { Lowongan } from '@/models/Lowongan';
+// import { Lowongan } from '@/models/Lowongan';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useRouter } from 'next/navigation';
+import { createLowonganFormData, createLowonganSchema } from '@/validation/lowongan-validation';
+import { addLowongan } from '@/firebase/utils/lowongan-service';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import Image from 'next/image';
+// import { Timestamp } from 'firebase/firestore';
 
 export default function AddLowonganKerjaPage() {
-  const docRef = collection(db, "lowongan");
-  const [formData, setFormData] = useState<Lowongan>({
-    Judul: "",
+  const [formData, setFormData] = useState<createLowonganFormData>({
+    judul: "",
     nama_lowongan: "",
-    BatasLowongan: null,
-    LinkLowongan: "",
-    Tipe: [],
-    Deskripsi: "",
-    Perusahaan: "",
-    Alamat: "",
-    Syarat: [],
-    Range: {
-      min: 0,
-      max: 0,
+    tenggat_lowongan: "",
+    link_lowongan: "",
+    tipe: ["Tetap"],
+    deskripsi: "",
+    perusahaan: "",
+    alamat: "",
+    syarat: [],
+    range_gaji: {
+      max: "0",
+      min: "0"
     },
-    tanggal_unggah: null,
-    link_konten: null,
-    ImageSampul: "",
-    isDelete: false
+    gambar_sampul: "",
   });
 
-  const [errors, setErrors] = useState<Partial<Lowongan>>({});
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [errors, setErrors] = useState<Record<string, any>>({});
   const [newSyarat, setNewSyarat] = useState<string>("");
-  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [files, setFiles] = useState<{ gambar_sampul?: File}>({});
+  const [previews, setPreviews] = useState<{ gambar_sampul?: string}>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const router = useRouter();
 
@@ -47,43 +48,30 @@ export default function AddLowonganKerjaPage() {
     });
     setErrors({
       ...errors,
-      [name]: "",
+      [name]: { _errors: [] },
     });
+
+    setErrors({});
   };
 
-    const handleImageUpload = async (
-      e: React.ChangeEvent<HTMLInputElement>,
-      field: 'ImageSampul'
-    ) => {
-      const file = e.target.files?.[0];
-      if (!file) return;
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'gambar_sampul') => {
+    const file = e.target.files?.[0];
+    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
+    if (file && file.size > MAX_FILE_SIZE) {
+      alert("Ukuran file terlalu besar. Maksimum 2 MB.");
+      return;
+    }
   
-      setIsUploading(true);
-  
-      const formDataImg = new FormData();
-      formDataImg.append('file', file);
-      formDataImg.append('upload_preset', 'kegiatan_upload'); // <- Ganti dengan Upload Preset Anda
-      formDataImg.append('cloud_name', 'dsqgrzcgb'); // <- Ganti dengan Cloud Name Anda
-  
-      try {
-        const res = await fetch('https://api.cloudinary.com/v1_1/dsqgrzcgb/image/upload', {
-          method: 'POST',
-          body: formDataImg,
-        });
-  
-        const data = await res.json();
-        if (data.secure_url) {
-          setFormData((prev) => ({
-            ...prev,
-            [field]: data.secure_url,
-          }));
-        }
-      } catch (error) {
-        console.error("Upload error:", error);
-      } finally {
-        setIsUploading(false);
-      }
-    };
+    if (file) {
+      setFiles(prev => ({ ...prev, [field]: file }));
+      setPreviews(prev => ({ ...prev, [field]: URL.createObjectURL(file) }));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setErrors((prev: any) => ({
+        ...prev,
+        [field]: { _errors: [] },  // clear error properly
+      }));
+    }
+  };  
 
   const handleSyaratChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewSyarat(e.target.value);
@@ -93,7 +81,7 @@ export default function AddLowonganKerjaPage() {
     if (newSyarat.trim() !== "") {
       setFormData((prevFormData) => ({
         ...prevFormData,
-        Syarat: [...prevFormData.Syarat, newSyarat.trim()]
+        syarat: [...prevFormData.syarat ?? [], newSyarat.trim()]
       }));
       setNewSyarat(""); // Clear input field after adding
     }
@@ -102,131 +90,91 @@ export default function AddLowonganKerjaPage() {
   const handleRemoveSyarat = (index: number) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      Syarat: prevFormData.Syarat.filter((_, i) => i !== index)
+      syarat: prevFormData.syarat?.filter((_, i) => i !== index)
     }));
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-  
+
     setFormData(prevFormData => {
-      const newTipe = checked
-        ? [...prevFormData.Tipe, name] // Add the selected type to the array
-        : prevFormData.Tipe.filter((item) => item !== name); // Remove it if unchecked
-  
+      const newType = checked
+        ? [...(prevFormData.tipe ?? []), name]
+        : (prevFormData.tipe ?? []).filter(item => item !== name);
+
+      if (newType.length === 0) {
+        // Jangan update state jadi kosong jika tidak diinginkan
+        return prevFormData;
+      }
+
       return {
         ...prevFormData,
-        Tipe: newTipe,
+        tipe: newType as [string, ...string[]], // pakai assertion
       };
     });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-
     e.preventDefault();
     setIsSubmitting(true);
-    setIsUploading(true);
-
-    const newErrors: any = {};
     
-    if (!formData.Judul) newErrors.Judul = "Judul harus diisi";
-    if (!formData.nama_lowongan) newErrors.nama_lowongan = "Nama lowongan harus diisi";
-    if (!formData.Deskripsi) newErrors.Deskripsi = "Deskripsi harus diisi";
-    if (!formData.BatasLowongan) {
-      newErrors.BatasLowongan = "Batas lowongan harus diisi"
-    };
-    if (!formData.Perusahaan) newErrors.Perusahaan = "Nama perusahaan harus diisi";
-    if (!formData.Alamat) newErrors.Alamat = "Alamat perusahaan harus diisi";
-    if (!formData.LinkLowongan) newErrors.LinkLowongan = "Link lowongan harus diisi";
-    if (formData.Tipe.length === 0) newErrors.Tipe = "Pilih minimal satu tipe pekerjaan";
-    if (formData.Syarat.length === 0) newErrors.Syarat = "Minimal satu syarat harus diisi";
-    if (!formData.Range?.min) newErrors.Range = { ...(newErrors.Range || {}), min: "Gaji minimum harus diisi" };
-    if (!formData.Range?.max) newErrors.Range = { ...(newErrors.Range || {}), max: "Gaji maksimum harus diisi" };
-    
-    let batasLowonganTimestamp: Timestamp | null = null;
-    if (formData.BatasLowongan instanceof Timestamp) {
-      batasLowonganTimestamp = formData.BatasLowongan;
-    }
-    else if (typeof formData.BatasLowongan === "string") {
-      const parsedDate = new Date(formData.BatasLowongan);
-      if (!isNaN(parsedDate.getTime())) { 
-        batasLowonganTimestamp = Timestamp.fromDate(parsedDate);
-      } else {
-        newErrors.BatasLowongan = "Format tanggal batas lowongan tidak valid";
-      }
+    const newFormData = {
+      ...formData,
+      gambar_sampul: previews.gambar_sampul || "",
+      range_gaji: {max: formData.range_gaji?.max || 0, min: formData.range_gaji?.min || 0}
     }
 
-    setErrors(newErrors);
-    
-    if (Object.keys(newErrors).length > 0) {
-      console.error("Form validation failed. Errors:", newErrors);
-      setIsSubmitting(false);
-      setIsUploading(false);
-      return;
+    const result = createLowonganSchema.safeParse(newFormData);
+    if (!result.success) {
+      setErrors(result.error.format());
+    } else {
+      setErrors({});
     }
-      
+
     try {
-      const lowonganSnapshot = await getDocs(docRef);
-      let new_id = 1;
-
-      if (!lowonganSnapshot.empty) {
-        const maxId = lowonganSnapshot.docs.reduce((max, doc) => {
-          const idNumber = parseInt(doc.id.replace("lowongan_", ""), 10);
-          return idNumber > max ? idNumber : max;
-        }, 0);
-        new_id = maxId + 1;
+      const success = await addLowongan(formData, files);
+      if (success) {
+        alert("Konten Lowongan Berhasil Ditambahkan");
+        router.push("/dashboard/disnaker/contents/lowongan");
       }
-
-      const data = {
-        ...formData,
-        BatasLowongan: batasLowonganTimestamp,
-        // ImageSampul: null,
-        tanggal_unggah: Timestamp.now(),
-        isDelete: false
-      };
-
-      const docId = `lowongan_${new_id}`;
-      const newDocRef = doc(docRef, docId);
-      await setDoc(newDocRef, data);
-      alert("Konten Lowongan Berhasil Ditambahkan");
-      console.log("Form data:", formData);
-      router.push("/dashboard/disnaker/contents/lowongan");
+      else {
+        alert("Konten Lowongan Gagal Ditambahkan! Mohon periksa kembali.");
+      }
     } catch (e) {
-      if (e instanceof Error) {
-        console.error("Error adding document:", e.message);
-      } else {
-        console.error("Unknown error occurred", e);
-      }
+      alert("Terjadi kesalahan saat menyimpan data.");
+      console.error("Error adding document:", e);
     } finally {
       setIsSubmitting(false);
-      setIsUploading(false);
     }
   };  
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Card elevation={1} sx={{ borderRadius: 2, overflow: 'hidden' }}>
-        <Box sx={{ bgcolor: 'primary.main', color: 'white', py: 2, px: 3 }}>
+        <Box className='bg-steelBlue flex justify-between items-center' sx={{ color: 'white', py: 2, px: 3 }} >
           <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>
             Tambah Lowongan Kerja
           </Typography>
         </Box>
-        <Form action="" onSubmit={handleSubmit} style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <Form action="" onSubmit={handleSubmit} style={{
+          padding: 24, display: 'flex', flexDirection: 'column', gap: 24
+        }}>
           <Stack spacing={3}>
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Judul Konten</Typography>
               <TextField
                 placeholder='Tuliskan judul konten lowongan disini'
-                name="Judul"
-                value={formData.Judul}
+                name="judul"
+                value={formData.judul}
                 onChange={handleChange}
-                error={!!errors.Judul}
-                helperText={errors.Judul}
                 fullWidth
                 variant="outlined"
                 size="medium"
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5 } }}
+                className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
+              {errors?.judul?._errors?.length > 0 && errors.judul._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
             </Box>
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Nama Pekerjaan</Typography>
@@ -235,29 +183,60 @@ export default function AddLowonganKerjaPage() {
                 name="nama_lowongan"
                 value={formData.nama_lowongan}
                 onChange={handleChange}
-                error={!!errors.nama_lowongan}
-                helperText={errors.nama_lowongan}
                 fullWidth
                 variant="outlined"
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5 } }}
+                className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-darkBlue focus:ring-2 focus:ring-steelBlue text-black text-sm font-base p-2 shadow-xl'
               />
+              {errors?.nama_lowongan?._errors?.length > 0 && errors.nama_lowongan._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
             </Box>
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}>Gambar Sampul</Typography>
-              <Box sx={{ border: '1px dashed', borderColor: errors.ImageSampul ? 'error.main' : 'divider', p: 3, borderRadius: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: 'background.paper' }}>
-                <Button variant="outlined" component="label" startIcon={<CloudUploadIcon />} sx={{ textTransform: 'none', px: 3, py: 1.5, borderRadius: 1.5, mb: 2 }}>
+              <Box sx={{
+                border: '1px dashed', borderColor: errors.ImageSampul ? 'error.main' : 'divider',
+                p: 3, borderRadius: 2, display: 'flex', flexDirection: 'column',
+                alignItems: 'center', bgcolor: 'background.paper'
+              }}>
+                <Button variant="outlined" component="label" startIcon={<CloudUploadIcon />} sx={{
+                  textTransform: 'none', px: 3, py: 1.5, borderRadius: 1.5, mb: 2
+                }}>
                   Pilih File
-                  <input type="file" accept="image/*" onChange={(e) => handleImageUpload(e, 'ImageSampul')} hidden />
+                  <input
+                    type="file"
+                    name='gambar_sampul'
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, 'gambar_sampul')}
+                    hidden
+                    className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
+                  />
                 </Button>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: formData.ImageSampul ? 'success.main' : 'text.secondary' }}>
-                  {formData.ImageSampul ? (
-                    <Typography variant="body2">Gambar Sampul telah diupload!</Typography>
-                  ) : (
-                    <Typography variant="body2">Belum ada gambar yang diunggah</Typography>
-                  )}
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  color: formData.gambar_sampul ? 'success.main' : 'text.secondary'
+                }}>
+                  {previews.gambar_sampul ? (
+                  <div className='flex flex-col gap-y-3 items-center'>
+                    <Image src={previews.gambar_sampul} alt="Preview Gambar Sampul" width={200} height={150} />
+                    <div className='flex flex-row items-center gap-x-2'>
+                      <CheckCircleOutlineIcon fontSize="small"  className='text-green-600'/>
+                      <Typography variant="body2">
+                        Gambar Sampul telah diupload!
+                      </Typography>
+                    </div>
+                  </div>
+                ) : (
+                  <Typography variant="body2">
+                    Belum ada gambar yang diunggah
+                  </Typography>
+                )}
                 </Box>
-                {!!errors.ImageSampul && (
-                  <Typography variant="caption" color="error" sx={{ mt: 1 }}>{errors.ImageSampul}</Typography>
+                {errors?.gambar_sampul?._errors.length > 0 && (
+                  <Typography variant="caption" color="error" className='text-md text-red-700'>
+                    {errors.gambar_sampul._errors[0]}
+                  </Typography>
                 )}
               </Box>
             </Box>
@@ -265,63 +244,76 @@ export default function AddLowonganKerjaPage() {
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Deskripsi Pekerjaan</Typography>
               <TextField
                 placeholder='Tuliskan deskripsi pekerjaan disini'
-                name="Deskripsi"
-                value={formData.Deskripsi}
+                name="deskripsi"
+                value={formData.deskripsi}
                 onChange={handleChange}
-                error={!!errors.Deskripsi}
-                helperText={errors.Deskripsi}
                 fullWidth
                 multiline
-                rows={4}
+                rows={8}
                 variant="outlined"
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5 } }}
+                className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
+              {errors?.deskripsi?._errors?.length > 0 && errors.deskripsi._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
             </Box>
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Batas Lowongan</Typography>
               <input
+                name="tenggat_lowongan"
                 type="date"
-                value={formData.BatasLowongan instanceof Timestamp ? formData.BatasLowongan.toDate().toISOString().split("T")[0] : formData.BatasLowongan || ""}
+                value={formData.tenggat_lowongan}
                 onChange={(e) => {
-                  const newDate = e.target.value ? Timestamp.fromDate(new Date(e.target.value)) : null;
-                  setFormData({ ...formData, BatasLowongan: newDate });
+                  const newDate = e.target.value;
+                  setFormData({ ...formData, tenggat_lowongan: newDate });
                 }}
-                className='w-40 rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-black focus:ring-2 focus:ring-blue-500 text-black text-sm font-base p-2 shadow-xl'
+                className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {!!errors.BatasLowongan && typeof errors.BatasLowongan === 'string' && (
-                <Typography variant="caption" color="error" sx={{ mt: 1 }}>{errors.BatasLowongan}</Typography>
-              )}
+              {errors?.tenggat_lowongan?._errors?.length > 0 && errors.tenggat_lowongan._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
             </Box>
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Range Gaji</Typography>
               <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3, alignItems: 'center' }}>
-                <TextField
-                  placeholder='Minimum'
-                  variant='standard'
-                  name="Range.min"
-                  value={formData.Range?.min || ''}
-                  onChange={(e) => {
-                    setFormData({ ...formData, Range: { ...formData.Range, min: parseInt(e.target.value) } });
-                  }}
-                  error={!!errors.Range?.min}
-                  helperText={errors.Range?.min}
-                  required
-                  sx={{ minWidth: 120 }}
-                />
-                <Typography variant="body1" sx={{ fontWeight: 600 }}>-</Typography>
-                <TextField
-                  placeholder='Maksimum'
-                  variant='standard'
-                  name="Range.max"
-                  value={formData.Range?.max || ''}
-                  onChange={(e) => {
-                    setFormData({ ...formData, Range: { ...formData.Range, max: parseInt(e.target.value) } });
-                  }}
-                  error={!!errors.Range?.max}
-                  helperText={errors.Range?.max}
-                  required
-                  sx={{ minWidth: 120 }}
-                />
+                <div className="flex flex-row gap-x-4 items-baseline">
+                  <p className='text-lg text-black'>Rp</p>
+                  <TextField
+                    placeholder='Minimal gaji'
+                    variant='standard'
+                    name="range_gaji.min"
+                    value={formData.range_gaji?.min}
+                    onChange={(e) => {
+                      setFormData({
+                        ...formData,
+                        range_gaji: { ...formData.range_gaji, min: e.target.value }
+                      });
+                    }}
+                    sx={{ minWidth: 120 }}
+                    className='text-black text-sm font-base p-2'
+                  />
+                </div>
+                <Typography variant="body1" sx={{ fontWeight: 600 }} >--</Typography>
+                <div className="flex flex-row gap-x-4 items-baseline">
+                  <p className='text-lg text-black'>Rp</p>
+                  <TextField
+                    placeholder='Maksimal gaji'
+                    variant='standard'
+                    name="range_gaji.max"
+                    value={formData.range_gaji?.max}
+                    onChange={(e) => {
+                      setFormData({
+                        ...formData,
+                        range_gaji: { ...formData.range_gaji, max: e.target.value }
+                      });
+                    }}
+                    sx={{ minWidth: 120 }}
+                    className='focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2'
+                  />
+                </div>
+                {(errors?.range_gaji?.max?.message?.length > 0 || errors?.range_gaji?.min?.message?.length > 0) && errors.range_gaji.max.message.map((msg: string, i: number) => (
+                  <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+                ))}
               </Box>
             </Box>
             <Box>
@@ -332,16 +324,16 @@ export default function AddLowonganKerjaPage() {
                     <input
                       type="checkbox"
                       name={type}
-                      checked={formData.Tipe.includes(type)}
+                      checked={formData.tipe?.includes(type)}
                       onChange={handleCheckboxChange}
                     />
                     <Typography variant="body2">{type}</Typography>
                   </Box>
                 ))}
               </Box>
-              {!!errors.Tipe && (
-                <Typography variant="caption" color="error" sx={{ mt: 1 }}>{errors.Tipe}</Typography>
-              )}
+              {errors?.tipe?._errors?.length > 0 && errors.tipe?._errors.map((msg: string, i: number) => (
+                  <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
             </Box>
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Syarat Pekerjaan</Typography>
@@ -349,16 +341,17 @@ export default function AddLowonganKerjaPage() {
                 <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2 }}>
                   <TextField
                     placeholder='Tuliskan syarat pekerjaan disini'
+                    fullWidth
                     value={newSyarat}
                     onChange={handleSyaratChange}
-                    sx={{ minWidth: 200 }}
+                    className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
                   />
                   <Button variant="contained" color="primary" onClick={handleAddSyarat} sx={{ alignSelf: 'center' }}>
                     <GoPlus className='w-6 h-6'/>
                   </Button>
                 </Box>
                 <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
-                  {formData.Syarat.map((syarat, index) => (
+                  {formData.syarat?.map((syarat, index) => (
                     <li key={index} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 }}>
                       <Typography variant="body2" sx={{ ml: 1 }}>{syarat}</Typography>
                       <Button variant='contained' color='error' onClick={() => handleRemoveSyarat(index)} sx={{ ml: 2, minWidth: 0, p: 1 }}>
@@ -367,8 +360,8 @@ export default function AddLowonganKerjaPage() {
                     </li>
                   ))}
                 </ul>
-                {!!errors.Syarat && (
-                  <Typography variant="caption" color="error" sx={{ mt: 1 }}>{errors.Syarat}</Typography>
+                {!!errors.syarat && (
+                  <Typography variant="caption" color="error" sx={{ mt: 1 }}>{errors.syarat}</Typography>
                 )}
               </Box>
             </Box>
@@ -376,44 +369,47 @@ export default function AddLowonganKerjaPage() {
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Nama Perusahaan</Typography>
               <TextField
                 placeholder='Tuliskan nama perusahaan disini'
-                name="Perusahaan"
-                value={formData.Perusahaan}
+                name="perusahaan"
+                value={formData.perusahaan}
                 onChange={handleChange}
-                error={!!errors.Perusahaan}
-                helperText={errors.Perusahaan}
                 fullWidth
                 variant="outlined"
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5 } }}
+                className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
+              {errors?.perusahaan?._errors?.length > 0 && errors.perusahaan._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
             </Box>
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Alamat Perusahaan</Typography>
               <TextField
                 placeholder='Tuliskan alamat pekerjaan disini'
-                name="Alamat"
-                value={formData.Alamat}
+                name="alamat"
+                value={formData.alamat}
                 onChange={handleChange}
-                error={!!errors.Alamat}
-                helperText={errors.Alamat}
                 fullWidth
                 variant="outlined"
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5 } }}
+                className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
+              {errors?.alamat?._errors?.length > 0 && errors.alamat._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
             </Box>
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Link resmi lowongan pekerjaan</Typography>
               <TextField
                 placeholder='Tuliskan link resmi informasi lowongan disini'
                 type='url'
-                name="LinkLowongan"
-                value={formData.LinkLowongan}
+                name="link_lowongan"
+                value={formData.link_lowongan}
                 onChange={handleChange}
-                error={!!errors.LinkLowongan}
-                helperText={errors.LinkLowongan}
                 fullWidth
                 variant="outlined"
-                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 1.5 } }}
+                className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
+              {errors?.link_lowongan?._errors?.length > 0 && errors.link_lowongan._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
             </Box>
           </Stack>
           <Divider sx={{ my: 2 }} />
@@ -422,9 +418,9 @@ export default function AddLowonganKerjaPage() {
               type="submit"
               variant="contained"
               color="primary"
-              disabled={isSubmitting || isUploading}
+              disabled={isSubmitting}
               sx={{ minWidth: '150px', py: 1.5, px: 4, borderRadius: 1.5, textTransform: 'uppercase', fontWeight: 'bold' }}
-              startIcon={isSubmitting || isUploading ? <CircularProgress size={20} color="inherit" /> : null}
+              startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
             >
               {isSubmitting ? 'Mengirim...' : 'SUBMIT'}
             </Button>
