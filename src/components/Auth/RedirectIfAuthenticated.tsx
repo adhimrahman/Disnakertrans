@@ -31,5 +31,9 @@ export default function RedirectIfAuthenticated({ children }: { children: React.
 
 	if (checking) return null;
 
-	return <>{children}</>;
+	return (
+		<>
+			{children}
+		</>
+	);
 }
