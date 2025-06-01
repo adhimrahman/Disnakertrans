@@ -17,7 +17,6 @@ export interface Lowongan {
   syarat: string[];
   created_at?: string;
   tipe: string[];
-  is_deleted: boolean;
    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
@@ -31,5 +30,4 @@ export interface LowonganItem {
   link_lowongan: string;
   created_at: string;
   tipe: string[];
-  is_deleted: boolean;
 }

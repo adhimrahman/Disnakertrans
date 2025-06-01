@@ -2,9 +2,10 @@
 
 import {
   collection, getDocs, Timestamp,
-  updateDoc, where, query, doc, orderBy,
+  updateDoc, query, doc, orderBy,
   QueryDocumentSnapshot, limit, startAfter,
-  getDoc, addDoc, 
+  getDoc, addDoc,
+  deleteDoc, 
 } from "firebase/firestore"
 import { db } from "../config"
 import { Validation } from "@/validation/validation";
@@ -29,7 +30,6 @@ export async function addKegiatan (formData: createKegiatanFormData, files: { ga
       deskripsi: validatedData.deskripsi,
       gambar_sampul: validatedData.gambar_sampul,
       gambar_kegiatan: validatedData.gambar_kegiatan,
-      is_deleted: false,
       created_at: Timestamp.now(),
       updated_at: Timestamp.now()
     });
@@ -47,8 +47,7 @@ export async function addKegiatan (formData: createKegiatanFormData, files: { ga
 
 export async function getKegiatan (): Promise<KegiatanItem[]> {
   const collectionRef = collection(db, "kegiatan");
-  const q = query(collectionRef, where("is_deleted", "==", false));
-  const kegiatanCollectionSnapshot = await getDocs(q);
+  const kegiatanCollectionSnapshot = await getDocs(collectionRef);
 
   const kegiatanList = kegiatanCollectionSnapshot.docs.map((doc) => {
     const data = doc.data();
@@ -67,7 +66,6 @@ export async function getKegiatan (): Promise<KegiatanItem[]> {
       gambar_sampul: data.gambar_sampul, // may be undefined or convert accordingly
       gambar_kegiatan: data.gambar_kegiatan,
       link: data.link || '',
-      is_deleted: data.is_deleted ?? true,
       created_at: tanggalStr,
     }
   });
@@ -95,7 +93,6 @@ export async function getKegiatanById (id: string): Promise<KegiatanItem | null>
     gambar_sampul: data.gambar_sampul, // may be undefined or convert accordingly
     gambar_kegiatan: data.gambar_kegiatan,
     link: data.link ?? '',
-    is_deleted: data.is_deleted ?? true,
     created_at: tanggalStr,
   }
 };
@@ -133,7 +130,7 @@ export async function deleteKegiatanById (kegiatan_id: string) {
   const validatedData = Validation.validate(getKegiatanSchema, kegiatan_id);
   const docRef = doc(db, "kegiatan", validatedData);
 
-  await updateDoc(docRef, { is_deleted: true });
+  await deleteDoc(docRef);
 }
 
 export async function getKegiatanByDateAndSort(
@@ -141,9 +138,7 @@ export async function getKegiatanByDateAndSort(
   sortOrder: "asc" | "desc" = "asc"
 ): Promise<KegiatanItem[]> {
   const collectionRef = collection(db, "kegiatan");
-
-  let q = query(collectionRef, where("is_deleted", "==", false));
-  q = query(q, orderBy(sortField as string, sortOrder));
+  const q = query(collectionRef, orderBy(sortField as string, sortOrder));
 
   const snapshot = await getDocs(q);
 
@@ -163,7 +158,6 @@ export async function getKegiatanByDateAndSort(
       gambar_sampul: data.gambar_sampul,
       gambar_kegiatan: data.gambar_kegiatan,
       link: data.link ?? '',
-      is_deleted: data.is_deleted ?? true,
       created_at: tanggalStr,
     };
   });
@@ -194,7 +188,7 @@ export async function fetchPage(pageNumber: number, pageSize: number) {
   // Store the first document snapshot of each page
   const pageCursors: QueryDocumentSnapshot[] = [];
   const collectionRef = collection(db, "kegiatan");
-  let q = query(collectionRef, where("is_deleted", "==", false), orderBy("judul"));
+  let q = query(collectionRef, orderBy("judul"));
 
   if (pageNumber === 1) {
     q = query(q, limit(pageSize));
@@ -225,7 +219,6 @@ export async function fetchPage(pageNumber: number, pageSize: number) {
       gambar_sampul: data.gambar_sampul,
       gambar_kegiatan: data.gambar_kegiatan,
       link: data.link ?? '',
-      is_deleted: data.is_deleted ?? true,
       created_at: tanggalStr,
     };
   });
