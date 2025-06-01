@@ -6,6 +6,7 @@ import { auth, db } from "@/firebase/config";
 import { doc, getDoc } from "firebase/firestore";
 import Modal from "react-modal";
 import { handleLogout } from "@/lib/auth";
+import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 type ProtectedRouteProps = {
     children: React.ReactNode;
@@ -16,7 +17,6 @@ type ProtectedRouteProps = {
 const ProtectedRoute = ({ children, expectedRole, checkLpkId = false }: ProtectedRouteProps) => {
     const router = useRouter();
     const params = useParams();
-    // const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -74,7 +74,7 @@ const ProtectedRoute = ({ children, expectedRole, checkLpkId = false }: Protecte
     }
 
     if (isAuthorized === null) {
-        return <div className="text-white">Loading...</div>;
+        return <LoadingSpinner />;
     }
 
     if (isAuthorized === false) {
@@ -100,6 +100,6 @@ const ProtectedRoute = ({ children, expectedRole, checkLpkId = false }: Protecte
         );
     }
     return <>{children}</>;
-}
+};
 
 export default ProtectedRoute;

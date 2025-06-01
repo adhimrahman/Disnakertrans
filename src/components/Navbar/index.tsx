@@ -22,7 +22,7 @@ export default function Header() {
             </button>
 
             <nav className={`w-full lg:w-auto ${isOpen ? "block" : "hidden"} capitalize lg:flex lg:justify-center lg:items-center space-y-6 lg:space-y-0 lg:space-x-11 mt-4 lg:mt-0 pb-5 lg:pb-0`} >
-                <Link href="/" className="block lg:inline-block text-white hover:underline hover:font-semibold hover:cursor-pointer mt-1">
+                <Link href="/" className="block lg:inline-block text-white hover:underline hover:font-semibold hover:cursor-pointer">
                     Home
                 </Link>
                 <Link href="/kegiatan" className="block lg:inline-block text-white hover:underline hover:font-semibold hover:cursor-pointer">

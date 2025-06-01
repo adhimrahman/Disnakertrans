@@ -2,9 +2,10 @@
 
 import {
   collection, getDocs, Timestamp,
-  updateDoc, where, query, doc, orderBy,
+  updateDoc, query, doc, orderBy,
   QueryDocumentSnapshot, limit, startAfter,
-  getDoc, addDoc, 
+  getDoc, addDoc,
+  deleteDoc, 
 } from "firebase/firestore"
 import { db } from "../config"
 import { Validation } from "@/validation/validation";
@@ -44,7 +45,6 @@ export async function addLowongan(formData: createLowonganFormData, files: { gam
       gambar_sampul: validateData.gambar_sampul,
       created_at: Timestamp.now(),
       updated_at: Timestamp.now(),
-      is_deleted: false
     });
 
     const docRef = doc(db, "lowongan", result.id);
@@ -60,8 +60,7 @@ export async function addLowongan(formData: createLowonganFormData, files: { gam
 
 export async function getLowongan(): Promise<Partial<LowonganItem[]>> {
   const collectionRef = collection(db, "lowongan");
-  const q = query(collectionRef, where("is_deleted", "==", false));
-  const lowonganCollectionSnapshot = await getDocs(q);
+  const lowonganCollectionSnapshot = await getDocs(collectionRef);
 
   const lowonganList = lowonganCollectionSnapshot.docs.map((doc) => {
     const data = doc.data();
@@ -85,7 +84,6 @@ export async function getLowongan(): Promise<Partial<LowonganItem[]>> {
       nama_lowongan: data.nama_lowongan ?? '',
       link_lowongan: data.link_lowongan ?? '',
       link_konten: data.link_konten ?? '',
-      is_deleted: data.is_deleted ?? true,
       tenggat_lowongan: batasStr ?? '',
       perusahaan: data.perusahaan ?? '',
       created_at: tanggalStr ?? '',
@@ -171,7 +169,7 @@ export async function updateLowongan (formData: Partial<Lowongan>, files: { gamb
 export async function deleteLowonganById (lowongan_id: string) {
   const validateId = Validation.validate(getLowonganSchema, lowongan_id);
   const docRef = doc(db, "lowongan", validateId);
-  await updateDoc(docRef, { is_deleted: true });
+  await deleteDoc(docRef);
 };
 
 export async function getLowonganByDateAndSort(
@@ -180,8 +178,7 @@ export async function getLowonganByDateAndSort(
 ): Promise<LowonganItem[]> {
   const collectionRef = collection(db, "lowongan");
 
-  let q = query(collectionRef, where("is_deleted", "==", false));
-  q = query(q, orderBy(sortField as string, sortOrder));
+  const q = query(collectionRef, orderBy(sortField as string, sortOrder));
 
   const snapshot = await getDocs(q);
   return snapshot.docs.map((doc) => {
@@ -205,7 +202,6 @@ export async function getLowonganByDateAndSort(
       nama_lowongan: data.nama_lowongan ?? '',
       link_lowongan: data.link_lowongan ?? '',
       link_konten: data.link_konten ?? '',
-      is_deleted: data.is_deleted ?? true,
       tenggat_lowongan: batasStr ?? '',
       perusahaan: data.perusahaan ?? '',
       created_at: tanggalStr ?? '',
@@ -238,7 +234,7 @@ export async function getLowonganFilteredByJudulContains(
 export async function fetchLowonganPage (pageNumber: number, pageSize: number) {
   const pageCursors: QueryDocumentSnapshot[] = [];
   const collectionRef = collection(db, "lowongan");
-  let q = query(collectionRef, where("is_deleted", "==", false), orderBy("created_at"));
+  let q = query(collectionRef, orderBy("created_at"));
 
   if (pageNumber === 1) {
     q = query(q, limit(pageSize));
@@ -273,7 +269,6 @@ export async function fetchLowonganPage (pageNumber: number, pageSize: number) {
       nama_lowongan: data.nama_lowongan ?? '',
       link_lowongan: data.link_lowongan ?? '',
       link_konten: data.link_konten ?? '',
-      is_deleted: data.is_deleted ?? true,
       tenggat_lowongan: batasStr ?? '',
       perusahaan: data.perusahaan ?? '',
       created_at: tanggalStr ?? '',

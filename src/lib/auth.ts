@@ -12,7 +12,7 @@ export async function handleLogin(email: string, password: string) {
     if (!docSnap.exists()) throw new Error("User data not found");
 
     await updateDoc(docRef, {
-        lastAccess: serverTimestamp(),
+        akses_terakhir: serverTimestamp(),
     });
 
     return { user, userData: docSnap.data() };

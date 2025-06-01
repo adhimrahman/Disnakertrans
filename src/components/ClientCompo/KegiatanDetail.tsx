@@ -54,7 +54,7 @@ export default function KegiatanDetail({ kegiatan, semuaKegiatan }: Props) {
 					</h1>
 
 					<p className="text-sm text-gray-500 mb-6 py-2">
-						📅 {formatTanggal(kegiatan.Tanggal)}
+						📅 {formatTanggal(kegiatan.Created)}
 					</p>
 
 					<div className="relative w-full h-64 md:h-[420px] mb-8 rounded-xl overflow-hidden shadow-sm">
@@ -136,7 +136,7 @@ export default function KegiatanDetail({ kegiatan, semuaKegiatan }: Props) {
 										{item.Deskripsi}
 									</p>
 									<p className="text-xs text-gray-400 mt-2">
-										{formatTanggal(item.Tanggal)}
+										{formatTanggal(item.Created)}
 									</p>
 								</div>
 							</Link>
