@@ -5,8 +5,9 @@ import Link from "next/link";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Kegiatan from "@/components/home/Kegiatan";
-import Lowongan from "@/components/home/Lowongan";
+import Kegiatan from "@/components/Home/Kegiatan";
+import Lowongan from "@/components/Home/Lowongan";
+import Pelatihan from "@/components/Home/Pelatihan"
 import ContactHighlight from "@/components/ui/ContactHightlight";
 import InfografisSection from "@/components/home/InfografisSection";
 import HeroCarousel from "@/components/home/Carousel";
@@ -16,9 +17,11 @@ import { getKegiatan } from "@/lib/getKegiatan";
 import kami from "../../public/images/kami.jpg"
 import Job1 from "../../public/images/Job1.png"
 import Job2 from "../../public/images/Job2.png"
+import { getPelatihan } from "@/lib/getPelatihan";
 
 export default async function HomePage() {
 	const kegiatan = await getKegiatan();
+	const pelatihan = await getPelatihan();
 
 	return (
 		<div className="min-h-screen">
@@ -65,8 +68,10 @@ export default async function HomePage() {
 
 				<Kegiatan kegiatan={kegiatan} />
 
-				<Lowongan />
-			
+			  <Pelatihan pelatihan={pelatihan} />
+
+			  <Lowongan />
+        
 				<InfografisSection />
 			
 				<section className="py-20 bg-gray-50">

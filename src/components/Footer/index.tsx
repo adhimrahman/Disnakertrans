@@ -17,7 +17,7 @@ export default function Footer() {
 							<Image src={Logo} alt="Logo" className="w-16 lg:w-20 h-16 lg:h-20 object-contain" />
 						</div>
 						
-						<p className="text-lg font-bold mb-4">DINAS KETENAGAKERJAAN <br /> DAN TRANSMIGRASI GOWA</p>
+						<p className="text-lg font-bold mb-4 uppercase">DINAS KETENAGAKERJAAN <br /> DAN TRANSMIGRASI GOWA</p>
 
 						<div className="flex space-x-6 mt-4">
 							<Link href="https://www.facebook.com/people/Disnakertrasn-Gowa/100068958707988/" target="_blank" rel="noopener noreferrer">

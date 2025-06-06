@@ -7,6 +7,7 @@ import { doc, getDoc } from "firebase/firestore";
 import Modal from "react-modal";
 import { handleLogout } from "@/lib/auth";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
+import CustomButton from "@/components/ui/CustomButton";
 
 type ProtectedRouteProps = {
     children: React.ReactNode;
@@ -88,12 +89,8 @@ const ProtectedRoute = ({ children, expectedRole, checkLpkId = false }: Protecte
                     Untuk mengakses halaman ini, Anda harus Re-Login / Logout terlebih dahulu.
                 </p>
                 <div className="flex justify-between pr-3">
-                    <button onClick={handleRedirect} className="bg-red-500 text-white px-6 py-2 rounded-lg mt-4 cursor-pointer">
-                        Kembali
-                    </button>
-                    <button onClick={handleLogoutClick} className="bg-red-500 text-white px-6 py-2 rounded-lg mt-4 cursor-pointer">
-                        Logout
-                    </button>
+                    <CustomButton text="Kembali" variant="red" px={6} onClick={handleRedirect} />
+                    <CustomButton text="Logout" variant="red" px={6} onClick={handleLogoutClick} />
                 </div>
             </div>
         </Modal>
