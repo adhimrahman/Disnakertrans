@@ -2,7 +2,7 @@
 
 // import { useState } from "react"
 import { BsBriefcaseFill } from "react-icons/bs";
-import Card from "@/components/Dashboard/Card"
+import Card from "@/components/dashboard/Card"
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { collection, where, query, DocumentData, getDocs, orderBy } from "firebase/firestore";
