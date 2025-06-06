@@ -11,6 +11,7 @@ export type KegiatanItem = {
     ImageDesc?: string;
     Created?: string;
     Updated?: string;
+    TanggalKegiatan?: string;
 };
 
 export const getKegiatan = cache(async (): Promise<KegiatanItem[]> => {
@@ -24,6 +25,7 @@ export const getKegiatan = cache(async (): Promise<KegiatanItem[]> => {
             ImageSampul: docData.gambar_sampul ?? "/images/placeholder.jpg",
             Created: docData.created_at?.toDate().toISOString() ?? "",
             Updated: docData.updated_at?.toDate().toISOString() ?? "",
+            TanggalKegiatan: docData.tanggal_kegiatan?.toDate().toISOString() ?? "",
         };
     });
     return data;

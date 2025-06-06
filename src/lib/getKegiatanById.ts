@@ -15,6 +15,7 @@ export async function getKegiatanById(id: string): Promise<KegiatanItem | null> 
         ImageSampul: docData.gambar_sampul ?? "/images/placeholder.jpg",
         ImageDesc: docData.gambar_kegiatan ?? "/images/placeholder.jpg",
         Created: docData.created_at?.toDate().toISOString() ?? "",
-        Updated: docData.updated_at.toDate().toISOString() ?? "",
+        Updated: docData.updated_at?.toDate().toISOString() ?? "",
+        TanggalKegiatan: docData.tanggal_kegiatan?.toDate().toISOString() ?? "",
     };
 }
