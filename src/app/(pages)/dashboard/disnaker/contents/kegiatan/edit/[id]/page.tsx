@@ -8,19 +8,21 @@ import { getKegiatanById, updateKegiatan } from '@/firebase/utils/kegiatan-servi
 import { updateKegiatanFormData, updateKegiatanSchema } from '@/validation/kegiatan-validation';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
+import { uploadKegiatanImage } from '@/firebase/uploadToStorage';
 
 export default function UpdateKontenKegiatanPage() {
   const [formData, setFormData] = useState<Partial<updateKegiatanFormData>>({
     judul: "",
     deskripsi: "",
     gambar_sampul: "",
-    gambar_kegiatan: "",
+    tanggal_kegiatan: "",
+    gambar_kegiatan: [],
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setErrors] = useState<Record<string, any>>({});
-  const [files, setFiles] = useState<{ gambar_sampul?: File; gambar_kegiatan?: File }>({});
-  const [previews, setPreviews] = useState<{ gambar_sampul?: string; gambar_kegiatan?: string }>({});
+  const [files, setFiles] = useState<{ gambar_sampul?: File; gambar_kegiatan?: File[] }>({});
+  const [previews, setPreviews] = useState<{ gambar_sampul?: string; gambar_kegiatan?: string[] }>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { id } = useParams();
   const router = useRouter();
@@ -34,7 +36,8 @@ export default function UpdateKontenKegiatanPage() {
           judul: data.judul,
           deskripsi: data.deskripsi,
           gambar_sampul: data.gambar_sampul as string,
-          gambar_kegiatan: data.gambar_kegiatan as string
+          gambar_kegiatan: data.gambar_kegiatan as Array<string>,
+          tanggal_kegiatan: data.tanggal_kegiatan as string,
         });
       }
     }
@@ -42,11 +45,16 @@ export default function UpdateKontenKegiatanPage() {
   }, [id]);
 
   useEffect(() => {
-  return () => {
-    if (previews.gambar_sampul) URL.revokeObjectURL(previews.gambar_sampul);
-    if (previews.gambar_kegiatan) URL.revokeObjectURL(previews.gambar_kegiatan);
-  };
-}, [previews]);
+    return () => {
+      if (previews.gambar_sampul) {
+        URL.revokeObjectURL(previews.gambar_sampul);
+      }
+
+      if (Array.isArray(previews.gambar_kegiatan)) {
+        previews.gambar_kegiatan.forEach(url => URL.revokeObjectURL(url));
+      }
+    };
+  }, [previews]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -63,44 +71,78 @@ export default function UpdateKontenKegiatanPage() {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'gambar_sampul' | 'gambar_kegiatan') => {
-    const file = e.target.files?.[0];
-    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
+    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+    if (field === 'gambar_kegiatan') {
+      const filesArray = Array.from(e.target.files || []);
+      if (filesArray.length > 5) {
+        alert('Maksimal 5 gambar kegiatan.');
+        return;
+      }
 
-    if (file && file.size > MAX_FILE_SIZE) {
-      alert("Ukuran file terlalu besar. Maksimum 2 MB.");
-      return;
-    }
+      for (const file of filesArray) {
+        if (file.size > MAX_FILE_SIZE) {
+          alert(`File ${file.name} terlalu besar (maks 2MB).`);
+          return;
+        }
+      }
 
-    if (file) {
-      setFiles(prev => ({ ...prev, [field]: file }));
-      setPreviews(prev => ({ ...prev, [field]: URL.createObjectURL(file) }));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setErrors((prev: any) => ({
-      ...prev,
-      [field]: { _errors: [] },  // clear error properly
-    }));
+      setFiles(prev => ({ ...prev, gambar_kegiatan: filesArray }));
+      setPreviews(prev => ({
+        ...prev,
+        gambar_kegiatan: filesArray.map(file => URL.createObjectURL(file)),
+      }));
+      setErrors(prev => ({
+        ...prev,
+        gambar_kegiatan: { _errors: [] },
+      }));
+    } else {
+      const file = e.target.files?.[0];
+      if (file && file.size > MAX_FILE_SIZE) {
+        alert("Ukuran file terlalu besar. Maksimum 2 MB.");
+        return;
+      }
+      if (file) {
+        setFiles(prev => ({ ...prev, [field]: file }));
+        setPreviews(prev => ({ ...prev, [field]: URL.createObjectURL(file) }));
+        setErrors(prev => ({
+          ...prev,
+          [field]: { _errors: [] },
+        }));
+      }
     }
-  };  
+  };
+  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const newFormData = {
-      ...formData,
-      gambar_sampul: previews.gambar_sampul || formData.gambar_sampul ||"",
-      gambar_kegiatan: previews.gambar_kegiatan || formData.gambar_kegiatan ||""
-    }
-
-    const result = updateKegiatanSchema.safeParse(newFormData);
-    if (!result.success) {
-      setErrors(result.error.format());
-    } else {
-      setErrors({});
-    }
-
     try {
-      const success = await updateKegiatan(formData, files);
+      const newFormData = { ...formData };
+
+      // upload sampul jika diganti
+      if (files.gambar_sampul) {
+        const uploaded = await uploadKegiatanImage(files.gambar_sampul);
+        if (typeof uploaded === "string") {
+          newFormData.gambar_sampul = uploaded;
+        }
+      }
+
+      // upload gambar kegiatan jika ada yang diganti
+      if (files.gambar_kegiatan && files.gambar_kegiatan.length > 0) {
+        const uploaded = await uploadKegiatanImage(files.gambar_kegiatan);
+        if (Array.isArray(uploaded)) {
+          newFormData.gambar_kegiatan = uploaded;
+        }
+      }
+
+      const result = updateKegiatanSchema.safeParse(newFormData);
+      if (!result.success) {
+        setErrors(result.error.format());
+        return;
+      }
+
+      const success = await updateKegiatan(newFormData, {}); // sudah tidak butuh files
       if (success) {
         alert("Kegiatan berhasil diperbarui!");
         router.push("/dashboard/disnaker/contents/kegiatan");
@@ -109,14 +151,15 @@ export default function UpdateKontenKegiatanPage() {
       }
     } catch (e) {
       alert("Terjadi kesalahan saat memperbarui data.");
-      console.error("Error adding document:", e);
+      console.error("Error updating document:", e);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const imageSampulSrc = previews.gambar_sampul || formData.gambar_sampul || "";
-  const imageKegiatanSrc = previews.gambar_kegiatan || formData.gambar_kegiatan || "";
+  const imageKegiatanSrc = previews.gambar_kegiatan || (Array.isArray(formData.gambar_kegiatan) ? formData.gambar_kegiatan : []);
+
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
@@ -177,6 +220,21 @@ export default function UpdateKontenKegiatanPage() {
                 }}
               />
               {errors?.Deskripsi?._errors?.length > 0 && errors.Deskripsi._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
+            </Box>
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>
+                Tanggal Kegiatan
+              </Typography>
+              <input
+                name='tanggal_kegiatan'
+                value={formData.tanggal_kegiatan}
+                onChange={handleChange}
+                type="date"
+                className="w-full p-2 border border-gray-300 rounded-md"
+              />
+              {errors?.tanggal_kegiatan?._errors?.length > 0 && errors.tanggal_kegiatan._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -276,9 +334,10 @@ export default function UpdateKontenKegiatanPage() {
               >
                 Pilih File
                 <input
-                  name='gambar_deskripsi'
+                  name='gambar_kegiatan'
                   type="file"
                   accept="image/*"
+                  multiple
                   onChange={(e) => handleFileChange(e, 'gambar_kegiatan')}
                   hidden
                 />
@@ -289,15 +348,14 @@ export default function UpdateKontenKegiatanPage() {
                 gap: 1,
                 color: formData.gambar_kegiatan ? 'success.main' : 'text.secondary'
               }}>
-                {(previews.gambar_kegiatan || formData.gambar_kegiatan) ? (
-                  <div className='flex flex-col gap-y-3 items-center'>
-                    <Image src={imageKegiatanSrc} alt="Preview Gambar Sampul" width={200} height={150} />
-                    <div className='flex flex-row items-center gap-x-2'>
-                      <CheckCircleOutlineIcon fontSize="small"  className='text-green-600'/>
-                      <Typography variant="body2">
-                        Gambar Kegiatan telah diupload!
-                      </Typography>
-                    </div>
+                {imageKegiatanSrc.length > 0 ? (
+                  <div className="flex flex-wrap justify-center gap-4">
+                    {imageKegiatanSrc.map((src, idx) => (
+                      <div key={idx} className="flex flex-col items-center">
+                        <Image src={src} alt={`Preview ${idx + 1}`} width={200} height={150} />
+                        <Typography variant="caption">Gambar {idx + 1}</Typography>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <Typography variant="body2" className='text-center text-red-600'>

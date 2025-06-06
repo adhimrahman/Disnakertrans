@@ -5,14 +5,12 @@ import React, { useState } from 'react';
 import { TextField, Button, Card, Container, Divider, CircularProgress, Typography, Box, Stack } from '@mui/material';
 import { IoTrash } from "react-icons/io5";
 import { GoPlus } from "react-icons/go";
-// import { Lowongan } from '@/models/Lowongan';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useRouter } from 'next/navigation';
 import { createLowonganFormData, createLowonganSchema } from '@/validation/lowongan-validation';
 import { addLowongan } from '@/firebase/utils/lowongan-service';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import Image from 'next/image';
-// import { Timestamp } from 'firebase/firestore';
 
 export default function AddLowonganKerjaPage() {
   const [formData, setFormData] = useState<createLowonganFormData>({
@@ -25,10 +23,8 @@ export default function AddLowonganKerjaPage() {
     perusahaan: "",
     alamat: "",
     syarat: [],
-    range_gaji: {
-      max: "0",
-      min: "0"
-    },
+    min_gaji: 0,
+    max_gaji: 0,
     gambar_sampul: "",
   });
 
@@ -121,7 +117,7 @@ export default function AddLowonganKerjaPage() {
     const newFormData = {
       ...formData,
       gambar_sampul: previews.gambar_sampul || "",
-      range_gaji: {max: formData.range_gaji?.max || 0, min: formData.range_gaji?.min || 0}
+      range_gaji: {max: formData.max_gaji || 0, min: formData.min_gaji || 0}
     }
 
     const result = createLowonganSchema.safeParse(newFormData);
@@ -267,13 +263,17 @@ export default function AddLowonganKerjaPage() {
                   const newDate = e.target.value;
                   setFormData({ ...formData, tenggat_lowongan: newDate });
                 }}
-                className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
+                className='w-full rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base px-2 py-3'
               />
               {errors?.tenggat_lowongan?._errors?.length > 0 && errors.tenggat_lowongan._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
-            <Box>
+            <Box sx={{
+              border: '1px solid #ccc', // warna abu-abu terang
+              borderRadius: 2,          // sudut rounded (opsional)
+              padding: 2                // padding isi Box (opsional)
+            }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Range Gaji</Typography>
               <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3, alignItems: 'center' }}>
                 <div className="flex flex-row gap-x-4 items-baseline">
@@ -281,14 +281,9 @@ export default function AddLowonganKerjaPage() {
                   <TextField
                     placeholder='Minimal gaji'
                     variant='standard'
-                    name="range_gaji.min"
-                    value={formData.range_gaji?.min}
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        range_gaji: { ...formData.range_gaji, min: e.target.value }
-                      });
-                    }}
+                    name="min_gaji"
+                    value={formData.min_gaji}
+                    onChange={handleChange}
                     sx={{ minWidth: 120 }}
                     className='text-black text-sm font-base p-2'
                   />
@@ -299,24 +294,37 @@ export default function AddLowonganKerjaPage() {
                   <TextField
                     placeholder='Maksimal gaji'
                     variant='standard'
-                    name="range_gaji.max"
-                    value={formData.range_gaji?.max}
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        range_gaji: { ...formData.range_gaji, max: e.target.value }
-                      });
-                    }}
+                    name="max_gaji"
+                    value={formData.max_gaji}
+                    onChange={handleChange}
                     sx={{ minWidth: 120 }}
                     className='focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2'
                   />
                 </div>
-                {(errors?.range_gaji?.max?.message?.length > 0 || errors?.range_gaji?.min?.message?.length > 0) && errors.range_gaji.max.message.map((msg: string, i: number) => (
-                  <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
-                ))}
               </Box>
             </Box>
-            <Box>
+              {(() => {
+                const minMsg = errors?.min_gaji?._errors?.[0];
+                const maxMsg = errors?.max_gaji?._errors?.[0];
+
+                // Hanya tampilkan satu jika sama
+                if (minMsg && minMsg === maxMsg) {
+                  return <p className='text-red-600 mt-2 text-sm text-right'>*{minMsg}</p>;
+                }
+
+                // Kalau berbeda, tampilkan keduanya
+                return (
+                  <>
+                    {minMsg && <p className='text-red-600 mt-2 text-sm text-right'>*{minMsg}</p>}
+                    {maxMsg && <p className='text-red-600 mt-2 text-sm text-right'>*{maxMsg}</p>}
+                  </>
+                );
+              })()}
+            <Box sx={{
+              border: '1px solid #ccc', // warna abu-abu terang
+              borderRadius: 2,          // sudut rounded (opsional)
+              padding: 2                // padding isi Box (opsional)
+            }}>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Tipe Pekerjaan</Typography>
               <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, flexWrap: 'wrap' }}>
                 {["Tetap", "Freelance", "Kontrak", "Paruh Waktu", "Magang"].map((type) => (
@@ -331,10 +339,10 @@ export default function AddLowonganKerjaPage() {
                   </Box>
                 ))}
               </Box>
-              {errors?.tipe?._errors?.length > 0 && errors.tipe?._errors.map((msg: string, i: number) => (
-                  <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
-              ))}
             </Box>
+            {errors?.tipe?._errors?.length > 0 && errors.tipe?._errors.map((msg: string, i: number) => (
+              <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+            ))}
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Syarat Pekerjaan</Typography>
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>

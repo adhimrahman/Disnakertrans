@@ -1,5 +1,3 @@
-// import { Timestamp } from "firebase/firestore";
-
 export interface Lowongan {
   alamat: string;
   tenggat_lowongan: string;
@@ -10,10 +8,8 @@ export interface Lowongan {
   link_lowongan: string;
   nama_lowongan: string;
   perusahaan: string;
-  range_gaji: {
-    min?: string;
-    max?: string;
-  };
+  max_gaji?: number;
+  min_gaji?: number;
   syarat: string[];
   created_at?: string;
   tipe: string[];
