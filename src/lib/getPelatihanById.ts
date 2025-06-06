@@ -1,8 +1,8 @@
 import { db } from "@/firebase/config";
 import { doc, getDoc } from "firebase/firestore";
-import { KegiatanItem } from "./getKegiatan"
+import { PelatihanItem } from "./getPelatihan"
 
-export async function getKegiatanById(id: string): Promise<KegiatanItem | null> {
+export async function getPelatihanById(id: string): Promise<PelatihanItem | null> {
     const docRef = doc(db, "kegiatan", id);
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) return null;

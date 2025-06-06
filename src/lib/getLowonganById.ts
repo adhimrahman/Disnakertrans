@@ -10,12 +10,12 @@ export async function getLowonganById(id: string): Promise<LowonganItem | null> 
     const docData = docSnap.data();
 	return {
 		id: docSnap.id,
-		Judul: docData.judul?? "Tidak ada Judul",
+		Judul: docData.judul ?? "Tidak ada Judul",
 		Perusahaan: docData.perusahaan ?? "Tidak ada Perusahaan",
 		Tipe: docData.tipe ?? ["no type"],
 		Range: {
-			min: docData.range_gaji?.min ?? 0,
-			max: docData.range_gaji?.max ?? 0,
+			min: docData.range_gaji.min ?? 0,
+			max: docData.range_gaji.max ?? 0,
 		},
 		Alamat: docData.alamat ?? "Tidak ada Alamat",
 		ImageSampul: docData.gambar_sampul ?? "/images/placeholder.jpg",

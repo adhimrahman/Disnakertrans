@@ -29,8 +29,8 @@ export const getLowongan = cache(async (): Promise<LowonganItem[]> => {
             Perusahaan: docData.perusahaan ?? "Tidak ada Perusahaan",
             Tipe: docData.tipe ?? ["no type"],
             Range: {
-                min: docData.range_gaji?.min ?? 0,
-                max: docData.range_gaji?.max ?? 0,
+                min: docData.range_gaji.min ?? 0,
+                max: docData.range_gaji.max ?? 0,
             },
             Alamat: docData.alamat ?? "Tidak ada Alamat",
             ImageSampul: docData.gambar_sampul ?? "/images/placeholder.jpg",
@@ -38,6 +38,8 @@ export const getLowongan = cache(async (): Promise<LowonganItem[]> => {
             Syarat: docData.syarat ?? ["null"],
             BatasLowongan: docData.tenggat_lowongan?.toDate().toISOString() ?? "null",
             LinkLowongan: docData.link_lowongan ?? "",
+            // created_at, link_konten, nama_lowongan, updated_at
+            // range_gaji max min
         }
     });
     return data;
