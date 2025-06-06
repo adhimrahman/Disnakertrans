@@ -35,7 +35,7 @@ export default function ForgotPasswordForm() {
 				/>
 			</div>
 
-			<CustomButton text="Kirim Link Reset" width="w-full" py={2} variant="blue" disabled={loading} />
+			<CustomButton text="Kirim Link Reset" width="w-full" py={3} variant="blue" disabled={loading} className="flex justify-center" />
 
 			<div className="text-center">
 				<Link href="/login" className="text-sm text-gray-100 hover:underline">Kembali ke Halaman Login</Link>
