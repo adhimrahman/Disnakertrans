@@ -39,8 +39,8 @@ export async function addLowongan(formData: createLowonganFormData, files: { gam
       tipe: validateData.tipe,
       syarat: validateData.syarat,
       range_gaji: {
-        max: validateData.range_gaji.max,
-        min: validateData.range_gaji.min
+        max: validateData.max_gaji,
+        min: validateData.min_gaji
       },
       gambar_sampul: validateData.gambar_sampul,
       created_at: Timestamp.now(),
@@ -150,8 +150,8 @@ export async function updateLowongan (formData: Partial<Lowongan>, files: { gamb
       tipe: validateData.tipe,
       syarat: validateData.syarat,
       range_gaji: {
-        max: Number(validateData.range_gaji?.max),
-        min: Number(validateData.range_gaji?.min)
+        max: validateData.max_gaji,
+        min: validateData.min_gaji
       },
       gambar_sampul: validateData.gambar_sampul,
       link_konten: validateData.link_konten,

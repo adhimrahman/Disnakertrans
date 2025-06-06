@@ -13,9 +13,9 @@ import { createKegiatanFormData, createKegiatanSchema, getKegiatanSchema, update
 import { uploadKegiatanImage } from "@/firebase/uploadToStorage";
 import { Kegiatan, KegiatanItem } from "@/models/Kegiatan";
 
-export async function addKegiatan (formData: createKegiatanFormData, files: { gambar_sampul?: File, gambar_kegiatan?: File }) {
+export async function addKegiatan (formData: createKegiatanFormData, files: { gambar_sampul?: File, gambar_kegiatan?: File[] }) {
   const gambarSampulUrl   = files.gambar_sampul ? await uploadKegiatanImage(files.gambar_sampul) : "";
-  const gambarKegiatanUrl = files.gambar_kegiatan ? await uploadKegiatanImage(files.gambar_kegiatan) : "";
+  const gambarKegiatanUrl = files.gambar_kegiatan ? await uploadKegiatanImage(files.gambar_kegiatan) : [];
 
   const collectionRef = collection(db, "kegiatan");
   const data = {
@@ -25,11 +25,16 @@ export async function addKegiatan (formData: createKegiatanFormData, files: { ga
   }
   try {
     const validatedData = Validation.validate(createKegiatanSchema, data);
+    const kegiatanDate = typeof validatedData.tanggal_kegiatan === 'string'
+      ? new Date(validatedData.tanggal_kegiatan)
+      : validatedData.tanggal_kegiatan;
+    
     const result = await addDoc(collectionRef, {
       judul: validatedData.judul,
       deskripsi: validatedData.deskripsi,
       gambar_sampul: validatedData.gambar_sampul,
       gambar_kegiatan: validatedData.gambar_kegiatan,
+      tanggal_kegiatan: Timestamp.fromDate(kegiatanDate),
       created_at: Timestamp.now(),
       updated_at: Timestamp.now()
     });
@@ -61,13 +66,13 @@ export async function getKegiatan (): Promise<KegiatanItem[]> {
     
     return {
       id: doc.id,
-      judul: data.judul || '',
-      deskripsi: data.deskripsi || '',
+      judul: data.judul ?? '',
+      deskripsi: data.deskripsi ?? '',
       gambar_sampul: data.gambar_sampul, // may be undefined or convert accordingly
       gambar_kegiatan: data.gambar_kegiatan,
-      link: data.link || '',
+      link: data.link ?? '',
       created_at: tanggalStr,
-    }
+    };
   });
 
   return kegiatanList;
@@ -79,12 +84,15 @@ export async function getKegiatanById (id: string): Promise<KegiatanItem | null>
   if (!kegiatanSnapshot.exists()) return null;
 
   const data = kegiatanSnapshot.data();
-  const tanggal = data.created_at;
-  const tanggalStr = tanggal?.toDate() ? tanggal.toDate().toLocaleDateString("id-ID", {
+  const created = data.created_at;
+  const createdStr = created?.toDate() ? created.toDate().toLocaleDateString("id-ID", {
         day: "2-digit",
         month: "short",
         year: "numeric",
   }) : null;
+
+  const tanggal = data.tanggal_kegiatan;
+  const tanggalStr = tanggal?.toDate()?.toISOString().substring(0, 10) ?? '';
 
   return {
     id: kegiatanSnapshot.id,
@@ -92,14 +100,15 @@ export async function getKegiatanById (id: string): Promise<KegiatanItem | null>
     deskripsi: data.deskripsi ?? '',
     gambar_sampul: data.gambar_sampul, // may be undefined or convert accordingly
     gambar_kegiatan: data.gambar_kegiatan,
+    tanggal_kegiatan: tanggalStr ?? '',
     link: data.link ?? '',
-    created_at: tanggalStr,
+    created_at: createdStr,
   }
 };
 
-export async function updateKegiatan(formData: Partial<Kegiatan>, files: { gambar_sampul?: File, gambar_kegiatan?: File }) {
+export async function updateKegiatan(formData: Partial<Kegiatan>, files: { gambar_sampul?: File, gambar_kegiatan?: File[] }) {
   const gambarSampulUrl = files.gambar_sampul ? await uploadKegiatanImage(files.gambar_sampul) : formData.gambar_sampul || "";
-  const gambarKegiatanUrl = files.gambar_kegiatan ? await uploadKegiatanImage(files.gambar_kegiatan) : formData.gambar_kegiatan || "";
+  const gambarKegiatanUrl = files.gambar_kegiatan ? await uploadKegiatanImage(files.gambar_kegiatan) : formData.gambar_kegiatan || [];
 
   const docRef = doc(db, "kegiatan", formData.id);
   const data = {
@@ -110,11 +119,16 @@ export async function updateKegiatan(formData: Partial<Kegiatan>, files: { gamba
   
   try {
     const validatedData = Validation.validate(updateKegiatanSchema, data);
+    const kegiatanDate = typeof validatedData.tanggal_kegiatan === 'string'
+      ? new Date(validatedData.tanggal_kegiatan)
+      : validatedData.tanggal_kegiatan;
+    
     const result = await updateDoc(docRef, {
       judul: validatedData.judul,
       deskripsi: validatedData.deskripsi,
       gambar_sampul: validatedData.gambar_sampul,
       gambar_kegiatan: validatedData.gambar_kegiatan,
+      tanggal_kegiatan: kegiatanDate ? Timestamp.fromDate(kegiatanDate) : undefined,
       updated_at: Timestamp.now()
     });
 
