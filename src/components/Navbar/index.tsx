@@ -12,8 +12,8 @@ export default function Header() {
 
     return (
         <header className="navbar fixed bg-darkBlue text-white w-full px-5 lg:px-9 py-2 lg:py-1 flex flex-wrap justify-between items-center z-50">
-            <div className="leftside logo sm:w-1/2 lg:w-1/4 flex items-center">
-                <Image src={Gowa} alt="Logo Pemerintahan Kab. Gowa" width={40} height={40} className="py-1"></Image>
+            <div className="leftside logo sm:w-1/2 lg:w-1/4 flex items-center py-1">
+                <Image src={Gowa} alt="Logo Pemerintahan Kab. Gowa" width={40} style={{ height: "57px" }}></Image>
                 <p className="pl-2 lg:pl-4 w uppercase font-semibold sm:text-xs text-sm lg:text-base">dinas ketenagakerjaan <br /> dan transmigrasi gowa</p>
              </div>
 
@@ -31,11 +31,15 @@ export default function Header() {
                 <Link href="/lapangan-kerja" className="block lg:inline-block text-white hover:underline hover:font-semibold hover:cursor-pointer">
                     Lowongan
                 </Link>
+                <Link href="/pelatihan" className="block lg:inline-block text-white hover:underline hover:font-semibold hover:cursor-pointer">
+                    Pelatihan
+                </Link>
                 <Link href="/contact-us" className="block lg:inline-block text-white hover:underline hover:font-semibold hover:cursor-pointer">
                     Contact Us
                 </Link>
                 <Link href="/login" passHref>
-                    <CustomButton text="Login" px={4} py={2} className=" lg:w-auto w-full" />
+                    {/* <CustomButton text="Login" px={4} py={2} className=" lg:w-auto w-full" /> */}
+                    <CustomButton px={4} py={2} text="Login" width="w-auto" />
                 </Link>
             </nav>
         </header>

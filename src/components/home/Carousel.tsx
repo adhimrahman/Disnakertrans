@@ -16,13 +16,13 @@ export default function HeroCarousel() {
             disableOnInteraction: false,
         }}>
             <SwiperSlide>
-                <Image src={Gambar} alt="Hero Gowa" className="w-full h-[350px] lg:h-[450px] object-cover lg:object-cover object-top mt-20 lg:mt-0" />
+                <Image src={Gambar} alt="Hero Gowa" className="w-full h-[350px] lg:h-[450px] object-cover lg:object-cover object-top mt-20 lg:mt-0" fill priority sizes="100vw" />
             </SwiperSlide>
             <SwiperSlide>
-                <Image src={Gambar6} alt="Pekerja Slide" className="w-full h-[350px] lg:h-[450px] object-cover lg:object-cover object-top mt-20 lg:mt-0" />
+                <Image src={Gambar6} alt="Pekerja Slide" className="w-full h-[350px] lg:h-[450px] object-cover lg:object-cover object-top mt-20 lg:mt-0" fill priority sizes="100vw" />
             </SwiperSlide>
             <SwiperSlide>
-                <Image src={Gambar7} alt="Job Info Slide" className="w-full h-[350px] lg:h-[450px] object-cover lg:object-cover object-top mt-20 lg:mt-0" />
+                <Image src={Gambar7} alt="Job Info Slide" className="w-full h-[350px] lg:h-[450px] object-cover lg:object-cover object-top mt-20 lg:mt-0" fill priority sizes="100vw" />
             </SwiperSlide>
         </Swiper>
     );

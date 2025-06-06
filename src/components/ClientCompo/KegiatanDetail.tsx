@@ -41,7 +41,7 @@ export default function KegiatanDetail({ kegiatan, semuaKegiatan }: Props) {
 						<li><Link href="/kegiatan" className="hover:underline text-blue-600 capitalize">Kegiatan</Link></li>
 						<li><span className="mx-2">/</span></li>
 						<li className="text-gray-800 line-clamp-1 capitalize" title={kegiatan?.Judul}>
-							{(kegiatan?.Judul ?? "").slice(0, 25)}
+							{(kegiatan?.Judul ?? "").slice(0, 99)}
 						</li>
 					</ol>
 				</nav>
@@ -54,15 +54,11 @@ export default function KegiatanDetail({ kegiatan, semuaKegiatan }: Props) {
 					</h1>
 
 					<p className="text-sm text-gray-500 mb-6 py-2">
-						📅 {formatTanggal(kegiatan.Created)}
+						📅 {formatTanggal(kegiatan.TanggalKegiatan)}
 					</p>
 
 					<div className="relative w-full h-64 md:h-[420px] mb-8 rounded-xl overflow-hidden shadow-sm">
-						{ kegiatan.ImageSampul ? (
-							<Image src={kegiatan.ImageSampul} alt={kegiatan.Judul} fill className="object-cover" />
-						) : (
-							<div className="w-full h-full bg-gray-200" />
-						)}
+						<Image src={kegiatan.ImageSampul} alt={kegiatan.Judul} fill className="object-cover" />
 					</div>
 
 					<article className="prose prose-lg prose-slate text-gray-900 max-w-none text-justify mb-10">
@@ -80,13 +76,12 @@ export default function KegiatanDetail({ kegiatan, semuaKegiatan }: Props) {
 						{kegiatanSebelumnya && (
 							<Link href={`/kegiatan/${kegiatanSebelumnya.id}`} className="flex gap-4 group hover:bg-gray-200 p-4 rounded-lg transition-all">
 								<div className="relative w-32 h-20 flex-shrink-0 rounded-md overflow-hidden">
-									{ kegiatanSebelumnya.ImageSampul ? (
-										<Image src={kegiatanSebelumnya.ImageSampul} alt={kegiatanSebelumnya.Judul} fill className="object-cover" />
-									) : <div className="w-full h-full bg-gray-200" /> }
+									<Image src={kegiatanSebelumnya.ImageSampul} alt={kegiatanSebelumnya.Judul} fill className="object-cover" />
 								</div>
 								<div className="flex flex-col">
 									<span className="text-xs text-gray-500">← Artikel Sebelumnya</span>
-									<h3 className="text-sm font-semibold text-gray-800 group-hover:text-blue-700 capitalize pt-2">
+									<h3 className="text-sm font-semibold text-gray-800 group-hover:text-blue-700 capitalize pt-2 line-clamp-2"
+										title={kegiatanBerikutnya.Judul} >
 										{kegiatanSebelumnya.Judul}
 									</h3>
 									<p className="text-xs text-gray-600 mt-1 line-clamp-2">
@@ -99,13 +94,12 @@ export default function KegiatanDetail({ kegiatan, semuaKegiatan }: Props) {
 						{kegiatanBerikutnya && (
 							<Link href={`/kegiatan/${kegiatanBerikutnya.id}`} className="flex gap-4 group hover:bg-gray-200 p-4 rounded-lg transition-all text-right md:flex-row-reverse md:text-right">
 								<div className="relative w-32 h-20 flex-shrink-0 rounded-md overflow-hidden">
-									{ kegiatanBerikutnya.ImageSampul ? (
-										<Image src={kegiatanBerikutnya.ImageSampul} alt={kegiatanBerikutnya.Judul} fill className="object-cover" />
-									) : <div className="w-full h-full bg-gray-200" /> }
+									<Image src={kegiatanBerikutnya.ImageSampul} alt={kegiatanBerikutnya.Judul} fill className="object-cover" />
 								</div>
 								<div className="flex flex-col">
 									<span className="text-xs text-gray-500">Artikel Berikutnya →</span>
-									<h3 className="text-sm font-semibold text-gray-800 group-hover:text-blue-700 capitalize pt-2">
+									<h3 className="text-sm font-semibold text-gray-800 group-hover:text-blue-700 capitalize pt-2 line-clamp-2"
+										title={kegiatanBerikutnya.Judul} >
 										{kegiatanBerikutnya.Judul}
 									</h3>
 									<p className="text-xs text-gray-600 mt-1 line-clamp-2">
@@ -124,19 +118,18 @@ export default function KegiatanDetail({ kegiatan, semuaKegiatan }: Props) {
 						{semuaKegiatan.filter((item) => item.id !== kegiatan.id).slice(0, 3).map((item) => (
 							<Link key={item.id} href={`/kegiatan/${item.id}`} className="block rounded-xl overflow-hidden shadow hover:shadow-md transition bg-white border border-gray-200 hover:scale-105">
 								<div className="relative w-full h-36">
-									{ item.ImageSampul ? (
-										<Image src={item.ImageSampul} alt={item.Judul} fill className="object-cover" />
-									) : <div className="w-full h-full bg-gray-200" /> }
+									<Image src={item.ImageSampul} alt={item.Judul} fill className="object-cover" />
 								</div>
 								<div className="p-4">
-									<h3 className="text-base font-semibold text-gray-800 line-clamp-2 capitalize">
+									<h3 className="text-base font-semibold text-gray-800 line-clamp-2 capitalize"
+										title={item.Judul}>
 										{item.Judul}
 									</h3>
 									<p className="text-sm text-gray-500 mt-1 line-clamp-2">
 										{item.Deskripsi}
 									</p>
 									<p className="text-xs text-gray-400 mt-2">
-										{formatTanggal(item.Created)}
+										{formatTanggal(item.TanggalKegiatan)}
 									</p>
 								</div>
 							</Link>
