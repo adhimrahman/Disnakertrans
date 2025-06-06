@@ -2,7 +2,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/config";
 import { cache } from "react";
 
-export type KegiatanItem = {
+export type PelatihanItem = {
     id: string;
     Judul: string;
     Deskripsi: string;
@@ -14,7 +14,7 @@ export type KegiatanItem = {
     TanggalKegiatan?: string;
 };
 
-export const getKegiatan = cache(async (): Promise<KegiatanItem[]> => {
+export const getPelatihan = cache(async (): Promise<PelatihanItem[]> => {
     const snapshot = await getDocs(collection(db, "kegiatan"));
     const data = snapshot.docs.map((doc) => {
         const docData = doc.data();
