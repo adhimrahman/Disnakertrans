@@ -21,13 +21,14 @@ export default function AddKontenKegiatanPage() {
     judul: "",
     deskripsi: "",
     gambar_sampul: "",
-    gambar_kegiatan: "",
+    tanggal_kegiatan: "",
+    gambar_kegiatan: [""],
   });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [errors, setErrors] = useState<Record<string, any>>({});
-  const [files, setFiles] = useState<{ gambar_sampul?: File; gambar_kegiatan?: File }>({});
-  const [previews, setPreviews] = useState<{ gambar_sampul?: string; gambar_kegiatan?: string }>({});
+  const [files, setFiles] = useState<{ gambar_sampul?: File; gambar_kegiatan?: File[] }>({});
+  const [previews, setPreviews] = useState<{ gambar_sampul?: string; gambar_kegiatan?: string[] }>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const router = useRouter();
 
@@ -46,24 +47,47 @@ export default function AddKontenKegiatanPage() {
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'gambar_sampul' | 'gambar_kegiatan') => {
-    const file = e.target.files?.[0];
     const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
 
-    if (file && file.size > MAX_FILE_SIZE) {
-      alert("Ukuran file terlalu besar. Maksimum 2 MB.");
-      return;
-    }
+    if (field === 'gambar_kegiatan') {
+      const filesArray = Array.from(e.target.files || []);
+      if (filesArray.length > 5) {
+        alert('Maksimal 5 gambar kegiatan.');
+        return;
+      }
 
-    if (file) {
-      setFiles(prev => ({ ...prev, [field]: file }));
-      setPreviews(prev => ({ ...prev, [field]: URL.createObjectURL(file) }));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      setErrors((prev: any) => ({
-      ...prev,
-      [field]: { _errors: [] },  // clear error properly
-    }));
+      for (const file of filesArray) {
+        if (file.size > MAX_FILE_SIZE) {
+          alert(`File ${file.name} terlalu besar (maks 2MB).`);
+          return;
+        }
+      }
+
+      setFiles((prev) => ({ ...prev, [field]: filesArray }));
+      setPreviews((prev) => ({
+        ...prev,
+        [field]: filesArray.map((file) => URL.createObjectURL(file)),
+      }));
+      setErrors((prev) => ({
+        ...prev,
+        [field]: { _errors: [] },
+      }));
+    } else {
+      const file = e.target.files?.[0];
+      if (file && file.size > MAX_FILE_SIZE) {
+        alert("Ukuran file terlalu besar. Maksimum 2 MB.");
+        return;
+      }
+      if (file) {
+        setFiles((prev) => ({ ...prev, [field]: file }));
+        setPreviews((prev) => ({ ...prev, [field]: URL.createObjectURL(file) }));
+        setErrors((prev) => ({
+          ...prev,
+          [field]: { _errors: [] },
+        }));
+      }
     }
-  };  
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -157,6 +181,21 @@ export default function AddKontenKegiatanPage() {
                 }}
               />
               {errors?.deskripsi?._errors?.length > 0 && errors.deskripsi._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
+            </Box>
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>
+                Tanggal Kegiatan
+              </Typography>
+              <input
+                name='tanggal_kegiatan'
+                value={formData.tanggal_kegiatan}
+                onChange={handleChange}
+                type="date"
+                className="w-full p-2 border border-gray-300 rounded-md"
+              />
+              {errors?.tanggal_kegiatan?._errors?.length > 0 && errors.tanggal_kegiatan._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -260,6 +299,7 @@ export default function AddKontenKegiatanPage() {
                   name='gambar_kegiatan'
                   type="file"
                   accept="image/*"
+                  multiple
                   onChange={(e) => handleFileChange(e, 'gambar_kegiatan')}
                   hidden
                 />
@@ -271,15 +311,14 @@ export default function AddKontenKegiatanPage() {
                 gap: 1,
                 color: formData.gambar_kegiatan ? 'success.main' : 'text.secondary'
               }}>
-                {previews.gambar_kegiatan ? (
-                  <div className='flex flex-col gap-y-3 items-center'>
-                    <Image src={previews.gambar_kegiatan} alt="Preview Gambar Sampul" width={200} height={150} />
-                    <div className='flex flex-row items-center gap-x-2'>
-                      <CheckCircleOutlineIcon fontSize="small"  className='text-green-600'/>
-                      <Typography variant="body2">
-                        Gambar Sampul telah diupload!
-                      </Typography>
-                    </div>
+                {Array.isArray(previews.gambar_kegiatan) && previews.gambar_kegiatan.length > 0 ? (
+                  <div className='flex flex-wrap justify-center items-center gap-4'>
+                    {previews.gambar_kegiatan?.map((src, idx) => (
+                      <div key={idx} className='flex flex-col items-center'>
+                        <Image src={src} alt={`Preview ${idx + 1}`} width={200} height={150} />
+                        <Typography variant="body2">Gambar {idx + 1}</Typography>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <Typography variant="body2">

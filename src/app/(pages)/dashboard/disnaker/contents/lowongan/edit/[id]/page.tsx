@@ -20,7 +20,8 @@ export default function UpdateKontenLowonganPage() {
     gambar_sampul: "",
     alamat: "",
     tenggat_lowongan: "",
-    range_gaji: { max: "0", min: "0" },
+    max_gaji: 0,
+    min_gaji: 0,
     tipe: [],
     syarat: [],
     perusahaan: "",
@@ -48,10 +49,8 @@ export default function UpdateKontenLowonganPage() {
           gambar_sampul: data.gambar_sampul as string,
           deskripsi: data.deskripsi,
           tenggat_lowongan: data.tenggat_lowongan as string,
-          range_gaji: {
-            max: String(data.range_gaji?.max) ?? 0,
-            min: String(data.range_gaji?.min) ?? 0
-          },
+          max_gaji: data.range_gaji?.max ?? 0 as number, 
+          min_gaji: data.range_gaji?.min ?? 0 as number,
           tipe: data.tipe,
           syarat: data.syarat,
           perusahaan: data.perusahaan,
@@ -198,7 +197,7 @@ export default function UpdateKontenLowonganPage() {
                 size="medium"
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.Judul?._errors?.length > 0 && errors.Judul._errors.map((msg: string, i: number) => (
+              {errors?.judul?._errors?.length > 0 && errors.judul._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -304,50 +303,45 @@ export default function UpdateKontenLowonganPage() {
                   <p className='text-lg text-black'>Rp</p>
                   <TextField
                     variant='standard'
-                    name="range_gaji.min"
-                    value={formData.range_gaji?.min || 0}
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        range_gaji: {
-                          ...formData.range_gaji,
-                          min: String(e.target.value) ?? 0,
-                          max: String(formData.range_gaji?.max) ?? 0
-                        }
-                      });
-                    }}
+                    type='number'
+                    name="min_gaji"
+                    value={formData.min_gaji}
+                    onChange={handleChange}
                     sx={{ minWidth: 120 }}
                     className='text-black text-sm font-base p-2'
                   />
                 </div>
-                {errors?.range_gaji?.min?._errors?.length > 0 && errors.range_gaji.min._errors.map((msg: string, i: number) => (
-                  <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
-                ))}
                 <Typography variant="body1" sx={{ fontWeight: 600 }} >--</Typography>
                 <div className="flex flex-row gap-x-4 items-baseline">
                   <p className='text-lg text-black'>Rp</p>
                   <TextField
                     placeholder='Minimal'
+                    type='number'
                     variant='standard'
-                    name="range_gaji.max"
-                    value={formData.range_gaji?.max || 0}
-                    onChange={(e) => {
-                      setFormData({
-                        ...formData,
-                        range_gaji: {
-                          ...formData.range_gaji,
-                          min: String(formData.range_gaji?.min) ?? 0,
-                          max: String(e.target.value) ?? 0
-                        }
-                      });
-                    }}
+                    name="max_gaji"
+                    value={formData.max_gaji}
+                    onChange={handleChange}
                     sx={{ minWidth: 120 }}
                     className='focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2'
                   />
                 </div>
-                {errors?.range_gaji?.max?.message?.length > 0 && errors.range_gaji.max.message.map((msg: string, i: number) => (
-                  <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
-                ))}
+                {(() => {
+                  const minMsg = errors?.min_gaji?._errors?.[0];
+                  const maxMsg = errors?.max_gaji?._errors?.[0];
+
+                  // Hanya tampilkan satu jika sama
+                  if (minMsg && minMsg === maxMsg) {
+                    return <p className='text-red-600 mt-2 text-sm text-right'>*{minMsg}</p>;
+                  }
+
+                  // Kalau berbeda, tampilkan keduanya
+                  return (
+                    <>
+                      {minMsg && <p className='text-red-600 mt-2 text-sm text-right'>*{minMsg}</p>}
+                      {maxMsg && <p className='text-red-600 mt-2 text-sm text-right'>*{maxMsg}</p>}
+                    </>
+                  );
+                })()}
               </Box>
             </Box>
             <Box>
