@@ -33,7 +33,7 @@ export default function LoginForm() {
                 <label className="block text-sm font-medium text-gray-100">Email</label>
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@example.com" required
                     className="mt-1 block w-full px-4 py-2 border border-gray-300 text-gray-800 rounded-lg 
-                    bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700"
+                    bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700" autoComplete="username"
                 />
             </div>
 
@@ -41,7 +41,7 @@ export default function LoginForm() {
                 <label className="block text-sm font-medium text-gray-100">Password</label>
                 <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••••••" required
                     className="mt-1 block w-full px-4 py-2 border border-gray-300 text-gray-800 rounded-lg 
-                    bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700"
+                    bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-700" autoComplete="current-password"
                 />
             </div>
 
