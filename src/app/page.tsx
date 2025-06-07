@@ -9,8 +9,8 @@ import Kegiatan from "@/components/Home/Kegiatan";
 import Lowongan from "@/components/Home/Lowongan";
 import Pelatihan from "@/components/Home/Pelatihan"
 import ContactHighlight from "@/components/ui/ContactHightlight";
-import InfografisSection from "@/components/home/InfografisSection";
-import HeroCarousel from "@/components/home/Carousel";
+import InfografisSection from "@/components/Home/InfografisSection";
+import HeroCarousel from "@/components/Home/Carousel";
 import CustomButton from "@/components/ui/CustomButton";
 import { getKegiatan } from "@/lib/getKegiatan";
 
@@ -68,9 +68,9 @@ export default async function HomePage() {
 
 				<Kegiatan kegiatan={kegiatan} />
 
-			  <Pelatihan pelatihan={pelatihan} />
+				<Pelatihan pelatihan={pelatihan} />
 
-			  <Lowongan />
+				<Lowongan />
         
 				<InfografisSection />
 			
