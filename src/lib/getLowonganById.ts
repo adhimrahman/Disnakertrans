@@ -23,5 +23,6 @@ export async function getLowonganById(id: string): Promise<LowonganItem | null> 
 		Syarat: docData.syarat ?? ["null"],
 		BatasLowongan: docData.tenggat_lowongan?.toDate().toISOString() ?? "null",
 		LinkLowongan: docData.link_lowongan ?? "",
+		PosisiLowongan: docData.posisi_lowongan,
 	}
 }
