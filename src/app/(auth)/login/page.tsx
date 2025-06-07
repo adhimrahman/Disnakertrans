@@ -47,7 +47,9 @@ export default function LoginPage() {
 						</div>
 
 						<div className="text-center">
-							<Image src="/images/Logo.png" alt="Logo" width={60} height={60} className="mx-auto mb-2 pb-2" />
+							<div className="relative w-[64px] h-[64px] mx-auto mb-2 pb-2">
+								<Image src="/images/Logo.png" alt="Logo" fill sizes="64px" className="object-contain mx-auto mb-2 pb-2" />
+							</div>
 							<h2 className="text-2xl lg:text-3xl font-bold text-gray-100">Masuk ke Akun Anda</h2>
 							<p className="text-sm text-gray-100">Admin Disnaker & LPK Gowa</p>
 						</div>

@@ -66,7 +66,12 @@ export default function LowonganDetail({ lowongan, semuaLowongan }: Props) {
                     <Image src={lowongan.ImageSampul} alt={lowongan.Judul} fill className="object-cover" />
                 </div>
 
- +
+                <article className="prose prose-lg prose-slate text-gray-900 max-w-none text-justify mb-10">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Posisi</h2>
+                    <ul className="list-disc pl-5 space-y-2">
+                            <li>{lowongan.PosisiLowongan}</li>
+                    </ul>
+                </article>
 
                 {lowongan.Syarat && lowongan.Syarat.length > 0 && (
                     <article className="prose prose-lg prose-slate text-gray-900 max-w-none text-justify mb-10">
@@ -81,10 +86,8 @@ export default function LowonganDetail({ lowongan, semuaLowongan }: Props) {
 
                 {lowongan.LinkLowongan && (
                     <div className="mt-8 mb-12">
-                        <CustomButton text="Lamar Sekarang" variant="blue" px={8} py={3} className="rounded-full transition-all transform hover:scale-105 shadow-md" />
-                        <p className="text-sm text-gray-500 mt-2">
-                            atau akses informasi selengkapnya di <a href={lowongan.LinkLowongan} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">sini</a>
-                        </p>
+                        <p className="text-sm text-gray-500 mt-2 mb-3">Atau akses informasi selengkapnya di...</p>
+                        <CustomButton text="Informasi Lengkap" variant="blue" px={8} py={3} className="rounded-full transition-all transform hover:scale-105 shadow-md" href={lowongan.LinkLowongan} target="_blank" />
                     </div>
                 )}
 
@@ -189,7 +192,7 @@ export default function LowonganDetail({ lowongan, semuaLowongan }: Props) {
                             <h3 className="text-base font-semibold text-gray-800 line-clamp-2 capitalize" title={item.Judul}>
                                 {item.Judul}
                             </h3>
-                            <p className="text-sm text-blue-600 font-medium mt-1 line-clamp-2">
+                            <p className="text-sm text-gray-600 font-medium mt-1 line-clamp-2">
                                 {item.Perusahaan}
                             </p>
                             <div className="flex justify-between items-center mt-2">
