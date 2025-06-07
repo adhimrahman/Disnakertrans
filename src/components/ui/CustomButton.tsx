@@ -9,10 +9,11 @@ type CustomButtonProps = {
 	variant?: "red" | "blue"; disabled?: boolean;
 	href?: string; children?: React.ReactNode;
 	onClick?: () => void;
+	target?: "_blank" | "_self" | "_parent" | "_top";
 };
 
 const CustomButton: React.FC<CustomButtonProps> = ({
-	text, width = 'w-auto', height = 'h-auto', px = 4, py = 2,
+	text, width = 'w-auto', height = 'h-auto', px = 4, py = 2, target,
 	className = '', variant = 'red', disabled = false, href, children, onClick,
 }) => {
 	const colorClasses = variant === "blue" ? "bg-blue-500 hover:bg-blue-700" : "bg-red-500 hover:bg-red-700";
@@ -25,7 +26,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
 
 	const content = children ?? text;
 
-	if (href) return <Link href={href} className={baseClass}> {content} </Link>
+	if (href) return <Link href={href} className={baseClass} target={target}> {content} </Link>
 
 	return <button className={baseClass} disabled={disabled} onClick={onClick}> {content} </button>
 };
