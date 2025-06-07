@@ -58,7 +58,7 @@ export default function PelatihanDetail({ pelatihan, semuaPelatihan }: Props) {
                     </p>
 
                     <div className="relative w-full h-64 md:h-[420px] mb-8 rounded-xl overflow-hidden shadow-sm">
-                        <Image src={pelatihan.ImageSampul} alt={pelatihan.Judul} fill className="object-cover" />
+                        <Image src={pelatihan.ImageSampul} alt={pelatihan.Judul} fill sizes="1080px" className="object-cover" />
                     </div>
 
                     <article className="prose prose-lg prose-slate text-gray-900 max-w-none text-justify mb-10">
@@ -67,7 +67,7 @@ export default function PelatihanDetail({ pelatihan, semuaPelatihan }: Props) {
 
                     { pelatihan.ImageDesc && (
                         <div className="relative w-full h-64 md:h-[420px] mb-12 rounded-xl overflow-hidden shadow-sm">
-                            <Image src={pelatihan.ImageDesc} alt="Gambar Tambahan" fill className="object-cover" />
+                            <Image src={pelatihan.ImageDesc} alt="Gambar Tambahan" fill sizes="1080px" className="object-cover" />
                         </div>
                     )}
 
@@ -76,7 +76,7 @@ export default function PelatihanDetail({ pelatihan, semuaPelatihan }: Props) {
                         {pelatihanSebelumnya && (
                             <Link href={`/pelatihan/${pelatihanSebelumnya.id}`} className="flex gap-4 group hover:bg-gray-200 p-4 rounded-lg transition-all">
                                 <div className="relative w-32 h-20 flex-shrink-0 rounded-md overflow-hidden">
-                                    <Image src={pelatihanSebelumnya.ImageSampul} alt={pelatihanSebelumnya.Judul} fill className="object-cover" />
+                                    <Image src={pelatihanSebelumnya.ImageSampul} alt={pelatihanSebelumnya.Judul} fill  sizes="720px" className="object-cover" />
                                 </div>
                                 <div className="flex flex-col">
                                     <span className="text-xs text-gray-500">← Artikel Sebelumnya</span>
@@ -94,7 +94,7 @@ export default function PelatihanDetail({ pelatihan, semuaPelatihan }: Props) {
                         {pelatihanBerikutnya && (
                             <Link href={`/pelatihan/${pelatihanBerikutnya.id}`} className="flex gap-4 group hover:bg-gray-200 p-4 rounded-lg transition-all text-right md:flex-row-reverse md:text-right">
                                 <div className="relative w-32 h-20 flex-shrink-0 rounded-md overflow-hidden">
-                                    <Image src={pelatihanBerikutnya.ImageSampul} alt={pelatihanBerikutnya.Judul} fill className="object-cover" />
+                                    <Image src={pelatihanBerikutnya.ImageSampul} alt={pelatihanBerikutnya.Judul} fill sizes="720px" className="object-cover" />
                                 </div>
                                 <div className="flex flex-col">
                                     <span className="text-xs text-gray-500">Artikel Berikutnya →</span>
