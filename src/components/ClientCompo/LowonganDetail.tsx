@@ -63,7 +63,7 @@ export default function LowonganDetail({ lowongan, semuaLowongan }: Props) {
                 </h1>
 
                 <div className="relative w-full h-64 md:h-[420px] mb-8 rounded-xl overflow-hidden shadow-sm">
-                    <Image src={lowongan.ImageSampul} alt={lowongan.Judul} fill className="object-cover" />
+                    <Image src={lowongan.ImageSampul} alt={lowongan.Judul} fill sizes="1080px" className="object-cover" />
                 </div>
 
                 <article className="prose prose-lg prose-slate text-gray-900 max-w-none text-justify mb-10">
@@ -95,7 +95,7 @@ export default function LowonganDetail({ lowongan, semuaLowongan }: Props) {
                     {lowonganSebelumnya && (
                         <Link href={`/lapangan-kerja/${lowonganSebelumnya.id}`} className="flex gap-4 group hover:bg-gray-200 p-4 rounded-lg transition-all">
                             <div className="relative w-32 h-20 flex-shrink-0 rounded-md overflow-hidden">
-                                <Image src={lowonganSebelumnya.ImageSampul} alt={lowonganSebelumnya.Judul} fill className="object-cover" />
+                                <Image src={lowonganSebelumnya.ImageSampul} alt={lowonganSebelumnya.Judul} fill sizes="720px" className="object-cover" />
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-xs text-gray-500">← Lowongan Sebelumnya</span>
@@ -113,7 +113,7 @@ export default function LowonganDetail({ lowongan, semuaLowongan }: Props) {
                     {lowonganBerikutnya && (
                         <Link href={`/lapangan-kerja/${lowonganBerikutnya.id}`} className="flex gap-4 group hover:bg-gray-200 p-4 rounded-lg transition-all text-right md:flex-row-reverse md:text-right">
                             <div className="relative w-32 h-20 flex-shrink-0 rounded-md overflow-hidden">
-                                <Image src={lowonganBerikutnya.ImageSampul} alt={lowonganBerikutnya.Judul} fill className="object-cover" />
+                                <Image src={lowonganBerikutnya.ImageSampul} alt={lowonganBerikutnya.Judul} fill sizes="720px" className="object-cover" />
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-xs text-gray-500">Lowongan Berikutnya →</span>
