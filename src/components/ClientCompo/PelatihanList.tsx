@@ -33,7 +33,7 @@ export default function PelatihanList({ pelatihan } : { pelatihan: PelatihanItem
                             </div>
 
                             <div className="px-4 md:px-5 py-4 flex justify-end">
-                                <CustomButton variant="blue" className="text-sm md:text-base tracking-wider" href={`/lapangan-kerja/${item.id}`} >
+                                <CustomButton variant="blue" className="text-sm md:text-base tracking-wider" href={`/lowongan/${item.id}`} >
                                     Selengkapnya <ArrowRight size={16} />
                                 </CustomButton>
                             </div>
