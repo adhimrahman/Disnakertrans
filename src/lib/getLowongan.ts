@@ -17,6 +17,7 @@ export type LowonganItem = {
 	Syarat: string[];
 	BatasLowongan?: string;
 	LinkLowongan: string;
+    PosisiLowongan: string;
 };
 
 export const getLowongan = cache(async (): Promise<LowonganItem[]> => {
@@ -38,8 +39,7 @@ export const getLowongan = cache(async (): Promise<LowonganItem[]> => {
             Syarat: docData.syarat ?? ["null"],
             BatasLowongan: docData.tenggat_lowongan?.toDate().toISOString() ?? "null",
             LinkLowongan: docData.link_lowongan ?? "",
-            // created_at, link_konten, nama_lowongan, updated_at
-            // range_gaji max min
+            PosisiLowongan: docData.posisi_lowongan,
         }
     });
     return data;
