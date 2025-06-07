@@ -22,11 +22,11 @@ export default function PelatihanList({ pelatihan } : { pelatihan: PelatihanItem
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-9">
                     {visiblePelatihan.map((item) => (
                         <div key={item.id} className="relative group rounded-lg overflow-hidden border border-gray-200 shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                            <div className="w-full h-60 relative overflow-hidden">
-                                <Image src={item.ImageSampul} alt={item.Judul} layout="fill" className="object-cover object-center" sizes="100vw" />
+                            <div className="relative w-full h-60 overflow-hidden">
+                                <Image src={item.ImageSampul} alt={item.Judul} sizes="720px" fill className="object-cover object-center" />
                             </div>
         
-                            <div className="p-6 bg-white">
+                            <div className="p-6">
                                 <h3 className="text-xl font-semibold text-gray-800 mb-2 capitalize hover:cursor-pointer line-clamp-1"
                                 title={item.Judul}>{item.Judul}</h3>
                                 <p className="text-sm text-gray-600 line-clamp-3">{item.Deskripsi}</p>

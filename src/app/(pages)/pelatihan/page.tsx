@@ -13,7 +13,7 @@ export default async function PelatihanPage() {
     <Navbar />
 
     <section className="relative w-full h-[300px] sm:h-[350px]">
-        <Image src="/images/Ilustrasi.jpeg" alt="Ilustrasi Header" fill className="object-cover object-center brightness-50" />
+        <Image src="/images/Ilustrasi.jpeg" alt="Ilustrasi Header" fill sizes="1080px" className="object-cover object-center brightness-50" priority />
         <div className="absolute inset-0 flex items-center justify-center text-center bg-gradient-to-b from-transparent to-black/50 pt-24 lg:pt-12">
             <h1 className="text-white text-3xl lg:text-5xl md:text-5xl font-bold shadow-md capitalize">
                 Pelatihan - Pelatihan LPK

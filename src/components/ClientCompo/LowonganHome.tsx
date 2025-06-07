@@ -26,15 +26,15 @@ export default function LowonganHome({ lowongan }: { lowongan: LowonganItem[] })
 			{lowongan.map((item) => (
 				<SwiperSlide key={item.id}>
 					<div className="bg-white shadow-md rounded-2xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-2 m-4 flex flex-col justify-between h-full w-full max-w-xs mx-auto">
-						<div className="relative w-full h-48">
+						<div className="relative w-full h-48 overflow-hidden">
 							{item.ImageSampul ? (
-								<Image src={item.ImageSampul} alt={item.Judul} width={40} height={40} className="object-cover" loading="lazy" />
+								<Image src={item.ImageSampul} alt={item.Judul} width={340} height={320} className="w-full aspect-[4/3] object-cover" loading="lazy" />
 							) : (
 								<div className="w-full h-full bg-gray-200" />
 							)}
 						</div>
 						<div className="flex flex-col p-5 gap-2 flex-grow">
-							<h3 className="text-xl font-bold text-gray-800 mb-1 line-clamp-2"
+							<h3 className="text-xl font-bold text-gray-800 mb-1 line-clamp-1"
 							title={item.Judul}>{item.Judul}</h3>
 							<p className="text-gray-500 text-sm">{item.Perusahaan}</p>
 							<div className="flex flex-wrap gap-2 mt-2">
