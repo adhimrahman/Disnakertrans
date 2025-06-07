@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import CustomButton from "@/components/ui/CustomButton";
+import { ArrowRight } from "lucide-react";
 
 type PelatihanItem = {
     id: string;
@@ -26,14 +26,16 @@ export default function PelatihanList({ pelatihan } : { pelatihan: PelatihanItem
                                 <Image src={item.ImageSampul} alt={item.Judul} sizes="720px" fill className="object-cover object-center" />
                             </div>
         
-                            <div className="p-6">
+                            <div className="p-6 min-h-[164px]">
                                 <h3 className="text-xl font-semibold text-gray-800 mb-2 capitalize hover:cursor-pointer line-clamp-1"
                                 title={item.Judul}>{item.Judul}</h3>
-                                <p className="text-sm text-gray-600 line-clamp-3">{item.Deskripsi}</p>
-                                <Link className="mt-3 inline-block text-sm text-blue-600 hover:text-blue-800 font-medium"
-                                href={`/pelatihan/${item.id}`}>
-                                    Selengkapnya →
-                                </Link>
+                                <p className="text-sm text-gray-600 line-clamp-4 text-justify">{item.Deskripsi}</p>
+                            </div>
+
+                            <div className="px-4 md:px-5 py-4 flex justify-end">
+                                <CustomButton variant="blue" className="text-sm md:text-base tracking-wider" href={`/lapangan-kerja/${item.id}`} >
+                                    Selengkapnya <ArrowRight size={16} />
+                                </CustomButton>
                             </div>
                         </div>
                     ))}

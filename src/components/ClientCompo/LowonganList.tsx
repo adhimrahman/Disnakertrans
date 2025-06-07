@@ -3,7 +3,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { MapPin } from "lucide-react";
-import CustomButton from "../ui/CustomButton";
+import CustomButton from "@/components/ui/CustomButton";
 
 type LowonganItem = {
 	id: string;
