@@ -39,7 +39,7 @@ export default function LowonganList({ lowongan, pageSize = 10 }: LowonganListPr
             visibleRow.map((item, index) => (
               <tr key={item.id} className="text-sm text-gray-800 font-medium hover:bg-blue-50 transition-colors duration-150 ease-in-out">
                 <td className="px-4 py-3">{(currentPage - 1) * 10 + (index + 1)}</td>
-                <td className="px-4 py-3">{item.nama_lowongan || "Tidak ada"}</td>
+                <td className="px-4 py-3">{item.posisi_lowongan || "Tidak ada"}</td>
                 <td className="px-4 py-3">{item.perusahaan || "Tidak ada"}</td>
                 <td className="px-4 py-3">{item.tenggat_lowongan || "Tidak ada"}</td>
                 <td className="px-4 py-3">

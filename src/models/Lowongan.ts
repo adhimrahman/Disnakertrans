@@ -6,7 +6,7 @@ export interface Lowongan {
   judul: string;
   link_konten: string;
   link_lowongan: string;
-  nama_lowongan: string;
+  posisi_lowongan: string;
   perusahaan: string;
   max_gaji?: number;
   min_gaji?: number;
@@ -19,7 +19,7 @@ export interface Lowongan {
 
 export interface LowonganItem {
   id: string;
-  nama_lowongan: string;
+  posisi_lowongan: string;
   perusahaan: string;
   tenggat_lowongan: string;
   link_konten: string;
