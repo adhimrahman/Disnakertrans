@@ -52,15 +52,15 @@ export default function SearchSortControls({
       />
       <div className='flex flex-row gap-x-3 items-center'>
         <p className='text-black text-sm'>Sort by: </p>
-        <select value={sort} onChange={onSortChange} className='text-black border border-gray-400 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm px-3 py-1'>
+        <select value={sort} onChange={onSortChange} className='font-poppins text-black border border-gray-400 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm px-3 py-1'>
           {sortOptions.map(({ value, label }) => (
-            <option key={value} value={value}>{label}</option>
+            <option key={value} value={value} className='font-poppins'>{label}</option>
           ))}
         </select>
         <p className='text-black text-sm'>secara </p>
-        <select value={order} onChange={onOrderChange} className='text-black border border-gray-400 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm px-3 py-1'>
-          <option value="asc">Menurun</option>
-          <option value="desc">Menaik</option>
+        <select value={order} onChange={onOrderChange} className='font-poppins text-black border border-gray-400 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm px-3 py-1'>
+          <option value="asc" className='font-poppins'>Menurun</option>
+          <option value="desc" className='font-poppins'>Menaik</option>
         </select>
       </div>
       {isPending && <p>Loading...</p>}

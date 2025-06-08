@@ -5,9 +5,9 @@ import Link from "next/link";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Kegiatan from "@/components/Home/Kegiatan";
-import Lowongan from "@/components/Home/Lowongan";
-import Pelatihan from "@/components/Home/Pelatihan"
+import Kegiatan from "@/components/home/Kegiatan";
+import Lowongan from "@/components/home/Lowongan";
+import Pelatihan from "@/components/home/Pelatihan"
 import ContactHighlight from "@/components/ui/ContactHightlight";
 import InfografisSection from "@/components/home/InfografisSection";
 import HeroCarousel from "@/components/home/Carousel";
@@ -67,11 +67,8 @@ export default async function HomePage() {
 				</section>
 
 				<Kegiatan kegiatan={kegiatan} />
-
-			  <Pelatihan pelatihan={pelatihan} />
-
-			  <Lowongan />
-        
+				<Pelatihan pelatihan={pelatihan} />
+				<Lowongan />
 				<InfografisSection />
 			
 				<section className="py-20 bg-gray-50">

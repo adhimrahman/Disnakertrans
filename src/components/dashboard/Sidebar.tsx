@@ -39,6 +39,7 @@ export default function Sidebar() {
     { title: "Accounts", icon: <BsFillPeopleFill />, to: "/dashboard/disnaker/accounts", spacing: true },
     { title: "Aduan", icon: <GrContact />, to: "/dashboard/disnaker/aduan", spacing: true },
     { title: "LPK", icon: <BsFolder2Open />, to: "/dashboard/disnaker/lpk", spacing: true },
+    { title: "Laporan LPK", icon: <BsFolder2Open />, to: "/dashboard/disnaker/LaporanLPK", spacing: true },
   ];
   const handleLogout = async () => {
     try {

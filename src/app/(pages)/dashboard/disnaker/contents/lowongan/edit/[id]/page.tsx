@@ -15,7 +15,7 @@ import { GoPlus } from "react-icons/go";
 export default function UpdateKontenLowonganPage() {
   const [formData, setFormData] = useState<Partial<updateLowonganFormData>>({
     judul: "",
-    nama_lowongan: "",
+    posisi_lowongan: "",
     deskripsi: "",
     gambar_sampul: "",
     alamat: "",
@@ -45,7 +45,7 @@ export default function UpdateKontenLowonganPage() {
         setFormData({
           id: id as string,
           judul: data.judul,
-          nama_lowongan: data.nama_lowongan,
+          posisi_lowongan: data.posisi_lowongan,
           gambar_sampul: data.gambar_sampul as string,
           deskripsi: data.deskripsi,
           tenggat_lowongan: data.tenggat_lowongan as string,
@@ -205,14 +205,14 @@ export default function UpdateKontenLowonganPage() {
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Nama Pekerjaan</Typography>
               <TextField
                 placeholder='Tuliskan nama pekerjaan disini'
-                name="nama_lowongan"
-                value={formData.nama_lowongan || ""}
+                name="posisi_lowongan"
+                value={formData.posisi_lowongan || ""}
                 onChange={handleChange}
                 fullWidth
                 variant="outlined"
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-darkBlue focus:ring-2 focus:ring-steelBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.nama_lowongan?._errors?.length > 0 && errors.nama_lowongan._errors.map((msg: string, i: number) => (
+              {errors?.posisi_lowongan?._errors?.length > 0 && errors.posisi_lowongan._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
