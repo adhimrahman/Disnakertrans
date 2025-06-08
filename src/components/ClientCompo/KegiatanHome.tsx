@@ -10,11 +10,6 @@ function limitChars(text: string, maxLength: number) {
     return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
 }
 
-function limitWords(text: string, count: number) {
-    const words = text.split(" ");
-    return words.slice(0, count).join(" ") + (words.length > count ? "..." : "");
-}
-
 export default function KegiatanHome({ kegiatan }: { kegiatan: KegiatanItem[] }) {
     return (
         <Swiper modules={[Navigation]} spaceBetween={-35} navigation breakpoints={{
@@ -33,8 +28,8 @@ export default function KegiatanHome({ kegiatan }: { kegiatan: KegiatanItem[] })
                             <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1 fade-text-end">
                                 {limitChars(item.Judul, 26)}
                             </h3>
-                            <p className="text-gray-700 text-sm leading-relaxed pt-2">
-                                {limitWords(item.Deskripsi, 15)}
+                            <p className="text-gray-700 text-sm leading-relaxed pt-2 line-clamp-4">
+                                {item.Deskripsi}
                             </p>
                         </div>
                         <div className="px-4 md:px-5 py-4 flex justify-end">
