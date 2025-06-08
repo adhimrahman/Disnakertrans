@@ -63,10 +63,15 @@ export default function LowonganDetail({ lowongan, semuaLowongan }: Props) {
                 </h1>
 
                 <div className="relative w-full h-64 md:h-[420px] mb-8 rounded-xl overflow-hidden shadow-sm">
-                    <Image src={lowongan.ImageSampul} alt={lowongan.Judul} fill className="object-cover" />
+                    <Image src={lowongan.ImageSampul} alt={lowongan.Judul} fill sizes="1080px" className="object-cover" />
                 </div>
 
- +
+                <article className="prose prose-lg prose-slate text-gray-900 max-w-none text-justify mb-10">
+                    <h2 className="text-xl font-bold text-gray-800 mb-4">Posisi</h2>
+                    <ul className="list-disc pl-5 space-y-2">
+                            <li>{lowongan.PosisiLowongan}</li>
+                    </ul>
+                </article>
 
                 {lowongan.Syarat && lowongan.Syarat.length > 0 && (
                     <article className="prose prose-lg prose-slate text-gray-900 max-w-none text-justify mb-10">
@@ -81,10 +86,8 @@ export default function LowonganDetail({ lowongan, semuaLowongan }: Props) {
 
                 {lowongan.LinkLowongan && (
                     <div className="mt-8 mb-12">
-                        <CustomButton text="Lamar Sekarang" variant="blue" px={8} py={3} className="rounded-full transition-all transform hover:scale-105 shadow-md" />
-                        <p className="text-sm text-gray-500 mt-2">
-                            atau akses informasi selengkapnya di <a href={lowongan.LinkLowongan} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">sini</a>
-                        </p>
+                        <p className="text-sm text-gray-500 mt-2 mb-3">Atau akses informasi selengkapnya di...</p>
+                        <CustomButton text="Informasi Lengkap" variant="blue" px={8} py={3} className="rounded-full transition-all transform hover:scale-105 shadow-md" href={lowongan.LinkLowongan} target="_blank" />
                     </div>
                 )}
 
@@ -92,7 +95,7 @@ export default function LowonganDetail({ lowongan, semuaLowongan }: Props) {
                     {lowonganSebelumnya && (
                         <Link href={`/lapangan-kerja/${lowonganSebelumnya.id}`} className="flex gap-4 group hover:bg-gray-200 p-4 rounded-lg transition-all">
                             <div className="relative w-32 h-20 flex-shrink-0 rounded-md overflow-hidden">
-                                <Image src={lowonganSebelumnya.ImageSampul} alt={lowonganSebelumnya.Judul} fill className="object-cover" />
+                                <Image src={lowonganSebelumnya.ImageSampul} alt={lowonganSebelumnya.Judul} fill sizes="720px" className="object-cover" />
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-xs text-gray-500">← Lowongan Sebelumnya</span>
@@ -110,7 +113,7 @@ export default function LowonganDetail({ lowongan, semuaLowongan }: Props) {
                     {lowonganBerikutnya && (
                         <Link href={`/lapangan-kerja/${lowonganBerikutnya.id}`} className="flex gap-4 group hover:bg-gray-200 p-4 rounded-lg transition-all text-right md:flex-row-reverse md:text-right">
                             <div className="relative w-32 h-20 flex-shrink-0 rounded-md overflow-hidden">
-                                <Image src={lowonganBerikutnya.ImageSampul} alt={lowonganBerikutnya.Judul} fill className="object-cover" />
+                                <Image src={lowonganBerikutnya.ImageSampul} alt={lowonganBerikutnya.Judul} fill sizes="720px" className="object-cover" />
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-xs text-gray-500">Lowongan Berikutnya →</span>
@@ -189,7 +192,7 @@ export default function LowonganDetail({ lowongan, semuaLowongan }: Props) {
                             <h3 className="text-base font-semibold text-gray-800 line-clamp-2 capitalize" title={item.Judul}>
                                 {item.Judul}
                             </h3>
-                            <p className="text-sm text-blue-600 font-medium mt-1 line-clamp-2">
+                            <p className="text-sm text-gray-600 font-medium mt-1 line-clamp-2">
                                 {item.Perusahaan}
                             </p>
                             <div className="flex justify-between items-center mt-2">

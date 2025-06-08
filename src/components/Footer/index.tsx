@@ -31,16 +31,18 @@ export default function Footer() {
 
 					{/* Right side - Navigation & Info */}
 					<div className="grid grid-cols-2 gap-4">
-						<div className="space-y-2 text-sm text-gray-300">
+						<div className="space-y-2 text-sm text-gray-300 flex flex-col gap-y-2">
 							<Link href="/" className="block hover:underline hover:font-medium">Home</Link>
 							<Link href="/kegiatan" className="block hover:underline hover:font-medium">Kegiatan</Link>
 							<Link href="/lapangan-kerja" className="block hover:underline hover:font-medium">Lowongan</Link>
+							<Link href="/pelatihan" className="block hover:underline hover:font-medium">Pelatihan</Link>
 							<Link href="/contact-us" className="block hover:underline hover:font-medium">Contact Us</Link>
+							<Link href="/login" className="block hover:underline hover:font-medium">Login</Link>
 						</div>
 						<div className="text-sm text-gray-300 space-y-3">
 							<div>
 								<h4 className="font-bold text-white mb-1">Tentang Kami</h4>
-								<p>
+								<p className="text-justify">
 									Dinas KetenagaLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
 									Sed do eiusmod tempor incididunt ut labore. At vero eos et accusamus et iusto odio dignissimos ducimus qui fuga.
 								</p>
@@ -56,7 +58,7 @@ export default function Footer() {
 			
 			<div className="border-t border-white border-opacity-40 my-8 w-full"></div>
 
-			<div className="flex flex-col md:flex-row justify-between items-center text-center text-sm text-gray-300 px-4">
+			<div className="flex flex-col md:flex-row justify-between items-center text-center text-sm text-gray-300 px-20">
 				<p>@Copyright 2025</p>
 				<p className="mt-2 md:mt-0 font-semibold">
 					Universitas Hasanuddin &nbsp; | &nbsp; Teknik Informatika 2022
