@@ -31,7 +31,7 @@ export async function addLowongan(formData: createLowonganFormData, files: { gam
     const result = await addDoc(collectionRef, {
       judul: validateData.judul,
       deskripsi: validateData.deskripsi,
-      nama_lowongan: validateData.nama_lowongan,
+      posisi_lowongan: validateData.posisi_lowongan,
       tenggat_lowongan: Timestamp.fromDate(batasDate),
       alamat: validateData.alamat,
       link_lowongan: validateData.link_lowongan,
@@ -47,9 +47,10 @@ export async function addLowongan(formData: createLowonganFormData, files: { gam
       updated_at: Timestamp.now(),
     });
 
+    const link = process.env.NEXT_PUBLIC_LINK_BASE;
     const docRef = doc(db, "lowongan", result.id);
 
-    await updateDoc(docRef, {link_konten: `http://localhost:3000/lowongan/${docRef.id}`});
+    await updateDoc(docRef, {link_konten: `${link}/lowongan/${docRef.id}`});
     console.log(result);
     return true;
   } catch (error) {
@@ -81,7 +82,7 @@ export async function getLowongan(): Promise<Partial<LowonganItem[]>> {
     
     return {
       id: doc.id,
-      nama_lowongan: data.nama_lowongan ?? '',
+      posisi_lowongan: data.posisi_lowongan ?? '',
       link_lowongan: data.link_lowongan ?? '',
       link_konten: data.link_konten ?? '',
       tenggat_lowongan: batasStr ?? '',
@@ -107,7 +108,7 @@ export async function getLowonganById (id: string): Promise<Partial<Lowongan> | 
   return {
     id: lowonganSnapshot.id,
     judul: data.judul ?? '',
-    nama_lowongan: data.nama_lowongan ?? '',
+    posisi_lowongan: data.posisi_lowongan ?? '',
     deskripsi: data.deskripsi ?? '',
     gambar_sampul: data.gambar_sampul ?? null,
     tenggat_lowongan: batasStr ?? '',
@@ -142,7 +143,7 @@ export async function updateLowongan (formData: Partial<Lowongan>, files: { gamb
     const result = await updateDoc(docRef, {
       judul: validateData.judul,
       deskripsi: validateData.deskripsi,
-      nama_lowongan: validateData.nama_lowongan,
+      posisi_lowongan: validateData.posisi_lowongan,
       tenggat_lowongan: batasDate ? Timestamp.fromDate(batasDate) : undefined,
       alamat: validateData.alamat,
       link_lowongan: validateData.link_lowongan,
@@ -199,7 +200,7 @@ export async function getLowonganByDateAndSort(
 
     return {
       id: doc.id,
-      nama_lowongan: data.nama_lowongan ?? '',
+      posisi_lowongan: data.posisi_lowongan ?? '',
       link_lowongan: data.link_lowongan ?? '',
       link_konten: data.link_konten ?? '',
       tenggat_lowongan: batasStr ?? '',
@@ -221,7 +222,7 @@ export async function getLowonganFilteredByJudulContains(
   const lowerSearch = search.toLowerCase();
   const filtered = allData.filter((item) => {
     return (
-      item.nama_lowongan.toLowerCase().includes(lowerSearch) ||
+      item.posisi_lowongan.toLowerCase().includes(lowerSearch) ||
       item.tenggat_lowongan?.toLowerCase().includes(lowerSearch) ||
       item.perusahaan.toLowerCase().includes(lowerSearch) || 
       item.created_at?.toLowerCase().includes(lowerSearch)
@@ -266,7 +267,7 @@ export async function fetchLowonganPage (pageNumber: number, pageSize: number) {
 
     return {
       id: doc.id,
-      nama_lowongan: data.nama_lowongan ?? '',
+      posisi_lowongan: data.posisi_lowongan ?? '',
       link_lowongan: data.link_lowongan ?? '',
       link_konten: data.link_konten ?? '',
       tenggat_lowongan: batasStr ?? '',
