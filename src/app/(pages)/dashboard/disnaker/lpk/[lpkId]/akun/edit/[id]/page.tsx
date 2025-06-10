@@ -22,7 +22,7 @@ import {
   Radio,
   CircularProgress
 } from '@mui/material';
-import { PesertaLpk } from '@/models/PesertaLpk';
+import { PesertaLpk } from '@/models/LPK';
 
 export default function EditAkunPage() {
   const router = useRouter();

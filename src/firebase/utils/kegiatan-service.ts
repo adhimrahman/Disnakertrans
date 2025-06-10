@@ -39,9 +39,10 @@ export async function addKegiatan (formData: createKegiatanFormData, files: { ga
       updated_at: Timestamp.now()
     });
 
+    const link = process.env.NEXT_PUBLIC_LINK_BASE;
     const docRef = doc(db, "kegiatan", result.id);
 
-    await updateDoc(docRef, { link: `http://localhost:3000/kegiatan/${docRef.id}` });
+    await updateDoc(docRef, { link: `${link}/kegiatan/${docRef.id}` });
     console.log(result);
     return true;
   } catch (error) {
