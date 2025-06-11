@@ -1,9 +1,13 @@
 'use client';
 
+import { IoTrash } from "react-icons/io5";
 import Link from "next/link";
 import { PelatihanItem } from "@/models/Pelatihan";
+import { redirect } from "next/navigation";
 import { useState } from "react";
 import PaginationControls from "./Pagination"; // jika Anda punya komponen ini
+import { deletePelatihanById } from "@/firebase/utils/pelatihan-service";
+
 
 interface PelatihanListProps {
   pelatihan: PelatihanItem[];
