@@ -2,7 +2,7 @@
 import PelatihanList from "@/components/dashboard/PelatihanList";
 import SearchSortControls from "@/components/dashboard/SearchandSort";
 import { getPelatihanFilteredByJudulContains } from "@/firebase/utils/pelatihan-service";
-import { PelatihanItem } from "@/models/Pelatihan"; // Pastikan ini cocok dengan tipe return dari fungsi
+import { PelatihanItem } from "@/lib/getPelatihan";
 
 interface PelatihanDashboardPageProps {
   params: {
@@ -20,7 +20,7 @@ export default async function PelatihanDashboardPage({ params, searchParams }: P
 
   const {
     search = '',
-    sort = 'created_at' as keyof PelatihanItem,
+    sort = 'Created' as keyof PelatihanItem,
     order = 'asc',
   } = searchParams || {};
 
@@ -30,8 +30,8 @@ export default async function PelatihanDashboardPage({ params, searchParams }: P
     <div className="flex flex-col gap-y-4 bg-white rounded-md p-4">
       <SearchSortControls
         sortOptions={[
-          { value: "created_at", label: "Tanggal Dibuat" },
-          { value: "Judul", label: "Judul" }, // Sesuaikan kapitalisasi
+          { value: "Created", label: "Tanggal Dibuat" },
+          { value: "Judul", label: "Judul" },
         ]}
       />
     </div>
