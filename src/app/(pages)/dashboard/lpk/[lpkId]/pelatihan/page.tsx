@@ -34,6 +34,7 @@ export default async function PelatihanDashboardPage({ params, searchParams }: P
           { value: "Judul", label: "Judul" },
         ]}
       />
+
     </div>
   );
 }
