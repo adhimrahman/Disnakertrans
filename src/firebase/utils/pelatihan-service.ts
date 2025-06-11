@@ -168,9 +168,9 @@ export async function getPelatihanFilteredByJudulContains(
   if (search.trim()) {
     q = query(
       pelatihanRef,
-      where("judul", ">=", search),
-      where("judul", "<=", search + "\uf8ff"),
-      orderBy("judul", order)
+      where("Judul", ">=", search),
+      where("Judul", "<=", search + "\uf8ff"),
+      orderBy("Judul", order)
     );
   } else {
     q = query(pelatihanRef, orderBy(sort, order));
