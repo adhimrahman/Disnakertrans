@@ -4,10 +4,8 @@ export interface Pelatihan {
   gambar_pelatihan: string;
   link_form: string;
   tanggal_kegiatan?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any; // Membolehkan akses key lain dengan tipe string
+  [key: string]: any;
 }
-
 
 export interface PelatihanItem {
   id: string;
@@ -15,7 +13,7 @@ export interface PelatihanItem {
   deskripsi: string;
   gambar_pelatihan: string;
   link_form: string;
-  tanggal_kegiatan: string | Date;
-  created_at: string | Date;
-  updated_at: string | Date;
+  tanggal_kegiatan: string; // hasil dari .toISOString()
+  created_at: string;
+  updated_at: string;
 }

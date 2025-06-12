@@ -4,8 +4,8 @@ import { cache } from "react";
 import { PelatihanItem } from "@/models/Pelatihan";
 
 
-export const getPelatihan = cache(async (): Promise<PelatihanItem[]> => {
-    const snapshot = await getDocs(collection(db, "kegiatan"));
+export const getPelatihan = cache(async (lpkId: string): Promise<PelatihanItem[]> => {
+    const snapshot = await getDocs(collection(db, "akun", lpkId, "pelatihan"));
     const data = snapshot.docs.map((doc) => {
         const docData = doc.data();
         return {
@@ -13,7 +13,6 @@ export const getPelatihan = cache(async (): Promise<PelatihanItem[]> => {
             judul: docData.judul ?? "Tidak ada Judul",
             deskripsi: docData.deskripsi ?? "Tidak ada Deskripsi",
             gambar_pelatihan: docData.gambar_pelatihan ?? "/images/placeholder.jpg",
-            gambar_sampul: docData.gambar_sampul ?? "/images/placeholder.jpg",
             link_form: docData.link_form ?? "",
             created_at: docData.created_at?.toDate().toISOString() ?? "",
             updated_at: docData.updated_at?.toDate().toISOString() ?? "",

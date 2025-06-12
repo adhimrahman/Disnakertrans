@@ -1,21 +1,31 @@
 import { db } from "@/firebase/config";
 import { doc, getDoc } from "firebase/firestore";
-import { PelatihanItem } from "./getPelatihan"
+
+export type PelatihanItem = {
+    id: string;
+    judul: string;
+    deskripsi: string;
+    gambar_pelatihan: string;
+    Created: string;
+    Updated: string;
+    link_form: string;
+    tanggal_kegiatan: string;
+};
 
 export async function getPelatihanById(id: string): Promise<PelatihanItem | null> {
-    const docRef = doc(db, "kegiatan", id);
+    const docRef = doc(db, "kegiatan", id); 
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) return null;
 
     const docData = docSnap.data();
     return {
         id: docSnap.id,
-        Judul: docData.judul ?? "Tidak ada Judul",
-        Deskripsi: docData.deskripsi ?? "Tidak ada Deskripsi",
-        ImageSampul: docData.gambar_sampul ?? "/images/placeholder.jpg",
-        ImageDesc: docData.gambar_kegiatan ?? "/images/placeholder.jpg",
+        judul: docData.judul ?? "Tidak ada Judul",
+        deskripsi: docData.deskripsi ?? "Tidak ada Deskripsi",
+        gambar_pelatihan: docData.gambar_sampul ?? "/images/placeholder.jpg",
         Created: docData.created_at?.toDate().toISOString() ?? "",
         Updated: docData.updated_at?.toDate().toISOString() ?? "",
-        TanggalKegiatan: docData.tanggal_kegiatan?.toDate().toISOString() ?? "",
+        link_form: docData.link ?? "",
+        tanggal_kegiatan: docData.tanggal_kegiatan?.toDate().toISOString() ?? "",
     };
 }

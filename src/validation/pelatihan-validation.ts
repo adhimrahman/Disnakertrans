@@ -6,21 +6,21 @@ export const createPelatihanSchema = z.object({
     .nonempty("Judul wajib diisi")
     .min(3, "Judul harus memiliki minimal 3 karakter")
     .max(30, "Judul maksimal 30 karakter"),
-    
+
   deskripsi: z.string()
     .nonempty("Deskripsi wajib diisi")
     .min(3, "Deskripsi harus memiliki minimal 3 karakter")
     .max(1000, "Deskripsi maksimal 1000 karakter"),
 
-  tanggal_pelatihan: z.string()
-    .nonempty("Tanggal Pelatihan wajib diisi")
-    .refine(val => !isNaN(Date.parse(val)), { message: "Tanggal Pelatihan tidak valid" }),
+  tanggal_kegiatan: z.string()
+    .nonempty("Tanggal Kegiatan wajib diisi")
+    .refine(val => !isNaN(Date.parse(val)), { message: "Tanggal tidak valid" }),
 
-  gambar_sampul: z.string()
-    .url("Gambar Sampul harus berupa URL")
+  gambar_pelatihan: z.string()
+    .url("Gambar harus berupa URL")
     .optional(),
 
-  link: z.string()
+  link_form: z.string()
     .url("Link harus berupa URL")
     .optional(),
 });
@@ -45,15 +45,15 @@ export const updatePelatihanSchema = z.object({
     .max(1000, "Deskripsi maksimal 1000 karakter")
     .optional(),
 
-  tanggal_pelatihan: z.string()
-    .refine(val => !isNaN(Date.parse(val)), { message: "Tanggal Pelatihan tidak valid" })
+  tanggal_kegiatan: z.string()
+    .refine(val => !isNaN(Date.parse(val)), { message: "Tanggal tidak valid" })
     .optional(),
 
-  gambar_sampul: z.string()
-    .url("Gambar Sampul harus berupa URL")
+  gambar_pelatihan: z.string()
+    .url("Gambar harus berupa URL")
     .optional(),
 
-  link: z.string()
+  link_form: z.string()
     .url("Link harus berupa URL")
     .optional(),
 });
