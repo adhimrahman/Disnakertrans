@@ -18,6 +18,7 @@ import { IoTrash } from "react-icons/io5";
 import { HiOutlineArrowSmRight, HiOutlineArrowSmLeft } from "react-icons/hi";
 import { PulseLoader } from "react-spinners";
 
+
 export default function LaporanLpkPage() {
   const [laporan, setLaporan] = useState<DocumentData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -114,7 +115,7 @@ export default function LaporanLpkPage() {
     currentPage * itemsPerPage
   );
 
-  const seeDetail = (id: string) => { router.push(`/dashboard/disnaker/lpk/${id}`) }
+  const seeDetail = (id: string) => { router.push(`/dashboard/lpk/${lpkId}/laporan/laporanLpk/edit/${id}`) }
 
   const handleSingleDelete = (id: string) => {
     const docRef = doc(db, `lpk/${lpkId}/laporan`, id);
@@ -155,23 +156,25 @@ export default function LaporanLpkPage() {
             <h2 className="text-xl font-semibold text-gray-800">Data Laporan LPK</h2>
             <p className="text-sm text-gray-500 mt-1">Kelola laporan pelatihan lembaga pelatihan kerja</p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <button
               type="button"
               className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-              onClick={() => {router.push(`/dashboard/disnaker/lpk/${lpkId}/laporan/add`)}}
+              onClick={() => {router.push(`/dashboard/lpk/${lpkId}/laporan/laporanLpk/add`)}}
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
               </svg>
               Tambah Laporan
             </button>
-            <SearchInput
-              value={searchTerm}
-              onChange={setSearchTerm} 
-              placeholder="Cari laporan..."
-              className="border border-gray-300 rounded-md px-4 py-2 text-sm min-w-[250px] text-gray-800 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-            />
+            <div className="flex items-center w-full sm:w-auto">
+              <SearchInput
+                value={searchTerm}
+                onChange={setSearchTerm} 
+                placeholder="Cari laporan..."
+                className="border border-gray-300 rounded-md px-4 py-2 text-sm w-full min-w-[250px] text-gray-800 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              />
+            </div>
           </div>
         </div>
         
@@ -291,7 +294,7 @@ export default function LaporanLpkPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                               </svg>
-                              Detail
+                              Edit
                             </button>
                             <button
                               type="button"
