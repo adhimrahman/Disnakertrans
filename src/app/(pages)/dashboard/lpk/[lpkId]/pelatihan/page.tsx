@@ -2,7 +2,7 @@
 import PelatihanList from "@/components/dashboard/PelatihanList";
 import SearchSortControls from "@/components/dashboard/SearchandSort";
 import { getPelatihanFilteredByJudulContains } from "@/firebase/utils/pelatihan-service";
-import { PelatihanItem } from "@/lib/getPelatihan";
+import { PelatihanItem } from "@/models/Pelatihan";
 
 interface PelatihanDashboardPageProps {
   params: {
@@ -34,7 +34,7 @@ export default async function PelatihanDashboardPage({ params, searchParams }: P
           { value: "Judul", label: "Judul" },
         ]}
       />
-
+      <PelatihanList pelatihan={pelatihan} />
     </div>
   );
 }

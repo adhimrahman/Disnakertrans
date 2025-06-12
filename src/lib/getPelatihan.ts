@@ -1,18 +1,8 @@
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/config";
 import { cache } from "react";
+import { PelatihanItem } from "@/models/Pelatihan";
 
-export type PelatihanItem = {
-    id: string;
-    Judul: string;
-    Deskripsi: string;
-    ImageSampul: string;
-	Tanggal?: string;
-    ImageDesc?: string;
-    Created?: string;
-    Updated?: string;
-    TanggalKegiatan?: string;
-};
 
 export const getPelatihan = cache(async (): Promise<PelatihanItem[]> => {
     const snapshot = await getDocs(collection(db, "kegiatan"));
@@ -20,12 +10,14 @@ export const getPelatihan = cache(async (): Promise<PelatihanItem[]> => {
         const docData = doc.data();
         return {
             id: doc.id,
-            Judul: docData.judul ?? "Tidak ada Judul",
-            Deskripsi: docData.deskripsi ?? "Tidak ada Deskripsi",
-            ImageSampul: docData.gambar_sampul ?? "/images/placeholder.jpg",
-            Created: docData.created_at?.toDate().toISOString() ?? "",
-            Updated: docData.updated_at?.toDate().toISOString() ?? "",
-            TanggalKegiatan: docData.tanggal_kegiatan?.toDate().toISOString() ?? "",
+            judul: docData.judul ?? "Tidak ada Judul",
+            deskripsi: docData.deskripsi ?? "Tidak ada Deskripsi",
+            gambar_pelatihan: docData.gambar_pelatihan ?? "/images/placeholder.jpg",
+            gambar_sampul: docData.gambar_sampul ?? "/images/placeholder.jpg",
+            link_form: docData.link_form ?? "",
+            created_at: docData.created_at?.toDate().toISOString() ?? "",
+            updated_at: docData.updated_at?.toDate().toISOString() ?? "",
+            tanggal_kegiatan: docData.tanggal_kegiatan?.toDate().toISOString() ?? "",
         };
     });
     return data;
