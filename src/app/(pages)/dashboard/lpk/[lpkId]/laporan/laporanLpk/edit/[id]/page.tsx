@@ -2,12 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  Timestamp
-} from 'firebase/firestore';
+import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 import {
   Container,
@@ -19,120 +14,219 @@ import {
   Button,
   Typography,
   FormControlLabel,
-  Radio,
-  CircularProgress
+  Checkbox,
+  IconButton,
+  Grid,
+  CircularProgress,
 } from '@mui/material';
-// import { PesertaLpk } from '@/models/LPK';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-// Tambahkan definisi tipe lokal jika tidak ada di models/LPK
-// (Abaikan jika sudah ada di models/LPK, ini hanya untuk menghindari error import)
-type Kontak = {
-  alamat_tinggal: string;
-  email: string;
-  nomor_hp: string;
+type Instruktur = {
+  nama: string;
+  sertifikasi: boolean;
 };
 
-type PesertaLpk = {
-  nama: string;
-  lpk: number;
+type LaporanLpk = {
+  jenis_pelatihan: string;
+  waktu_pelatihan: Timestamp | null;
   jurusan: string;
-  jenis_kelamin: boolean;
-  tanggal_lahir: any;
-  kontak: Kontak;
-  tanggal_daftar: any;
-  lulus: boolean;
+  jumlah_pendaftar: {
+    pria: number;
+    wanita: number;
+  };
+  jumlah_lulus: {
+    pria: number;
+    wanita: number;
+  };
+  instruktur: Instruktur[];
+  lulus_bersertifikat: number;
+  lulus_kompeten: number;
+  bekerja: number;
   isDelete: boolean;
 };
 
-export default function EditAkunPage() {
+export default function EditLaporanPage() {
   const router = useRouter();
   const { lpkId, id } = useParams();
 
-  const [formData, setFormData] = useState<PesertaLpk>({
-    nama: '',
-    lpk: 0,
+  const [formData, setFormData] = useState<LaporanLpk>({
+    jenis_pelatihan: '',
+    waktu_pelatihan: null,
     jurusan: '',
-    jenis_kelamin: false,
-    tanggal_lahir: null,
-    kontak: { alamat_tinggal: '', email: '', nomor_hp: '' },
-    tanggal_daftar: null,
-    lulus: false,
-    isDelete: false
+    jumlah_pendaftar: { pria: 0, wanita: 0 },
+    jumlah_lulus: { pria: 0, wanita: 0 },
+    instruktur: [{ nama: '', sertifikasi: false }],
+    lulus_bersertifikat: 0,
+    lulus_kompeten: 0,
+    bekerja: 0,
+    isDelete: false,
   });
-  const [errors, setErrors] = useState<Partial<PesertaLpk>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loading, setLoading] = useState(true);
+  
+  const [waktuPelatihanStr, setWaktuPelatihanStr] = useState<string>('');
+  type LaporanLpkErrors = {
+    [K in keyof LaporanLpk]?: string;
+  };
+  const [errors, setErrors] = useState<LaporanLpkErrors>({});
+  const [instrukturErrors, setInstrukturErrors] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
+  // Mengambil data laporan yang akan diedit
   useEffect(() => {
     if (!lpkId || !id) {
       setLoading(false);
       return;
     }
-    (async () => {
-      if (typeof lpkId === 'string' && typeof id === 'string') {
-        const ref = doc(db, `lpk/${String(lpkId)}/peserta`, String(id));
-      const snap = await getDoc(ref);
-      if (snap.exists()) {
-        const data = snap.data() as PesertaLpk;
-        setFormData({
-          nama: data.nama || '',
-          lpk: data.lpk || 0,
-          jurusan: data.jurusan || '',
-          jenis_kelamin: data.jenis_kelamin ?? false,
-          tanggal_lahir: data.tanggal_lahir ?? null,
-          kontak: data.kontak || { alamat_tinggal: '', email: '', nomor_hp: '' },
-          tanggal_daftar: data.tanggal_daftar ?? null,
-          lulus: data.lulus ?? false,
-          isDelete: false
-        });
+
+    const fetchData = async () => {
+      try {
+        const laporanRef = doc(db, `lpk/${lpkId}/laporan`, id as string);
+        const docSnap = await getDoc(laporanRef);
+        
+        if (docSnap.exists()) {
+          const data = docSnap.data() as LaporanLpk;
+          
+          // Format tanggal untuk input
+          const tanggalPelatihan = data.waktu_pelatihan instanceof Timestamp 
+            ? data.waktu_pelatihan.toDate().toISOString().split('T')[0] 
+            : '';
+          
+          setFormData(data);
+          setWaktuPelatihanStr(tanggalPelatihan);
+          
+          // Inisialisasi error untuk instruktur
+          setInstrukturErrors(new Array(data.instruktur.length).fill(''));
+        } else {
+          console.error('Dokumen tidak ditemukan');
+        }
+      } catch (error) {
+        console.error('Error mengambil data:', error);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-      }
-    })();
+    };
+
+    fetchData();
   }, [lpkId, id]);
 
+  // Handler untuk perubahan input
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev: PesertaLpk) => ({ ...prev, [name]: name === 'lpk' ? Number(value) : value }));
-    setErrors((prev: Partial<PesertaLpk>) => ({ ...prev, [name]: '' }));
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
-  const toggleGender = (val: boolean) => {
-    setFormData((prev: PesertaLpk) => ({ ...prev, jenis_kelamin: val }));
+  // Handler untuk input nested (jumlah pendaftar/lulus)
+  const handleNestedChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    parent: 'jumlah_pendaftar' | 'jumlah_lulus',
+    child: 'pria' | 'wanita'
+  ) => {
+    const { value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [parent]: {
+        ...prev[parent],
+        [child]: Number(value)
+      }
+    }));
   };
 
+  // Handler untuk perubahan data instruktur
+  const handleInstrukturChange = (index: number, field: keyof Instruktur, value: any) => {
+    const newInstruktur = [...formData.instruktur];
+    newInstruktur[index] = { ...newInstruktur[index], [field]: value };
+    setFormData(prev => ({ ...prev, instruktur: newInstruktur }));
+    
+    // Reset error untuk instruktur ini
+    if (field === 'nama' && value.trim() !== '') {
+      const newErrors = [...instrukturErrors];
+      newErrors[index] = '';
+      setInstrukturErrors(newErrors);
+    }
+  };
+
+  // Menambah baris instruktur baru
+  const addInstruktur = () => {
+    setFormData(prev => ({
+      ...prev,
+      instruktur: [...prev.instruktur, { nama: '', sertifikasi: false }]
+    }));
+    setInstrukturErrors(prev => [...prev, '']);
+  };
+
+  // Menghapus baris instruktur
+  const removeInstruktur = (index: number) => {
+    if (formData.instruktur.length > 1) {
+      const newInstruktur = [...formData.instruktur];
+      newInstruktur.splice(index, 1);
+      setFormData(prev => ({ ...prev, instruktur: newInstruktur }));
+      
+      const newErrors = [...instrukturErrors];
+      newErrors.splice(index, 1);
+      setInstrukturErrors(newErrors);
+    }
+  };
+
+  // Handler untuk submit form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    
+    // Validasi form
+    const newErrors: LaporanLpkErrors = {};
+    const newInstrukturErrors: string[] = [];
+    let hasError = false;
 
-    const newErrors: any = {};
-    if (!formData.nama) newErrors.nama = 'Nama harus diisi';
-    if (!formData.lpk) newErrors.lpk = 'Nomor LPK harus diisi';
-    if (!formData.jurusan) newErrors.jurusan = 'Jurusan harus diisi';
-    if (!formData.tanggal_lahir) newErrors.tanggal_lahir = 'Tanggal lahir harus diisi';
-    if (!formData.kontak.alamat_tinggal) newErrors.kontak = { ...(newErrors.kontak || {}), alamat_tinggal: 'Alamat tinggal harus diisi' };
-    if (!formData.kontak.email) newErrors.kontak = { ...(newErrors.kontak || {}), email: 'Email harus diisi' };
-    if (!formData.kontak.nomor_hp) newErrors.kontak = { ...(newErrors.kontak || {}), nomor_hp: 'Nomor HP harus diisi' };
-    if (!formData.tanggal_daftar) newErrors.tanggal_daftar = 'Tanggal daftar harus diisi';
+    if (!formData.jenis_pelatihan) {
+      newErrors.jenis_pelatihan = 'Jenis pelatihan harus diisi';
+      hasError = true;
+    }
+    
+    if (!waktuPelatihanStr) {
+      newErrors.waktu_pelatihan = 'Waktu pelatihan harus diisi';
+      hasError = true;
+    }
+    
+    if (!formData.jurusan) {
+      newErrors.jurusan = 'Jurusan harus diisi';
+      hasError = true;
+    }
+    
+    // Validasi instruktur
+    formData.instruktur.forEach((inst, index) => {
+      if (!inst.nama.trim()) {
+        newInstrukturErrors[index] = `Nama instruktur #${index + 1} harus diisi`;
+        hasError = true;
+      } else {
+        newInstrukturErrors[index] = '';
+      }
+    });
 
     setErrors(newErrors);
-    if (Object.keys(newErrors).length) {
+    setInstrukturErrors(newInstrukturErrors);
+    
+    if (hasError) {
       setIsSubmitting(false);
       return;
     }
 
-    if (!lpkId || !id) return;
     try {
-      const ref = doc(db, `lpk/${String(lpkId)}/peserta`, String(id));
-      await updateDoc(ref, {
+      if (!lpkId || !id) return;
+      
+      const laporanRef = doc(db, `lpk/${lpkId}/laporan`, id as string);
+      
+      await updateDoc(laporanRef, {
         ...formData,
-        tanggal_lahir: formData.tanggal_lahir instanceof Timestamp ? formData.tanggal_lahir : formData.tanggal_lahir ? Timestamp.fromDate(new Date(formData.tanggal_lahir)) : null,
-        tanggal_daftar: formData.tanggal_daftar instanceof Timestamp ? formData.tanggal_daftar : formData.tanggal_daftar ? Timestamp.fromDate(new Date(formData.tanggal_daftar)) : null
+        waktu_pelatihan: Timestamp.fromDate(new Date(waktuPelatihanStr))
       });
-      alert('Akun berhasil diupdate');
-      router.back();
+      
+      alert('Laporan berhasil diperbarui');
+      router.push(`/dashboard/lpk/${lpkId}/laporan/laporanLpk`);
     } catch (err) {
-      console.error('Update error:', err);
+      console.error('Error memperbarui laporan:', err);
+      alert('Terjadi kesalahan saat memperbarui data');
     } finally {
       setIsSubmitting(false);
     }
@@ -151,31 +245,35 @@ export default function EditAkunPage() {
       <Card sx={{ borderRadius: 2, overflow: 'hidden' }} elevation={1}>
         <Box sx={{ bgcolor: 'primary.main', color: 'white', p: 2 }}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            Edit Peserta LPK
+            Edit Laporan LPK
           </Typography>
-        </Box>
-        <Divider />
+        </Box>       
+        <Divider sx={{ mb: 3 }} />
         <Box component="form" onSubmit={handleSubmit} sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
           <Stack spacing={2}>
             <TextField
-              label="Nama Peserta"
-              name="nama"
-              value={formData.nama}
+              label="Jenis Pelatihan"
+              name="jenis_pelatihan"
+              value={formData.jenis_pelatihan}
               onChange={handleChange}
-              error={!!errors.nama}
-              helperText={errors.nama}
+              error={!!errors.jenis_pelatihan}
+              helperText={errors.jenis_pelatihan}
               fullWidth
+              required
             />
+            
             <TextField
-              label="Nomor LPK"
-              name="lpk"
-              type="number"
-              value={formData.lpk}
-              onChange={handleChange}
-              error={!!errors.lpk}
-              helperText={errors.lpk}
+              label="Waktu Pelatihan"
+              type="date"
+              value={waktuPelatihanStr}
+              onChange={e => setWaktuPelatihanStr(e.target.value)}
+              error={!!errors.waktu_pelatihan}
+              helperText={errors.waktu_pelatihan}
+              InputLabelProps={{ shrink: true }}
               fullWidth
+              required
             />
+            
             <TextField
               label="Jurusan"
               name="jurusan"
@@ -184,96 +282,154 @@ export default function EditAkunPage() {
               error={!!errors.jurusan}
               helperText={errors.jurusan}
               fullWidth
+              required
             />
-            <Box>
-              <Typography variant="subtitle1">Jenis Kelamin</Typography>
-              <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
-                <FormControlLabel
-                  control={<Radio checked={formData.jenis_kelamin} onChange={() => toggleGender(true)} />}
+            
+            <Typography variant="subtitle1">Jumlah Pendaftar</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
                   label="Pria"
+                  type="number"
+                  value={formData.jumlah_pendaftar.pria}
+                  onChange={(e) => handleNestedChange(e, 'jumlah_pendaftar', 'pria')}
+                  fullWidth
+                  inputProps={{ min: 0 }}
                 />
-                <FormControlLabel
-                  control={<Radio checked={!formData.jenis_kelamin} onChange={() => toggleGender(false)} />}
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
                   label="Wanita"
+                  type="number"
+                  value={formData.jumlah_pendaftar.wanita}
+                  onChange={(e) => handleNestedChange(e, 'jumlah_pendaftar', 'wanita')}
+                  fullWidth
+                  inputProps={{ min: 0 }}
                 />
-              </Box>
-            </Box>
-            <TextField
-              label="Tanggal Lahir"
-              type="date"
-              value={
-                formData.tanggal_lahir instanceof Timestamp
-                  ? formData.tanggal_lahir.toDate().toISOString().split('T')[0]
-                  : formData.tanggal_lahir || ''
-              }
-              onChange={e => setFormData((prev: PesertaLpk) => ({
-                ...prev,
-                tanggal_lahir: e.target.value ? Timestamp.fromDate(new Date(e.target.value)) : null
-              }))}
-              InputLabelProps={{ shrink: true }}
-              error={!!errors.tanggal_lahir}
-              helperText={typeof errors.tanggal_lahir === 'string' ? errors.tanggal_lahir : undefined}
-              fullWidth
-            />
-            <TextField
-              label="Alamat Tinggal"
-              value={formData.kontak.alamat_tinggal}
-              onChange={e => setFormData((prev: PesertaLpk) => ({ ...prev, kontak: { ...prev.kontak, alamat_tinggal: e.target.value } }))}
-              error={!!errors.kontak?.alamat_tinggal}
-              helperText={errors.kontak?.alamat_tinggal}
-              fullWidth
-            />
-            <TextField
-              label="Email"
-              value={formData.kontak.email}
-              onChange={e => setFormData((prev: PesertaLpk) => ({ ...prev, kontak: { ...prev.kontak, email: e.target.value } }))}
-              error={!!errors.kontak?.email}
-              helperText={errors.kontak?.email}
-              fullWidth
-            />
-            <TextField
-              label="Nomor HP"
-              value={formData.kontak.nomor_hp}
-              onChange={e => setFormData((prev: PesertaLpk) => ({ ...prev, kontak: { ...prev.kontak, nomor_hp: e.target.value } }))}
-              error={!!errors.kontak?.nomor_hp}
-              helperText={errors.kontak?.nomor_hp}
-              fullWidth
-            />
-            <Box>
-              <Typography variant="subtitle1">Kelulusan</Typography>
-              <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
-                <FormControlLabel
-                  control={<Radio checked={formData.lulus} onChange={() => setFormData((prev: PesertaLpk) => ({ ...prev, lulus: true }))} />}
-                  label="Telah Lulus"
+              </Grid>
+            </Grid>
+            
+            <Typography variant="subtitle1">Jumlah Lulus</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  label="Pria"
+                  type="number"
+                  value={formData.jumlah_lulus.pria}
+                  onChange={(e) => handleNestedChange(e, 'jumlah_lulus', 'pria')}
+                  fullWidth
+                  inputProps={{ min: 0 }}
                 />
-                <FormControlLabel
-                  control={<Radio checked={!formData.lulus} onChange={() => setFormData((prev: PesertaLpk) => ({ ...prev, lulus: false }))} />}
-                  label="Belum Lulus"
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label="Wanita"
+                  type="number"
+                  value={formData.jumlah_lulus.wanita}
+                  onChange={(e) => handleNestedChange(e, 'jumlah_lulus', 'wanita')}
+                  fullWidth
+                  inputProps={{ min: 0 }}
                 />
-              </Box>
-            </Box>
-            <TextField
-              label="Tanggal Daftar"
-              type="date"
-              value={
-                formData.tanggal_daftar instanceof Timestamp
-                  ? formData.tanggal_daftar.toDate().toISOString().split('T')[0]
-                  : formData.tanggal_daftar || ''
-              }
-              onChange={e => setFormData((prev: PesertaLpk) => ({
-                ...prev,
-                tanggal_daftar: e.target.value ? Timestamp.fromDate(new Date(e.target.value)) : null
-              }))}
-              InputLabelProps={{ shrink: true }}
-              error={!!errors.tanggal_daftar}
-              helperText={typeof errors.tanggal_daftar === 'string' ? errors.tanggal_daftar : undefined}
-              fullWidth
-            />
+              </Grid>
+            </Grid>
+            
+            <Typography variant="subtitle1">Instruktur</Typography>
+            {formData.instruktur.map((instruktur, index) => (
+              <Grid container key={index} spacing={2} alignItems="center">
+                <Grid item xs={9}>
+                  <TextField
+                    label={`Nama Instruktur #${index + 1}`}
+                    error={!!instrukturErrors[index]}
+                    helperText={instrukturErrors[index]}
+                    value={instruktur.nama}
+                    onChange={(e) => handleInstrukturChange(index, 'nama', e.target.value)}
+                    fullWidth
+                    required
+                  />
+                </Grid>
+                <Grid item xs={2}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={instruktur.sertifikasi}
+                        onChange={(e) => handleInstrukturChange(index, 'sertifikasi', e.target.checked)}
+                        color="primary"
+                      />
+                    }
+                    label="Sertifikasi"
+                  />
+                </Grid>
+                <Grid item xs={1}>
+                  <IconButton 
+                    onClick={() => removeInstruktur(index)} 
+                    disabled={formData.instruktur.length === 1}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Grid>
+              </Grid>
+            ))}
+            <Button
+              variant="outlined"
+              startIcon={<AddIcon />}
+              onClick={addInstruktur}
+              sx={{ alignSelf: 'flex-start' }}
+            >
+              Tambah Instruktur
+            </Button>
+            
+            <Typography variant="subtitle1">Statistik Kelulusan</Typography>
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <TextField
+                  label="Lulus Bersertifikat"
+                  type="number"
+                  name="lulus_bersertifikat"
+                  value={formData.lulus_bersertifikat}
+                  onChange={handleChange}
+                  fullWidth
+                  inputProps={{ min: 0 }}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  label="Lulus Kompeten"
+                  type="number"
+                  name="lulus_kompeten"
+                  value={formData.lulus_kompeten}
+                  onChange={handleChange}
+                  fullWidth
+                  inputProps={{ min: 0 }}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  label="Bekerja"
+                  type="number"
+                  name="bekerja"
+                  value={formData.bekerja}
+                  onChange={handleChange}
+                  fullWidth
+                  inputProps={{ min: 0 }}
+                />
+              </Grid>
+            </Grid>
           </Stack>
+          
           <Divider sx={{ my: 2 }} />
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button type="submit" variant="contained" color="primary" disabled={isSubmitting}>
-              {isSubmitting ? <CircularProgress size={16} color="inherit" /> : 'Edit'}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+            <Button 
+              variant="outlined" 
+              onClick={() => router.back()}
+            >
+              Batal
+            </Button>
+            <Button 
+              type="submit" 
+              variant="contained" 
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? <CircularProgress size={24} /> : 'Perbarui Laporan'}
             </Button>
           </Box>
         </Box>
