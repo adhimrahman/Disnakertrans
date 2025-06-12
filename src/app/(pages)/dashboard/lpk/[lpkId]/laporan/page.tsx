@@ -1,6 +1,6 @@
 'use client';
 
-import Card from "@/components/Dashboard/Card";
+import Card from "@/components/dashboard/Card";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { BsFillFileEarmarkArrowUpFill } from "react-icons/bs";

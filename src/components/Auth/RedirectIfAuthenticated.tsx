@@ -24,7 +24,7 @@ export default function RedirectIfAuthenticated({ children }: { children: React.
 			} else {
 				setChecking(false);
 			}
-		});
+		});	
 
 		return () => unsubscribe();
 	}, [router]);

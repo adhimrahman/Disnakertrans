@@ -15,9 +15,14 @@ import {
   DocumentData
 } from "firebase/firestore";
 import { db } from "@/firebase/config";
+import { getAuth } from "firebase/auth";
 import { SortColumn } from "@/components/Dashboard/Sort";
 import { SearchInput } from "@/components/Dashboard/SearchTable";
 import { PulseLoader } from "react-spinners";
+
+const auth = getAuth();
+const user = auth.currentUser;
+const uid = user?.uid;
 
 export default function AccountsPage() {  
   const [akun, setAkun] = useState<DocumentData[]>([]);
@@ -138,12 +143,12 @@ export default function AccountsPage() {
   );
 
   const handelEdit = async (id: string) => { 
-    router.push(`/dashboard/disnaker/lpk/${lpkId}/akun/edit/${id}`);
+    router.push(`/dashboard/lpk/${lpkId}/laporan/peserta/edit/${id}`);
   }
 
   const handleSingleDelete = async (id: string) => {
     try {
-      const docRef = doc(db, `lpk/${lpkId}/peserta`, id);
+      const docRef = doc(db, `user/${lpkId}/peserta`, id);
       await updateDoc(docRef, { isDelete: true });
       // Notification could be added here
     } catch (error) {
@@ -190,23 +195,25 @@ export default function AccountsPage() {
             <h2 className="text-xl font-semibold text-gray-800">Data Peserta LPK</h2>
             <p className="text-sm text-gray-500 mt-1">Kelola data peserta lembaga pelatihan kerja</p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <button
               type="button"
               className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-              onClick={() => {router.push(`/dashboard/disnaker/lpk/${lpkId}/akun/add`)}}
+              onClick={() => {router.push(`/dashboard/lpk/${lpkId}/laporan/peserta/add`)}}
             >
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
               </svg>
               Tambah Peserta
             </button>
-            <SearchInput
-              value={searchTerm}
-              onChange={setSearchTerm} 
-              placeholder="Cari peserta..."
-              className="border border-gray-300 rounded-md px-4 py-2 text-sm min-w-[250px] text-gray-800 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-            />
+            <div className="flex items-center w-full sm:w-auto">
+              <SearchInput
+                value={searchTerm}
+                onChange={setSearchTerm} 
+                placeholder="Cari peserta..."
+                className="border border-gray-300 rounded-md px-4 py-2 text-sm w-full min-w-[250px] text-gray-800 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              />
+            </div>
           </div>
         </div>
         
