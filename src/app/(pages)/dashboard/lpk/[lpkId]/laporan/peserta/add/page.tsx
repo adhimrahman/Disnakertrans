@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { collection, addDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/firebase/config';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import {
   Container,
   Card,
@@ -16,8 +16,24 @@ import {
   Radio,
   FormControlLabel,
 } from '@mui/material';
-import { PesertaLpk } from '@/models/LPK';
-import { useRouter } from 'next/navigation';
+
+type Kontak = {
+  alamat_tinggal: string;
+  email: string;
+  nomor_hp: string;
+};
+
+type PesertaLpk = {
+  nama: string;
+  lpk: number;
+  jurusan: string;
+  jenis_kelamin: boolean;
+  tanggal_lahir: any;
+  kontak: Kontak;
+  tanggal_daftar: any;
+  lulus: boolean;
+  isDelete: boolean;
+};
 
 export default function ContentsJobVacancyForm() {
   const { lpkId } = useParams();
@@ -43,11 +59,11 @@ export default function ContentsJobVacancyForm() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev: PesertaLpk) => ({
       ...prev,
       [name]: name === 'lpk' ? Number(value) : value,
     }));
-    setErrors(prev => ({ ...prev, [name]: '' }));
+    setErrors((prev: Partial<PesertaLpk>) => ({ ...prev, [name]: '' }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,7 +94,7 @@ export default function ContentsJobVacancyForm() {
         isDelete: false,
       });
       alert('Peserta berhasil ditambahkan');
-      router.push(`/dashboard/disnaker/lpk/${lpkId}/akun`);
+      router.push(`/dashboard/lpk/${lpkId}/laporan/peserta`);
     } catch (err) {
       console.error('Error:', err);
     } finally {
@@ -132,7 +148,7 @@ export default function ContentsJobVacancyForm() {
                   control={
                     <Radio
                       checked={formData.jenis_kelamin === true}
-                      onChange={() => setFormData(prev => ({ ...prev, jenis_kelamin: true }))}
+                      onChange={() => setFormData((prev: PesertaLpk) => ({ ...prev, jenis_kelamin: true }))}
                     />
                   }
                   label="Pria"
@@ -141,7 +157,7 @@ export default function ContentsJobVacancyForm() {
                   control={
                     <Radio
                       checked={formData.jenis_kelamin === false}
-                      onChange={() => setFormData(prev => ({ ...prev, jenis_kelamin: false }))}
+                      onChange={() => setFormData((prev: PesertaLpk) => ({ ...prev, jenis_kelamin: false }))}
                     />
                   }
                   label="Wanita"
@@ -162,7 +178,7 @@ export default function ContentsJobVacancyForm() {
               label="Alamat Tinggal"
               name="alamat_tinggal"
               value={formData.kontak.alamat_tinggal}
-              onChange={e => setFormData(prev => ({ ...prev, kontak: { ...prev.kontak, alamat_tinggal: e.target.value } }))}
+              onChange={e => setFormData((prev: PesertaLpk) => ({ ...prev, kontak: { ...prev.kontak, alamat_tinggal: e.target.value } }))}
               error={!!errors.kontak?.alamat_tinggal}
               helperText={errors.kontak?.alamat_tinggal}
               fullWidth
@@ -171,7 +187,7 @@ export default function ContentsJobVacancyForm() {
               label="Email"
               name="email"
               value={formData.kontak.email}
-              onChange={e => setFormData(prev => ({ ...prev, kontak: { ...prev.kontak, email: e.target.value } }))}
+              onChange={e => setFormData((prev: PesertaLpk) => ({ ...prev, kontak: { ...prev.kontak, email: e.target.value } }))}
               error={!!errors.kontak?.email}
               helperText={errors.kontak?.email}
               fullWidth
@@ -180,7 +196,7 @@ export default function ContentsJobVacancyForm() {
               label="Nomor HP"
               name="nomor_hp"
               value={formData.kontak.nomor_hp}
-              onChange={e => setFormData(prev => ({ ...prev, kontak: { ...prev.kontak, nomor_hp: e.target.value } }))}
+              onChange={e => setFormData((prev: PesertaLpk) => ({ ...prev, kontak: { ...prev.kontak, nomor_hp: e.target.value } }))}
               error={!!errors.kontak?.nomor_hp}
               helperText={errors.kontak?.nomor_hp}
               fullWidth
@@ -192,7 +208,7 @@ export default function ContentsJobVacancyForm() {
                   control={
                     <Radio
                       checked={formData.lulus === true}
-                      onChange={() => setFormData(prev => ({ ...prev, lulus: true }))}
+                      onChange={() => setFormData((prev: PesertaLpk) => ({ ...prev, lulus: true }))}
                     />
                   }
                   label="Telah Lulus"
@@ -201,7 +217,7 @@ export default function ContentsJobVacancyForm() {
                   control={
                     <Radio
                       checked={formData.lulus === false}
-                      onChange={() => setFormData(prev => ({ ...prev, lulus: false }))}
+                      onChange={() => setFormData((prev: PesertaLpk) => ({ ...prev, lulus: false }))}
                     />
                   }
                   label="Belum Lulus"
