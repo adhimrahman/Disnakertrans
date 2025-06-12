@@ -15,7 +15,9 @@ export async function handleLogin(email: string, password: string) {
         akses_terakhir: serverTimestamp(),
     });
 
-    return { user, userData: docSnap.data() };
+    const token = await user.getIdToken();
+
+    return { user, token, userData: docSnap.data() };
 }
 
 export async function resetPassword(email: string) {

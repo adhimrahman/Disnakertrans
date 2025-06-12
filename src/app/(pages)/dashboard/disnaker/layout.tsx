@@ -2,12 +2,15 @@
 
 import Sidebar from '@/components/dashboard/Sidebar';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import useSessionExpire from '@/hooks/useSessionExpire';
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  useSessionExpire();
+
   return (
     <ProtectedRoute expectedRole='disnaker'>
     <div className="flex h-screen overflow-hidden">
