@@ -18,6 +18,7 @@ import { IoTrash } from "react-icons/io5";
 import { HiOutlineArrowSmRight, HiOutlineArrowSmLeft } from "react-icons/hi";
 import { PulseLoader } from "react-spinners";
 
+
 export default function LaporanLpkPage() {
   const [laporan, setLaporan] = useState<DocumentData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
