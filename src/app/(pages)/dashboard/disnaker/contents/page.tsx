@@ -5,21 +5,19 @@ import Link from 'next/link';
 
 export default function ContentsForm() {
   return (
-    <div className="flex flex-row justify-center w-full gap-x-36 items-center mt-20">
+    <div className="flex flex-row justify-center w-full gap-x-44 items-center h-screen overflow-hidden">
       <Link href="/dashboard/disnaker/contents/kegiatan">
         <Card
-          className="w-72 h-96 align-middle"
+          className="w-72 h-72 align-middle"
           title="Kegiatan Disnaker"
-          body="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quae."
-          icon={<BsFillFileEarmarkArrowUpFill />}
+          icon={<BsFillFileEarmarkArrowUpFill className='text-darkBlue'/>}
         />
       </Link>
       <Link href="/dashboard/disnaker/contents/lowongan">
         <Card
-          className="w-72 h-96"
+          className="w-72 h-72"
           title="Lowongan Perkerjaan"
-          body="Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quae."
-          icon={<MdContentPasteSearch />}
+          icon={<MdContentPasteSearch className='text-darkBlue'/>}
         />
       </Link>
     </div>

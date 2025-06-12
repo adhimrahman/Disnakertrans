@@ -1,8 +1,8 @@
 type CardProps = {
   className?: string;
   title: string;
-  body: string;
-  icon: React.ReactNode;
+  body?: string;
+  icon?: React.ReactNode;
   onClick?: () => void;
   titleClassName?: string;
   bodyClassName?: string;

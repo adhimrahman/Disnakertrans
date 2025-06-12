@@ -23,7 +23,7 @@ export default async function LaporanLPKDashboardPage({ searchParams }: LaporanL
     ? await getLaporanLPKFiltered(search, sort, order)
     : await getLaporanLPKBySort(sort, order);
   return (
-    <div className="flex flex-col gap-y-4 bg-white rounded-md p-4">
+    <div className="flex flex-col gap-y-4">
       <SearchSortControls
         sortOptions={[
           { value: "nama_lembaga", label: "Nama LPK" },
@@ -31,7 +31,7 @@ export default async function LaporanLPKDashboardPage({ searchParams }: LaporanL
         ]}
       />
       <span className="px-3" />
-      <LaporanLPKList laporanLPK={laporanLPK} />
+      <LaporanLPKList laporanLPK={laporanLPK}/>
     </div>
   );
 };

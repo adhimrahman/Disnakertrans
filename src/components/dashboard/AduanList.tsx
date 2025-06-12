@@ -23,23 +23,23 @@ export default function AduanList({ aduan, pageSize = 10 }: AduanListProps) {
       <table className="min-w-full table-auto shadow-md">
         <thead className="bg-gray-100 text-sm font-medium">
           <tr className="text-white bg-steelBlue">
-            <th className="px-4 py-3 text-left">No</th>
-            <th className="px-4 py-3 min-w-[180px] text-left">Nama Pengadu</th>
-            <th className="px-4 py-3 min-w-[180px] text-left">Email</th>
-            <th className="px-4 py-3 min-w-[180px] text-left">Tanggal Pengaduan</th>
-            <th className="px-4 py-3 min-w-[180px] text-left">Aksi</th>
+            <th className="px-4 py-3 text-center">No</th>
+            <th className="px-4 py-3 min-w-[180px] text-center">Nama Pengadu</th>
+            <th className="px-4 py-3 min-w-[180px] text-center">Email</th>
+            <th className="px-4 py-3 min-w-[180px] text-center">Tanggal Pengaduan</th>
+            <th className="px-4 py-3 min-w-[180px] text-center">Aksi</th>
           </tr>
         </thead>
         <tbody>
           {visibleRow.length > 0 && aduan.length > 0 ? (
             visibleRow.map((item, index) => (
               <tr key={item.id} className="text-sm text-gray-800 font-medium hover:bg-blue-50 transition-colors duration-150 ease-in-out">
-                <td className="px-4 py-3">{(currentPage - 1) * 10 + (index + 1)}</td>
+                <td className="px-4 py-3 text-center">{(currentPage - 1) * 10 + (index + 1)}</td>
                 <td className="px-4 py-3">{(item.nama_depan + " " + item.nama_belakang) || "Tidak ada"}</td>
                 <td className="px-4 py-3">{item.email || "Tidak ada"}</td>
-                <td className="px-4 py-3">{item.created_at || "Tidak ada"}</td>
+                <td className="px-4 py-3 text-center">{item.created_at || "Tidak ada"}</td>
                 <td className="px-4 py-3">
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-2 justify-center">
                     <button
                       type="button"
                       className="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 ease-in-out"

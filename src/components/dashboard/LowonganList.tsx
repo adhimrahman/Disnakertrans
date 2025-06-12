@@ -24,25 +24,25 @@ export default function LowonganList({ lowongan, pageSize = 10 }: LowonganListPr
       <table className="min-w-full table-auto shadow-md">
         <thead className="bg-gray-100 text-sm font-medium">
           <tr className="text-white bg-steelBlue">
-            <th className="px-4 py-3 text-left">No</th>
-            <th className="px-4 py-3 min-w-[180px] text-left">Nama Lowongan</th>
-            <th className="px-4 py-3 min-w-[120px] text-left">Perusahaan</th>
-            <th className="px-4 py-3 min-w-[140px] text-left">Batas Lowongan</th>
-            <th className="px-4 py-3 text-left">Link Lowongan</th>
-            <th className="px-4 py-3 min-w-[120px] text-left">Tanggal Unggah</th>
-            <th className="px-4 py-3 text-left">Link Konten</th>
-            <th className="px-4 py-3 text-left">Aksi</th>
+            <th className="px-4 py-3 text-center">No</th>
+            <th className="px-4 py-3 min-w-[180px] text-center">Posisi Lowongan</th>
+            <th className="px-4 py-3 min-w-[120px] text-center">Perusahaan</th>
+            <th className="px-4 py-3 min-w-[160px] text-center">Batas Lowongan</th>
+            <th className="px-4 py-3 min-w-[160px] text-center">Link Lowongan</th>
+            <th className="px-4 py-3 min-w-[160px] text-center">Tanggal Unggah</th>
+            <th className="px-4 py-3 min-w-[120px] text-center">Link Konten</th>
+            <th className="px-4 py-3 min-w-[120px] text-center">Aksi</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-500">
           {visibleRow.length > 0 && lowongan.length > 0 ? (
             visibleRow.map((item, index) => (
               <tr key={item.id} className="text-sm text-gray-800 font-medium hover:bg-blue-50 transition-colors duration-150 ease-in-out">
-                <td className="px-4 py-3">{(currentPage - 1) * 10 + (index + 1)}</td>
+                <td className="px-4 py-3 text-center">{(currentPage - 1) * 10 + (index + 1)}</td>
                 <td className="px-4 py-3">{item.posisi_lowongan || "Tidak ada"}</td>
                 <td className="px-4 py-3">{item.perusahaan || "Tidak ada"}</td>
-                <td className="px-4 py-3">{item.tenggat_lowongan || "Tidak ada"}</td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 text-center">{item.tenggat_lowongan || "Tidak ada"}</td>
+                <td className="px-4 py-3 text-center">
                   {item.link_lowongan ? (
                     <Link
                       href={item.link_lowongan ?? ""}
@@ -60,8 +60,8 @@ export default function LowonganList({ lowongan, pageSize = 10 }: LowonganListPr
                     <span className="text-gray-500">Tidak ada</span>
                   )}
                 </td>
-                <td className="px-4 py-3">{item.created_at}</td>
-                <td className="px-4 py-3">
+                <td className="px-4 py-3 text-center">{item.created_at}</td>
+                <td className="px-4 py-3 text-center">
                   {item.link_konten ? (
                     <Link
                       href={item.link_konten ?? ""}
@@ -79,8 +79,8 @@ export default function LowonganList({ lowongan, pageSize = 10 }: LowonganListPr
                     <span className="text-gray-500">Tidak ada</span>
                   )}
                 </td>
-                <td className="px-4 py-3">
-                  <div className="flex space-x-2">
+                <td className="px-4 py-3 text-center">
+                  <div className="flex space-x-2 justify-center">
                     <button
                       type="button"
                       className="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 ease-in-out"
