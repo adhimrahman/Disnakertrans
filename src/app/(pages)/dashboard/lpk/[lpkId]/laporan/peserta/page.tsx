@@ -15,9 +15,14 @@ import {
   DocumentData
 } from "firebase/firestore";
 import { db } from "@/firebase/config";
+import { getAuth } from "firebase/auth";
 import { SortColumn } from "@/components/Dashboard/Sort";
 import { SearchInput } from "@/components/Dashboard/SearchTable";
 import { PulseLoader } from "react-spinners";
+
+const auth = getAuth();
+const user = auth.currentUser;
+const uid = user?.uid;
 
 export default function AccountsPage() {  
   const [akun, setAkun] = useState<DocumentData[]>([]);
@@ -42,7 +47,7 @@ export default function AccountsPage() {
     const fetchAllPeserta = async () => {
       if (!lpkId) return;
       console.log("fetchAllPeserta triggered. sort:", sortField, sortOrder);
-      const pesertaRef = collection(db, `lpk/${lpkId}/peserta`);
+      const pesertaRef = collection(db, `lpk/${uid}/peserta`);
       const req = query(
         pesertaRef,
         where("isDelete", "==", false),
@@ -143,7 +148,7 @@ export default function AccountsPage() {
 
   const handleSingleDelete = async (id: string) => {
     try {
-      const docRef = doc(db, `lpk/${lpkId}/peserta`, id);
+      const docRef = doc(db, `user/${lpkId}/peserta`, id);
       await updateDoc(docRef, { isDelete: true });
       // Notification could be added here
     } catch (error) {
@@ -173,7 +178,7 @@ export default function AccountsPage() {
     try {
       // Use Promise.all to wait for all deletions to complete
       await Promise.all(selectedRows.map(async (id) => {
-        const docRef = doc(db, `lpk/${lpkId}/peserta`, id);
+        const docRef = doc(db, `lpk/${uid}/peserta`, id);
         await updateDoc(docRef, { isDelete: true });
       }));
       setSelectedRows([]);  // Clear selected rows after delete
