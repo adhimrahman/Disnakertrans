@@ -47,7 +47,7 @@ export default function AccountsPage() {
     const fetchAllPeserta = async () => {
       if (!lpkId) return;
       console.log("fetchAllPeserta triggered. sort:", sortField, sortOrder);
-      const pesertaRef = collection(db, `lpk/${uid}/peserta`);
+      const pesertaRef = collection(db, `lpk/${lpkId}/peserta`);
       const req = query(
         pesertaRef,
         where("isDelete", "==", false),
@@ -178,7 +178,7 @@ export default function AccountsPage() {
     try {
       // Use Promise.all to wait for all deletions to complete
       await Promise.all(selectedRows.map(async (id) => {
-        const docRef = doc(db, `lpk/${uid}/peserta`, id);
+        const docRef = doc(db, `lpk/${lpkId}/peserta`, id);
         await updateDoc(docRef, { isDelete: true });
       }));
       setSelectedRows([]);  // Clear selected rows after delete

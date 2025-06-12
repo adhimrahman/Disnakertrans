@@ -194,7 +194,7 @@ export default function LaporanLpkPage() {
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <div className="flex space-x-2">
-                        <button
+                        {/* <button
                           type="button"
                           className="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 ease-in-out"
                           onClick={() => router.push(`/dashboard/lpk/${lpkId}/laporan/detail/${item.id}`)}
@@ -204,7 +204,7 @@ export default function LaporanLpkPage() {
                             <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"></path>
                           </svg>
                           Detail
-                        </button>
+                        </button> */}
                         <button
                           type="button"
                           className="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 ease-in-out"
