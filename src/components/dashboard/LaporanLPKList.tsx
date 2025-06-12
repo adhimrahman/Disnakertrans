@@ -2,7 +2,7 @@
 
 import PaginationControls from "./Pagination";
 import { useState } from "react";
-import { LaporanItem } from "@/models/LPK";
+import { LaporanItem } from "@/models/Laporan";
 
 interface LaporanLPKListProps {
   laporanLPK: LaporanItem[]

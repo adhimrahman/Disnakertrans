@@ -16,7 +16,7 @@ import {
   Radio,
   FormControlLabel,
 } from '@mui/material';
-import { PesertaLpk } from '@/models/LPK';
+import { PesertaLpk } from '@/models/Laporan';
 import { useRouter } from 'next/navigation';
 
 export default function ContentsJobVacancyForm() {

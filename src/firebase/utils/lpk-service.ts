@@ -1,6 +1,6 @@
 import { collection, getDocs, limit, orderBy, query, QueryDocumentSnapshot, startAfter } from "firebase/firestore";
 import { db } from "../config";
-import { LaporanItem } from "@/models/LPK";
+import { LaporanItem } from "@/models/Laporan";
 
 export async function getLowongan(): Promise<LaporanItem[]> {
   const collectionRef = collection(db, "laporan");

@@ -1,7 +1,7 @@
 import LaporanLPKList from "@/components/dashboard/LaporanLPKList";
 import SearchSortControls from "@/components/dashboard/SearchandSort";
 import { getLaporanLPKBySort, getLaporanLPKFiltered } from "@/firebase/utils/lpk-service";
-import { LaporanItem } from "@/models/LPK";
+import { LaporanItem } from "@/models/Laporan";
 
 interface LaporanLPKDashboardPageProps {
   searchParams?: {
