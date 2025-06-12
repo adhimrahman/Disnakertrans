@@ -149,7 +149,7 @@ export default function LaporanLpkPage() {
               </div>
             )}
           </div>
-          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
             <button
               type="button"
               className="bg-steelBlue hover:bg-darkBlue transition px-4 py-2 rounded-xl text-white w-full lg:w-auto hover:cursor-pointer"
@@ -157,7 +157,14 @@ export default function LaporanLpkPage() {
             >
               + Tambah Laporan
             </button>
-            <SearchInput value={searchTerm} onChange={setSearchTerm} placeholder="Cari laporan..." />
+            <div className="flex items-center w-full sm:w-auto">
+              <SearchInput 
+                value={searchTerm} 
+                onChange={setSearchTerm} 
+                placeholder="Cari laporan..." 
+                className="border border-gray-300 rounded-md px-4 py-2 text-sm w-full text-gray-800 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              />
+            </div>
           </div>
         </div>
         
