@@ -156,7 +156,7 @@ export default function LaporanLpkPage() {
             <h2 className="text-xl font-semibold text-gray-800">Data Laporan LPK</h2>
             <p className="text-sm text-gray-500 mt-1">Kelola laporan pelatihan lembaga pelatihan kerja</p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <button
               type="button"
               className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
@@ -167,12 +167,14 @@ export default function LaporanLpkPage() {
               </svg>
               Tambah Laporan
             </button>
-            <SearchInput
-              value={searchTerm}
-              onChange={setSearchTerm} 
-              placeholder="Cari laporan..."
-              className="border border-gray-300 rounded-md px-4 py-2 text-sm min-w-[250px] text-gray-800 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-            />
+            <div className="flex items-center w-full sm:w-auto">
+              <SearchInput
+                value={searchTerm}
+                onChange={setSearchTerm} 
+                placeholder="Cari laporan..."
+                className="border border-gray-300 rounded-md px-4 py-2 text-sm w-full min-w-[250px] text-gray-800 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              />
+            </div>
           </div>
         </div>
         
