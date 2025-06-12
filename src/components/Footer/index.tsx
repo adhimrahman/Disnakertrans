@@ -43,8 +43,9 @@ export default function Footer() {
 							<div>
 								<h4 className="font-bold text-white mb-1">Tentang Kami</h4>
 								<p className="text-justify">
-									Dinas KetenagaLorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-									Sed do eiusmod tempor incididunt ut labore. At vero eos et accusamus et iusto odio dignissimos ducimus qui fuga.
+								Dinas Ketenagakerjaan Gowa memiliki komitmen untuk meningkatkan kualitas sumber daya manusia dan 
+								menciptakan lapangan kerja yang inklusif dan berkelanjutan. Melalui berbagai program pelatihan, pendampingan pencari kerja, 
+								serta kerjasama dengan berbagai pihak, kami hadir untuk memberikan solusi ketenagakerjaan yang nyata bagi masyarakat.
 								</p>
 							</div>
 							<div className="mt-6">
