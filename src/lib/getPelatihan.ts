@@ -5,6 +5,9 @@ import { PelatihanItem } from "@/models/Pelatihan";
 
 
 export const getPelatihan = cache(async (lpkId: string): Promise<PelatihanItem[]> => {
+    if (!lpkId || typeof lpkId !== 'string' || lpkId.trim() === '') {
+        return [];
+    }
     const snapshot = await getDocs(collection(db, "akun", lpkId, "pelatihan"));
     const data = snapshot.docs.map((doc) => {
         const docData = doc.data();

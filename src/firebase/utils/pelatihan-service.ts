@@ -151,6 +151,11 @@ export async function getPelatihanFilteredByJudulContains(
   sort: keyof PelatihanItem = "created_at",
   order: "asc" | "desc" = "asc"
 ): Promise<PelatihanItem[]> {
+  // Handle jika lpkId undefined/null/kosong
+  if (!lpkId || typeof lpkId !== 'string' || lpkId.trim() === '') {
+    // Bisa return [] agar tidak error, atau throw error custom
+    return [];
+  }
   const pelatihanRef = collection(db, "akun", lpkId, "pelatihan");
 
   let q;

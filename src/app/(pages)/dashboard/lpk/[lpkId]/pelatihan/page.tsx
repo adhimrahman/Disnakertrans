@@ -16,10 +16,17 @@ interface PelatihanDashboardPageProps {
 
 export default async function PelatihanDashboardPage({ params, searchParams }: PelatihanDashboardPageProps) {
   const { lpkId } = params;
+  console.log("lpkId:", lpkId);
+  if (!lpkId) {
+    throw new Error("lpkId is missing in URL params");
+  }
 
-  const search = searchParams?.search?.trim() || "";
-  const sort: keyof PelatihanItem = (searchParams?.sort as keyof PelatihanItem) || "created_at";
-  const order = searchParams?.order || "asc";
+  // Await searchParams if it's a Promise
+  const resolvedSearchParams = await searchParams;
+
+  const search = resolvedSearchParams?.search?.trim() || "";
+  const sort: keyof PelatihanItem = (resolvedSearchParams?.sort as keyof PelatihanItem) || "created_at";
+  const order = resolvedSearchParams?.order || "asc";
 
   const pelatihan = await getPelatihanFilteredByJudulContains(lpkId, search, sort, order);
 

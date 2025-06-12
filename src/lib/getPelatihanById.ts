@@ -13,7 +13,7 @@ export type PelatihanItem = {
 };
 
 export async function getPelatihanById(id: string): Promise<PelatihanItem | null> {
-    const docRef = doc(db, "kegiatan", id); 
+    const docRef = doc(db, "pelatihan", id); 
     const docSnap = await getDoc(docRef);
     if (!docSnap.exists()) return null;
 
