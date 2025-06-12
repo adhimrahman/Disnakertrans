@@ -5,9 +5,9 @@ import { TextField, Button, Box, Typography, CircularProgress, Stack, Card, Cont
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import { useRouter, useParams } from "next/navigation";
-import { getPelatihanById, getPelatihan as updatePelatihan } from "@/firebase/utils/pelatihan-service";
-import { uploadPelatihanImage } from "@/firebase/utils/pelatihan-service";
+import { getPelatihanById, updatePelatihan, uploadPelatihanImage } from "@/firebase/utils/pelatihan-service";  //<--- fix disini
 import Image from "next/image";
+
 
 export default function EditPelatihanPage() {
   const [formData, setFormData] = useState({
