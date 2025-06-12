@@ -14,7 +14,7 @@ import {
   createPelatihanFormData
 } from "@/validation/pelatihan-validation";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { PelatihanItem } from "@/lib/getPelatihan";
+import { PelatihanItem } from "@/models/Pelatihan";
 
 
 
@@ -73,17 +73,25 @@ export async function getPelatihan(lpkId: string, p0: string, p1: { gambar_pelat
   return snapshot.docs.map((doc) => {
     const data = doc.data();
     const created = data.created_at?.toDate();
+    const updated = data.updated_at?.toDate();
     const tanggalStr = created
       ? created.toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })
+      : null;
+    const updatedStr = updated
+      ? updated.toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })
       : null;
 
     return {
       id: doc.id,
-      Judul: data.judul ?? '',
-      Deskripsi: data.deskripsi ?? '',
-      ImageSampul: data.gambar_sampul ?? '',
-      link: data.link ?? '',
+      judul: data.judul ?? '',
+      deskripsi: data.deskripsi ?? '',
+      gambar_pelatihan: data.gambar_sampul ?? '',
+      tanggal_kegiatan: data.tanggal_pelatihan
+        ? data.tanggal_pelatihan.toDate().toISOString().substring(0, 10)
+        : '',
+      link_form: data.link ?? '',
       created_at: tanggalStr,
+      updated_at: updatedStr,
     };
   });
 }
@@ -158,7 +166,7 @@ export async function deletePelatihanById(lpkId: string, pelatihanId: string) {
 export async function getPelatihanFilteredByJudulContains(
   lpkId: string,
   search: string,
-  sort: keyof PelatihanItem = "Created",
+  sort: keyof PelatihanItem = "created_at",
   order: "asc" | "desc" = "asc"
 ): Promise<PelatihanItem[]> {
   const pelatihanRef = collection(db, "akun", lpkId, "pelatihan");
@@ -187,11 +195,17 @@ export async function getPelatihanFilteredByJudulContains(
 
     return {
       id: doc.id,
-      Judul: data.judul ?? '',
-      Deskripsi: data.deskripsi ?? '',
-      ImageSampul: data.gambar_sampul ?? '',
-      link: data.link ?? '',
+      judul: data.judul ?? '',
+      deskripsi: data.deskripsi ?? '',
+      gambar_pelatihan: data.gambar_sampul ?? '',
+      tanggal_kegiatan: data.tanggal_pelatihan
+        ? data.tanggal_pelatihan.toDate().toISOString().substring(0, 10)
+        : '',
+      link_form: data.link ?? '',
       created_at: tanggalStr,
+      updated_at: data.updated_at?.toDate()
+        ? data.updated_at.toDate().toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })
+        : null,
     };
   });
 }
