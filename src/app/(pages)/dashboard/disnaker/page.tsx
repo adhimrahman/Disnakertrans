@@ -24,8 +24,6 @@ import {
 } from '@mui/icons-material';
 import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore';
 import { db } from '@/firebase/config';
-import { id, is, ta } from 'date-fns/locale';
-import { isDataView } from 'util/types';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({
@@ -47,101 +45,105 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
+        console.log("Fetching dashboard statistics...");
+        
         // Mendapatkan jumlah akun
-        const usersSnapshot = await getDocs(collection(db, 'Users'));
+        const usersRef = collection(db, 'Users');
+        const usersSnapshot = await getDocs(usersRef);
         const totalAkun = usersSnapshot.size;
+        console.log(`Total akun: ${totalAkun}`);
 
-        // Mendapatkan jumlah LPK (filter by role/type jika ada)
-        const lpkSnapshot = await getDocs(query(collection(db, 'lpk'))); //where('role', '==', 'lpk')));
-
+        // Mendapatkan jumlah LPK
+        const lpkRef = collection(db, 'lpk');
+        const lpkSnapshot = await getDocs(lpkRef);
         const totalLPK = lpkSnapshot.size;
+        console.log(`Total LPK: ${totalLPK}`);
 
         // Mendapatkan jumlah kegiatan
-        const kegiatanSnapshot = await getDocs(collection(db, 'Kegiatan'));
+        const kegiatanRef = collection(db, 'Kegiatan');
+        const kegiatanQuery = query(kegiatanRef, where("isDelete", "!=", true));
+        const kegiatanSnapshot = await getDocs(kegiatanQuery);
         const totalKegiatan = kegiatanSnapshot.size;
+        console.log(`Total kegiatan: ${totalKegiatan}`);
         
         // Menghitung kegiatan per bulan
         const kegiatanByMonth = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        const currentYear = new Date().getFullYear();
+        
         kegiatanSnapshot.forEach((doc) => {
           const data = doc.data();
-          if (data.Tanggal && data.Tanggal instanceof Timestamp) {
-            const date = data.Tanggal.toDate();
-            const month = date.getMonth();
-            kegiatanByMonth[month]++;
+          if (data.tanggal_kegiatan && data.tanggal_kegiatan instanceof Timestamp) {
+            const date = data.tanggal_kegiatan.toDate();
+            // Only count events from current year
+            if (date.getFullYear() === currentYear) {
+              const month = date.getMonth();
+              kegiatanByMonth[month]++;
+            }
           }
         });
+        console.log('Kegiatan by month:', kegiatanByMonth);
 
-        // Mendapatkan jumlah lowongan
-        const lowonganSnapshot = await getDocs(collection(db, 'lowongan'));
+        // Mendapatkan jumlah lowongan yang tidak dihapus
+        const lowonganRef = collection(db, 'lowongan');
+        const lowonganQuery = query(lowonganRef, where("isDelete", "!=", true));
+        const lowonganSnapshot = await getDocs(lowonganQuery);
         const totalLowongan = lowonganSnapshot.size;
+        console.log(`Total lowongan: ${totalLowongan}`);
         
         // Menghitung lowongan per bulan
         const lowonganByMonth = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        
         lowonganSnapshot.forEach((doc) => {
           const data = doc.data();
-          // Debug log untuk melihat struktur data
-          console.log('Data Lowongan:', {
-            id: doc.id,
-            tanggal_unggah: data.tanggal_unggah,
-            isTimestamp: data.tanggal_unggah instanceof Timestamp,
-            isDelete : data.isDelete,
-          });
-
-          // Perbaikan pengecekan tanggal
-          if (!data.isDelete || data.isDelete === undefined) {
-            try {
+          
+          try {
+            if (data.tanggal_unggah) {
               let date;
+              
               if (data.tanggal_unggah instanceof Timestamp) {
                 date = data.tanggal_unggah.toDate();
               } else if (data.tanggal_unggah?.seconds) {
-                // Jika tanggal tersimpan dalam format { seconds, nanoseconds }
                 date = new Timestamp(
                   data.tanggal_unggah.seconds,
                   data.tanggal_unggah.nanoseconds || 0
                 ).toDate();
               }
-
-              console.log(`[CHECK] ID: ${doc.id}, tanggal_unggah:`, data.tanggal_unggah);
-
-              if (date) {
+              
+              // Only count lowongan from current year
+              if (date && date.getFullYear() === currentYear) {
                 const month = date.getMonth();
                 lowonganByMonth[month]++;
-                console.log(`Berhasil menambahkan lowongan untuk bulan ${month + 1}`);
               }
-            } catch (error) {
-              console.error('Error processing date for document:', doc.id, error);
             }
+          } catch (error) {
+            console.error(`Error processing date for lowongan ${doc.id}:`, error);
           }
         });
-
         console.log('Lowongan by month:', lowonganByMonth);
 
         // Mendapatkan jumlah laporan dari semua LPK
         let totalLaporan = 0;
-
-        // 1. Ambil semua dokumen LPK
-        const allLpkDataSnapshot = await getDocs(collection(db, 'lpk'));
-
-        // 2. Iterasi setiap LPK untuk mengambil laporannya
+        
+        // Iterasi setiap LPK untuk mengambil laporannya
         const laporanPromises = lpkSnapshot.docs.map(async (lpkDoc) => {
           const lpkId = lpkDoc.id;
-          
-          // Periksa apakah collection laporan ada untuk LPK ini
           try {
-            const laporanSnapshot = await getDocs(collection(db, `lpk/${lpkId}/laporan`));
+            const laporanRef = collection(db, `lpk/${lpkId}/laporan`);
+            const laporanQuery = query(laporanRef, where("isDelete", "!=", true));
+            const laporanSnapshot = await getDocs(laporanQuery);
             return laporanSnapshot.size;
           } catch (error) {
-            console.log(`Tidak ada laporan untuk LPK ${lpkId} atau error:`, error);
+            console.log(`Error fetching laporan for LPK ${lpkId}:`, error);
             return 0;
           }
         });
 
-        // 3. Tunggu semua promises selesai dan jumlahkan
+        // Tunggu semua promises selesai dan jumlahkan
         const laporanCounts = await Promise.all(laporanPromises);
         totalLaporan = laporanCounts.reduce((sum, count) => sum + count, 0);
-
         console.log(`Total laporan dari semua LPK: ${totalLaporan}`);
 
+        // Update state
         setStats({
           totalAkun,
           totalLPK,

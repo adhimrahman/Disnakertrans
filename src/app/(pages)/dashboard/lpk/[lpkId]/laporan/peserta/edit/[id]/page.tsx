@@ -22,7 +22,27 @@ import {
   Radio,
   CircularProgress
 } from '@mui/material';
-import { PesertaLpk } from '@/models/Laporan';
+// import { PesertaLpk } from '@/models/LPK';
+
+// Tambahkan definisi tipe lokal jika tidak ada di models/LPK
+// (Abaikan jika sudah ada di models/LPK, ini hanya untuk menghindari error import)
+type Kontak = {
+  alamat_tinggal: string;
+  email: string;
+  nomor_hp: string;
+};
+
+type PesertaLpk = {
+  nama: string;
+  lpk: number;
+  jurusan: string;
+  jenis_kelamin: boolean;
+  tanggal_lahir: any;
+  kontak: Kontak;
+  tanggal_daftar: any;
+  lulus: boolean;
+  isDelete: boolean;
+};
 
 export default function EditAkunPage() {
   const router = useRouter();
@@ -73,12 +93,12 @@ export default function EditAkunPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: name === 'lpk' ? Number(value) : value }));
-    setErrors(prev => ({ ...prev, [name]: '' }));
+    setFormData((prev: PesertaLpk) => ({ ...prev, [name]: name === 'lpk' ? Number(value) : value }));
+    setErrors((prev: Partial<PesertaLpk>) => ({ ...prev, [name]: '' }));
   };
 
   const toggleGender = (val: boolean) => {
-    setFormData(prev => ({ ...prev, jenis_kelamin: val }));
+    setFormData((prev: PesertaLpk) => ({ ...prev, jenis_kelamin: val }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -186,7 +206,7 @@ export default function EditAkunPage() {
                   ? formData.tanggal_lahir.toDate().toISOString().split('T')[0]
                   : formData.tanggal_lahir || ''
               }
-              onChange={e => setFormData(prev => ({
+              onChange={e => setFormData((prev: PesertaLpk) => ({
                 ...prev,
                 tanggal_lahir: e.target.value ? Timestamp.fromDate(new Date(e.target.value)) : null
               }))}
@@ -198,7 +218,7 @@ export default function EditAkunPage() {
             <TextField
               label="Alamat Tinggal"
               value={formData.kontak.alamat_tinggal}
-              onChange={e => setFormData(prev => ({ ...prev, kontak: { ...prev.kontak, alamat_tinggal: e.target.value } }))}
+              onChange={e => setFormData((prev: PesertaLpk) => ({ ...prev, kontak: { ...prev.kontak, alamat_tinggal: e.target.value } }))}
               error={!!errors.kontak?.alamat_tinggal}
               helperText={errors.kontak?.alamat_tinggal}
               fullWidth
@@ -206,7 +226,7 @@ export default function EditAkunPage() {
             <TextField
               label="Email"
               value={formData.kontak.email}
-              onChange={e => setFormData(prev => ({ ...prev, kontak: { ...prev.kontak, email: e.target.value } }))}
+              onChange={e => setFormData((prev: PesertaLpk) => ({ ...prev, kontak: { ...prev.kontak, email: e.target.value } }))}
               error={!!errors.kontak?.email}
               helperText={errors.kontak?.email}
               fullWidth
@@ -214,7 +234,7 @@ export default function EditAkunPage() {
             <TextField
               label="Nomor HP"
               value={formData.kontak.nomor_hp}
-              onChange={e => setFormData(prev => ({ ...prev, kontak: { ...prev.kontak, nomor_hp: e.target.value } }))}
+              onChange={e => setFormData((prev: PesertaLpk) => ({ ...prev, kontak: { ...prev.kontak, nomor_hp: e.target.value } }))}
               error={!!errors.kontak?.nomor_hp}
               helperText={errors.kontak?.nomor_hp}
               fullWidth
@@ -223,11 +243,11 @@ export default function EditAkunPage() {
               <Typography variant="subtitle1">Kelulusan</Typography>
               <Box sx={{ display: 'flex', gap: 2, mt: 1 }}>
                 <FormControlLabel
-                  control={<Radio checked={formData.lulus} onChange={() => setFormData(prev => ({ ...prev, lulus: true }))} />}
+                  control={<Radio checked={formData.lulus} onChange={() => setFormData((prev: PesertaLpk) => ({ ...prev, lulus: true }))} />}
                   label="Telah Lulus"
                 />
                 <FormControlLabel
-                  control={<Radio checked={!formData.lulus} onChange={() => setFormData(prev => ({ ...prev, lulus: false }))} />}
+                  control={<Radio checked={!formData.lulus} onChange={() => setFormData((prev: PesertaLpk) => ({ ...prev, lulus: false }))} />}
                   label="Belum Lulus"
                 />
               </Box>
@@ -240,7 +260,7 @@ export default function EditAkunPage() {
                   ? formData.tanggal_daftar.toDate().toISOString().split('T')[0]
                   : formData.tanggal_daftar || ''
               }
-              onChange={e => setFormData(prev => ({
+              onChange={e => setFormData((prev: PesertaLpk) => ({
                 ...prev,
                 tanggal_daftar: e.target.value ? Timestamp.fromDate(new Date(e.target.value)) : null
               }))}
