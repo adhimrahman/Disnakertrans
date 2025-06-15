@@ -1,6 +1,8 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import CustomButton from "@/components/ui/CustomButton";
+import ContactForm from "@/components/ui/ContactForm";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 export default function ContactUsPage() {
     return (
@@ -16,31 +18,7 @@ export default function ContactUsPage() {
                 </div>
 
                 <div className="bg-white shadow-lg border rounded-xl p-8 mt-6 max-w-5xl mx-auto">
-                    <form className="grid grid-cols-1 md:grid-cols-2 gap-6 text-gray-800">
-                        <div>
-                            <label className="text-gray-800 font-medium mb-2 block">Nama Depan</label>
-                            <input type="text" placeholder="Nama Depan" className="w-full p-3 rounded-lg border border-gray-300 bg-gray-50 placeholder:text-gray-400" />
-                        </div>
-                        <div>
-                            <label className="text-gray-800 font-medium mb-2 block">Nama Belakang</label>
-                            <input type="text" placeholder="Nama Belakang" className="w-full p-3 rounded-lg border border-gray-300 bg-gray-50 placeholder:text-gray-400" />
-                        </div>
-                        <div>
-                            <label className="text-gray-800 font-medium mb-2 block">Email</label>
-                            <input type="email" placeholder="user@example.com" className="w-full p-3 rounded-lg border border-gray-300 bg-gray-50 placeholder:text-gray-400" />
-                        </div>
-                        <div>
-                            <label className="text-gray-800 font-medium mb-2 block">No Telp</label>
-                            <input type="tel" placeholder="08xxxxxxxx" className="w-full p-3 rounded-lg border border-gray-300 bg-gray-50 placeholder:text-gray-400" />
-                        </div>
-                        <div className="md:col-span-2">
-                            <label className="text-gray-800 font-medium mb-2 block">Pesan Anda</label>
-                            <textarea rows={5} placeholder="Tulis pesan Anda..." className="w-full p-3 rounded-lg border border-gray-300 bg-gray-50 placeholder:text-gray-400"></textarea>
-                        </div>
-                        <div className="md:col-span-2">
-                            <CustomButton text="Kirim Pesan" width="w-full" py={3} />
-                        </div>
-                    </form>
+                    <ContactForm />
                 </div>
             </section>
 
@@ -62,6 +40,7 @@ export default function ContactUsPage() {
                 </div>
             </section>
 
+            <ToastContainer position="top-right" autoClose={3000} />
             <Footer />
         </div>
     );
