@@ -1,157 +1,240 @@
-'use client'
+// 'pelatihan/add/page.tsx'
 
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  CircularProgress,
-  Grid,
-  TextField,
-  Typography,
-} from '@mui/material'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { z } from 'zod'
-import { createPelatihanSchema } from '@/validation/pelatihan-validation'// Pastikan path-nya benar
-import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
-import { storage } from '@/firebase/config'
+'use client';
 
-const formSchema = z.object({
-  nama: z.string().min(1, { message: 'Nama pelatihan wajib diisi' }),
-  tanggal: z.string().min(1, { message: 'Tanggal wajib diisi' }),
-  lokasi: z.string().min(1, { message: 'Lokasi wajib diisi' }),
-  penyelenggara: z.string().min(1, { message: 'Penyelenggara wajib diisi' }),
-  deskripsi: z.string().min(1, { message: 'Deskripsi wajib diisi' }),
-})
+import Form from 'next/form';
+import React, { useState } from 'react';
+import { TextField, Button, Card, Container, Divider, CircularProgress, Typography, Box, Stack } from '@mui/material';
+import { useParams, useRouter } from 'next/navigation';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import Image from 'next/image';
+import { addPelatihan } from '@/firebase/utils/pelatihan-service';
+import { CreatePelatihan, CreatePelatihanSchema } from '@/validation/pelatihan-validation';
+import { CloudUploadIcon } from 'lucide-react';
 
-type FormData = z.infer<typeof formSchema>
+export default function AddPelatihanPage() {
+  const [formData, setFormData] = useState<CreatePelatihan>({
+    judul: '',
+    deskripsi: '',
+    tanggal_kegiatan: "",
+    gambar_pelatihan: '',
+    link_form: '',
+  });
 
-export default function TambahPelatihanPage() {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<FormData>({ resolver: zodResolver(formSchema) })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [errors, setErrors] = useState<Record<string, any>>({});
+  const [files, setFiles] = useState<{ gambar_pelatihan?: File}>({});
+  const [previews, setPreviews] = useState<{ gambar_pelatihan?: string}>({});
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const { lpkId } = useParams();
+  const router = useRouter();
 
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const [selectedImage, setSelectedImage] = useState<File | null>(null)
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+    setErrors({
+      ...errors,
+      [name]: { _errors: [] },
+    });
+  
+    setErrors({});
+  };
 
-  const onSubmit = async (data: FormData) => {
-    setLoading(true)
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'gambar_pelatihan') => {
+    const file = e.target.files?.[0];
+    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB
+    if (file && file.size > MAX_FILE_SIZE) {
+      alert("Ukuran file terlalu besar. Maksimum 2 MB.");
+      return;
+    }
+    
+    if (file) {
+      setFiles(prev => ({ ...prev, [field]: file }));
+      setPreviews(prev => ({ ...prev, [field]: URL.createObjectURL(file) }));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setErrors((prev: any) => ({
+        ...prev,
+        [field]: { _errors: [] },  // clear error properly
+      }));
+    }
+  };  
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    const newFormData = {
+      ...formData,
+      gambar_pelatihan: previews.gambar_pelatihan || "",
+    };
+
+    const result = CreatePelatihanSchema.safeParse(newFormData);
+    if (!result.success) {
+      setErrors(result.error.format());
+    } else {
+      setErrors({});
+    };
 
     try {
-      let gambarUrl = ''
-
-      if (selectedImage) {
-        const storageRef = ref(storage, `pelatihan/${selectedImage.name}`)
-        const uploadTask = uploadBytesResumable(storageRef, selectedImage)
-        await uploadTask
-        gambarUrl = await getDownloadURL(uploadTask.snapshot.ref)
+      const success = await addPelatihan(lpkId as string, newFormData, files);
+      if (success) {
+        alert("Pelatihan berhasil ditambahkan!");
+        router.push(`/dashboard/lpk/${lpkId}/pelatihan`);
+      } else {
+        alert("Pelatihan gagal ditambahkan! Mohon periksa kembali.");
       }
-
-      createPelatihanSchema.parse({ ...data, gambar: gambarUrl })
-
-      toast.success('Pelatihan berhasil ditambahkan!')
-      reset()
-      router.push('/admin/pelatihan')
-    } catch (error) {
-      console.error('Gagal menambahkan pelatihan:', error)
-      toast.error('Gagal menambahkan pelatihan.')
+    } catch (e) {
+      alert("Terjadi kesalahan saat menyimpan data.");
+      console.error("Error adding document:", e);
     } finally {
-      setLoading(false)
-    }
-  }
+      setIsSubmitting(false);
+    };
+  };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Card>
-        <CardHeader title="Tambah Pelatihan" />
-        <CardContent>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Card elevation={1} sx={{ borderRadius: 2, overflow: 'hidden' }}>
+        <Box className='bg-steelBlue flex justify-between items-center' sx={{ color: 'white', py: 2, px: 3 }} >
+          <Typography variant="h5" component="h1" sx={{ fontWeight: 'bold' }}>
+            Menambah Informasi Pelatihan
+          </Typography>
+        </Box>
+        <Form action="" onSubmit={handleSubmit} style={{
+          padding: 24, display: 'flex', flexDirection: 'column', gap: 24
+        }}>
+          <Stack spacing={3}>
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Judul Konten Pelatihan</Typography>
               <TextField
-                label="Nama Pelatihan"
+                placeholder='Tuliskan judul pelatihan disini'
+                name="judul"
+                value={formData.judul}
+                onChange={handleChange}
                 fullWidth
-                {...register('nama')}
-                error={!!errors.nama}
-                helperText={errors.nama?.message}
+                variant="outlined"
+                size="medium"
+                className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+              {errors?.judul?._errors?.length > 0 && errors.judul._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
+            </Box>
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}>Gambar Pelatihan</Typography>
+              <Box sx={{
+                border: '1px dashed', borderColor: errors.ImageSampul ? 'error.main' : 'divider',
+                p: 3, borderRadius: 2, display: 'flex', flexDirection: 'column',
+                alignItems: 'center', bgcolor: 'background.paper'
+              }}>
+                <Button variant="outlined" component="label" startIcon={<CloudUploadIcon />} sx={{
+                  textTransform: 'none', px: 3, py: 1.5, borderRadius: 1.5, mb: 2
+                }}>
+                  Pilih File
+                  <input
+                    type="file"
+                    name='gambar_pelatihan'
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, 'gambar_pelatihan')}
+                    hidden
+                    className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
+                  />
+                </Button>
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  color: formData.gambar_pelatihan ? 'success.main' : 'text.secondary'
+                }}>
+                  {previews.gambar_pelatihan ? (
+                  <div className='flex flex-col gap-y-3 items-center'>
+                    <Image src={previews.gambar_pelatihan} alt="Preview Gambar Sampul" width={200} height={150} />
+                    <div className='flex flex-row items-center gap-x-2'>
+                      <CheckCircleOutlineIcon fontSize="small"  className='text-green-600'/>
+                      <Typography variant="body2">
+                        Gambar Pelatihan telah diupload!
+                      </Typography>
+                    </div>
+                  </div>
+                ) : (
+                  <Typography variant="body2">
+                    Belum ada gambar yang diunggah
+                  </Typography>
+                )}
+                </Box>
+                {errors?.gambar_pelatihan?._errors.length > 0 && (
+                  <Typography variant="caption" color="error" className='text-md text-red-700'>
+                    {errors.gambar_pelatihan._errors[0]}
+                  </Typography>
+                )}
+              </Box>
+            </Box>
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Deskripsi Pelatihan</Typography>
               <TextField
-                type="date"
-                label="Tanggal"
-                fullWidth
-                InputLabelProps={{ shrink: true }}
-                {...register('tanggal')}
-                error={!!errors.tanggal}
-                helperText={errors.tanggal?.message}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Lokasi"
-                fullWidth
-                {...register('lokasi')}
-                error={!!errors.lokasi}
-                helperText={errors.lokasi?.message}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Penyelenggara"
-                fullWidth
-                {...register('penyelenggara')}
-                error={!!errors.penyelenggara}
-                helperText={errors.penyelenggara?.message}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Deskripsi"
+                placeholder='Tuliskan deskripsi pelatihan disini'
+                name="deskripsi"
+                value={formData.deskripsi}
+                onChange={handleChange}
                 fullWidth
                 multiline
-                rows={4}
-                {...register('deskripsi')}
-                error={!!errors.deskripsi}
-                helperText={errors.deskripsi?.message}
+                rows={8}
+                variant="outlined"
+                className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-            </Grid>
-            <Grid item xs={12}>
-              <Button variant="outlined" component="label" fullWidth>
-                Upload Gambar
-                <input
-                  type="file"
-                  accept="image/*"
-                  hidden
-                  onChange={(e) => {
-                    if (e.target.files?.[0]) {
-                      setSelectedImage(e.target.files[0])
-                    }
-                  }}
-                />
-              </Button>
-              {selectedImage && (
-                <Typography variant="body2" mt={1}>
-                  Gambar dipilih: {selectedImage.name}
-                </Typography>
-              )}
-            </Grid>
-          </Grid>
-        </CardContent>
-        <CardActions sx={{ justifyContent: 'flex-end', px: 3, pb: 2 }}>
-          <Button type="submit" variant="contained" disabled={loading}>
-            {loading ? <CircularProgress size={24} color="inherit" /> : 'Tambah Pelatihan'}
-          </Button>
-        </CardActions>
+              {errors?.deskripsi?._errors?.length > 0 && errors.deskripsi._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
+            </Box>
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Tanggal Pelatihan</Typography>
+              <input
+                name="tanggal_kegiatan"
+                type="date"
+                value={formData.tanggal_kegiatan}
+                onChange={(e) => {
+                  const newDate = e.target.value;
+                  setFormData({ ...formData, tanggal_kegiatan: newDate });
+                }}
+                className='w-full rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base px-2 py-3'
+              />
+              {errors?.tanggal_kegiatan?._errors?.length > 0 && errors.tanggal_kegiatan._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
+            </Box>
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Link Form Pendaftaran</Typography>
+              <TextField
+                placeholder='Tuliskan link form pendaftaran disini'
+                name="link_form"
+                value={formData.link_form}
+                onChange={handleChange}
+                fullWidth
+                variant="outlined"
+                className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
+              />
+              {errors?.link_form?._errors?.length > 0 && errors.link_form._errors.map((msg: string, i: number) => (
+                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
+              ))}
+            </Box>
+          </Stack>
+          <Divider sx={{ my: 2 }} />
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              disabled={isSubmitting}
+              sx={{ minWidth: '150px', py: 1.5, px: 4, borderRadius: 1.5, textTransform: 'uppercase', fontWeight: 'bold' }}
+              startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
+            >
+              {isSubmitting ? 'Mengirim...' : 'SUBMIT'}
+            </Button>
+          </Box>
+        </Form>
       </Card>
-    </form>
-  )
-}
+    </Container>    
+  );
+};

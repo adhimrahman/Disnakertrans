@@ -38,3 +38,19 @@ export async function uploadLowonganImage(file: File): Promise<string> {
     throw error;
   }
 }
+
+export async function uploadPelatihanImage(file: File): Promise<string> {
+  const uniqueFileName = `${uuidv4()}_${file.name}`;
+  const fileRef = ref(storage, `pelatihan/${uniqueFileName}`);
+  try {
+    // Upload file ke Firebase Storage
+    await uploadBytes(fileRef, file);
+
+    // Dapatkan URL download agar bisa diakses publik
+    const downloadUrl = await getDownloadURL(fileRef);
+    return downloadUrl;
+  } catch (error) {
+    console.error("Error uploading file to Firebase Storage:", error);
+    throw error;
+  }
+};
