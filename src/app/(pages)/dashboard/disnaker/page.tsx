@@ -48,21 +48,22 @@ export default function DashboardPage() {
         console.log("Fetching dashboard statistics...");
         
         // Mendapatkan jumlah akun
-        const usersRef = collection(db, 'Users');
+        const usersRef = collection(db, 'akun');
         const usersSnapshot = await getDocs(usersRef);
         const totalAkun = usersSnapshot.size;
         console.log(`Total akun: ${totalAkun}`);
 
         // Mendapatkan jumlah LPK
-        const lpkRef = collection(db, 'lpk');
-        const lpkSnapshot = await getDocs(lpkRef);
+        const lpkRef = collection(db, 'akun');
+        const lpkQuery = query(lpkRef, where("role", "!=", 'disnaker'));
+        const lpkSnapshot = await getDocs(lpkQuery);
         const totalLPK = lpkSnapshot.size;
         console.log(`Total LPK: ${totalLPK}`);
 
         // Mendapatkan jumlah kegiatan
-        const kegiatanRef = collection(db, 'Kegiatan');
+        const kegiatanRef = collection(db, 'kegiatan');
         const kegiatanQuery = query(kegiatanRef, where("isDelete", "!=", true));
-        const kegiatanSnapshot = await getDocs(kegiatanQuery);
+        const kegiatanSnapshot = await getDocs(kegiatanRef);
         const totalKegiatan = kegiatanSnapshot.size;
         console.log(`Total kegiatan: ${totalKegiatan}`);
         
@@ -86,7 +87,7 @@ export default function DashboardPage() {
         // Mendapatkan jumlah lowongan yang tidak dihapus
         const lowonganRef = collection(db, 'lowongan');
         const lowonganQuery = query(lowonganRef, where("isDelete", "!=", true));
-        const lowonganSnapshot = await getDocs(lowonganQuery);
+        const lowonganSnapshot = await getDocs(lowonganRef);
         const totalLowongan = lowonganSnapshot.size;
         console.log(`Total lowongan: ${totalLowongan}`);
         
@@ -97,15 +98,15 @@ export default function DashboardPage() {
           const data = doc.data();
           
           try {
-            if (data.tanggal_unggah) {
+            if (data.tenggat_lowongan) {
               let date;
               
-              if (data.tanggal_unggah instanceof Timestamp) {
-                date = data.tanggal_unggah.toDate();
-              } else if (data.tanggal_unggah?.seconds) {
+              if (data.tenggat_lowongan instanceof Timestamp) {
+                date = data.tenggat_lowongan.toDate();
+              } else if (data.tenggat_lowongan?.seconds) {
                 date = new Timestamp(
-                  data.tanggal_unggah.seconds,
-                  data.tanggal_unggah.nanoseconds || 0
+                  data.tenggat_lowongan.seconds,
+                  data.tenggat_lowongan.nanoseconds || 0
                 ).toDate();
               }
               
@@ -129,8 +130,8 @@ export default function DashboardPage() {
           const lpkId = lpkDoc.id;
           try {
             const laporanRef = collection(db, `lpk/${lpkId}/laporan`);
-            const laporanQuery = query(laporanRef, where("isDelete", "!=", true));
-            const laporanSnapshot = await getDocs(laporanQuery);
+            // const laporanQuery = query(laporanRef, where("isDelete", "!=", true));
+            const laporanSnapshot = await getDocs(laporanRef);
             return laporanSnapshot.size;
           } catch (error) {
             console.log(`Error fetching laporan for LPK ${lpkId}:`, error);
