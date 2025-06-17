@@ -2,7 +2,7 @@
 
 import PelatihanList from "@/components/dashboard/PelatihanList";
 import SearchSortControls from "@/components/dashboard/SearchandSort";
-import { getPelatihanFiltered, getPelatihanBySort } from "@/firebase/utils/pelatihan-service";
+import { getPelatihanFiltered, getPelatihanById } from "@/firebase/utils/pelatihan-service";
 import { PelatihanItem } from "@/models/Pelatihan";
 
 interface PelatihanDashboardPageProps {
@@ -24,10 +24,17 @@ export default async function PelatihanDashboardPage({ params, searchParams }: P
     order = 'asc',
   } = resolvedSearchParams || {};
 
-  const pelatihan = search
+  const pelatihanRaw = search
     ? await getPelatihanFiltered(params.lpkId, search, sort, order)
-    : await getPelatihanBySort(params.lpkId, sort, order);
-  
+    : await getPelatihanById(params.lpkId);
+
+  // Ensure pelatihan is always an array
+  const pelatihan: PelatihanItem[] = Array.isArray(pelatihanRaw)
+    ? pelatihanRaw
+    : pelatihanRaw
+      ? [pelatihanRaw as PelatihanItem]
+      : [];
+
   return (
     <div className="min-w-full flex flex-col gap-y-4 bg-white rounded-md p-4">
       <SearchSortControls
