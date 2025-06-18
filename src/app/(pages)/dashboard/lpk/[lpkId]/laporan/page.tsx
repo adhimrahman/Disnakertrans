@@ -12,8 +12,8 @@ import {
 import { db } from "@/firebase/config";
 import { DocumentData } from "firebase/firestore";
 import { useState, useEffect, useMemo } from "react";
-import { SortColumn } from "@/components/Dashboard/Sort";
-import { SearchInput } from "@/components/Dashboard/SearchTable";
+import { SortColumn } from "@/components/dashboard/Sort";
+import { SearchInput } from "@/components/dashboard/SearchTable";
 import { IoTrash } from "react-icons/io5";
 import { useRouter, useParams } from "next/navigation";
 import { PulseLoader } from "react-spinners";
@@ -63,14 +63,18 @@ export default function LaporanLpkPage() {
   const filteredData = useMemo(() => {
     const term = searchTerm.toLowerCase();
     const filtered = laporan.filter((item) => {
+      // Format and lowercase the date for searching
       const waktuPelaksanaan = item.tanggal_pelaksanaan?.toDate().toLocaleDateString("id-ID", {
         day: "2-digit",
         month: "long",
         year: "numeric",
       }).toLowerCase();
 
+      // Check if the search term exists in any of the relevant fields
       return (
-        item.nama_lembaga.toLowerCase().includes(term) ||
+        (item.nama_lembaga?.toLowerCase() || '').includes(term) ||
+        (item.jenis_pelatihan?.toLowerCase() || '').includes(term) ||
+        (item.keterangan?.toLowerCase() || '').includes(term) ||
         waktuPelaksanaan.includes(term)
       );
     });
