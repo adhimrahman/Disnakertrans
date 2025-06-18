@@ -1,3 +1,4 @@
+'use client';
 import { useEffect, useState } from "react";
 import { BsHouseDoor, BsBook, BsFolder2Open } from "react-icons/bs";
 import { IoLogOutOutline } from "react-icons/io5";

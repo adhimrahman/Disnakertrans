@@ -14,8 +14,12 @@ export default function LoginForm() {
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		try {
-			const { userData } = await handleLogin(email, password);
+			const { token, userData } = await handleLogin(email, password);
 			toast.success("Login berhasil!");
+
+			// localStorage.setItem('lastLogin', JSON.stringify(new Date().toISOString()));
+			localStorage.setItem("token", token); // dari response handleLogin
+			localStorage.setItem("lastActivity", new Date().toISOString());
 
 			if (userData.role === "disnaker") router.push("/dashboard/disnaker");
 			else if (userData.role === "lpk") router.push(`/dashboard/lpk/${userData.lpkId}`);
