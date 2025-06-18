@@ -6,7 +6,8 @@ import { getPelatihanById } from "@/lib/getPelatihanById";
 import PelatihanDetail from "@/components/ClientCompo/PelatihanDetail";
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
-    const data = await getPelatihanById(params.id);
+    const { id } = await params;
+    const data = await getPelatihanById(id);
     if (!data) return { title: "Pelatihan Tidak Ditemukan" };
 
     return {
@@ -16,7 +17,8 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 }
 
 export default async function PelatihanDetailPage({ params }: { params: { id: string } }) {
-    const pelatihan = await getPelatihanById(params.id);
+    const { id } = await params;
+    const pelatihan = await getPelatihanById(id);
     const semuaPelatihan = await getPelatihan();
 
     if (!pelatihan) return notFound();

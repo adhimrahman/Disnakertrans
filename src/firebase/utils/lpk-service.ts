@@ -2,7 +2,7 @@ import { collection, getDocs, limit, orderBy, query, QueryDocumentSnapshot, star
 import { db } from "../config";
 import { LaporanItem } from "@/models/LPK";
 
-export async function getLowongan(): Promise<LaporanItem[]> {
+export async function getLaporan(): Promise<LaporanItem[]> {
   const collectionRef = collection(db, "laporan");
   const laporanLPKCollectionRef = await getDocs(collectionRef);
 
@@ -93,7 +93,7 @@ export async function getLaporanLPKFiltered(
   return filtered;
 };
 
-export async function fetchLowonganPage (pageNumber: number, pageSize: number) {
+export async function fetchLaporanPage (pageNumber: number, pageSize: number) {
   const pageCursors: QueryDocumentSnapshot[] = [];
   const collectionRef = collection(db, "laporan");
   let q = query(collectionRef, orderBy("nama_lembaga"));

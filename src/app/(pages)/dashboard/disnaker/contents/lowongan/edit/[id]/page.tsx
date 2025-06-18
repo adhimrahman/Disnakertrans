@@ -202,9 +202,9 @@ export default function UpdateKontenLowonganPage() {
               ))}
             </Box>
             <Box>
-              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Nama Pekerjaan</Typography>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Posisi Lowongan</Typography>
               <TextField
-                placeholder='Tuliskan nama pekerjaan disini'
+                placeholder='Tuliskan posisi lowongan disini'
                 name="posisi_lowongan"
                 value={formData.posisi_lowongan || ""}
                 onChange={handleChange}
@@ -438,22 +438,6 @@ export default function UpdateKontenLowonganPage() {
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
               {errors?.link_lowongan?._errors?.length > 0 && errors.link_lowongan._errors.map((msg: string, i: number) => (
-                <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
-              ))}
-            </Box>
-            <Box>
-              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Link konten lowongan pekerjaan</Typography>
-              <TextField
-                placeholder='Tuliskan link konten lowongan disini'
-                type='url'
-                name="link_konten"
-                value={formData.link_konten || ""}
-                onChange={handleChange}
-                fullWidth
-                variant="outlined"
-                className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
-              />
-              {errors?.link_konten?._errors?.length > 0 && errors.link_konten._errors.map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
