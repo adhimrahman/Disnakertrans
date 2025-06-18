@@ -5,6 +5,9 @@ import { handleLogin } from "@/lib/auth";
 import { toast } from "react-toastify";
 import CustomButton from "@/components/ui/CustomButton";
 
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
+
 export default function LoginForm() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -55,6 +58,7 @@ export default function LoginForm() {
                 <a href="/forgot-password" className="text-sm text-gray-100 hover:underline">Lupa password?</a>
             </div>
 			<CustomButton text="Login" width="w-full" py={3} variant="blue" className="flex justify-center" />
+			<ToastContainer position="top-center" autoClose={5000} />
 		</form>
 	);
 }
