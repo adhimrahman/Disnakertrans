@@ -21,7 +21,7 @@ import { getPelatihan } from "@/lib/getPelatihan";
 
 export default async function HomePage() {
 	const kegiatan = await getKegiatan();
-	const pelatihan = await getPelatihan(""); // TODO: Replace "" with the appropriate lpkId string
+	const pelatihan = await getPelatihan();
 
 	return (
 		<div className="min-h-screen">
