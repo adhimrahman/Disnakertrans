@@ -6,10 +6,12 @@ import { ArrowRight } from "lucide-react";
 
 type PelatihanItem = {
     id: string;
-    Judul: string;
-    Deskripsi: string;
-    ImageSampul: string;
-    Tanggal?: string;
+    judul: string;
+    deskripsi: string;
+    gambar_pelatihan: string;
+    created_at: string;
+    updated_at: string;
+    tanggal_kegiatan: string;
 };
 
 export default function PelatihanList({ pelatihan } : { pelatihan: PelatihanItem[] }) {
@@ -23,13 +25,13 @@ export default function PelatihanList({ pelatihan } : { pelatihan: PelatihanItem
                     {visiblePelatihan.map((item) => (
                         <div key={item.id} className="relative group rounded-lg overflow-hidden border border-gray-200 shadow-md hover:shadow-xl transition-all duration-300 transform hover:scale-105">
                             <div className="relative w-full h-60 overflow-hidden">
-                                <Image src={item.ImageSampul} alt={item.Judul} sizes="720px" fill className="object-cover object-center" />
+                                <Image src={item.gambar_pelatihan} alt={item.judul} sizes="720px" fill className="object-cover object-center" />
                             </div>
         
                             <div className="p-6 min-h-[164px]">
                                 <h3 className="text-xl font-semibold text-gray-800 mb-2 capitalize hover:cursor-pointer line-clamp-1"
-                                title={item.Judul}>{item.Judul}</h3>
-                                <p className="text-sm text-gray-600 line-clamp-4 text-justify">{item.Deskripsi}</p>
+                                title={item.judul}>{item.judul}</h3>
+                                <p className="text-sm text-gray-600 line-clamp-4 text-justify">{item.deskripsi}</p>
                             </div>
 
                             <div className="px-4 md:px-5 py-4 flex justify-end">

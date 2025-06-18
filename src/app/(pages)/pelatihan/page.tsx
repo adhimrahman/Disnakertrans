@@ -6,7 +6,7 @@ import PelatihanList from "@/components/ClientCompo/PelatihanList";
 import { getPelatihan } from "@/lib/getPelatihan";
 
 export default async function PelatihanPage() {
-	const pelatihan = await getPelatihan();
+const pelatihan = await getPelatihan();
 
 	return (
     <>
