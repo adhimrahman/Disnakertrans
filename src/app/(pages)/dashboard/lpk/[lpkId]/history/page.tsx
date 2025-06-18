@@ -2,7 +2,7 @@
 
 import { useRouter, useParams } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
-import { collection, getDocs, Timestamp } from "firebase/firestore";
+import { collection, getDocs, query, where, doc, DocumentData } from "firebase/firestore";
 import { db } from "@/firebase/config";
 import { BsBriefcaseFill } from "react-icons/bs";
 import Card from "@/components/dashboard/Card";
@@ -13,7 +13,7 @@ import "dayjs/locale/id";
 type Laporan = {
   id: string;
   isDelete?: boolean;
-  waktu_pelatihan: Timestamp;
+  tanggal_pelaksanaan: any;
 };
 
 type GroupedReport = {
@@ -23,28 +23,52 @@ type GroupedReport = {
 };
 
 export default function LpkDetailPage() {
-  const [reports, setReports] = useState<Laporan[]>([]);
+  const [laporan, setLaporan] = useState<Laporan[]>([]);
+  const [akunDocId, setAkunDocId] = useState<string>("");
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const router = useRouter();
-  const params = useParams();
-  const id = params?.lpkId;
-  const [loading, setLoading] = useState(true);
+  const { lpkId } = useParams();
 
   const itemsPerPage = 9;
 
   useEffect(() => {
-    const fetchReports = async () => {
-      if (!id) return;
+    const fetchAkun = async () => {
+      if (!lpkId) return;
+      try {
+        const akunRef = collection(db, "akun");
+        const q = query(akunRef, where("lpkId", "==", lpkId));
+        const akunSnapshot = await getDocs(q);
+        if (!akunSnapshot.empty) {
+          const akunDoc = akunSnapshot.docs[0];
+          setAkunDocId(akunDoc.id);
+        } else {
+          alert("Data akun tidak ditemukan!");
+        }
+      } catch (error) {
+        console.error("Gagal fetch akun:", error);
+      }
+    };
+
+    fetchAkun();
+  }, [lpkId]);
+
+  useEffect(() => {
+    if (!akunDocId) return;
+
+    const fetchLaporan = async () => {
       setLoading(true);
       try {
-        const laporanRef = collection(db, "lpk", id as string, "laporan");
-        const laporanSnap = await getDocs(laporanRef);
-        const laporanData = laporanSnap.docs.map((doc) => ({
+        const laporanRef = collection(db, "laporan");
+        const laporanQuery = query(laporanRef, where("reference", "==", doc(db, "akun", akunDocId)));
+        const laporanSnapshot = await getDocs(laporanQuery);
+        const laporanData = laporanSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
-        } as Laporan)).filter((doc) => doc.isDelete !== true);
-        
-        setReports(laporanData);
+        })) as Laporan[];
+
+        const filteredData = laporanData.filter(item => item.isDelete !== true);
+        setLaporan(filteredData);
       } catch (error) {
         console.error("Gagal fetch laporan:", error);
       } finally {
@@ -52,33 +76,23 @@ export default function LpkDetailPage() {
       }
     };
 
-    if (id) fetchReports();
-  }, [id]);
+    fetchLaporan();
+  }, [akunDocId]);
 
-  // Kelompokkan laporan berdasarkan bulan dan tahun
   const groupedReports = useMemo(() => {
     const groups: Record<string, GroupedReport> = {};
-    
-    reports.forEach((report) => {
-      const date = report.waktu_pelatihan.toDate();
+    laporan.forEach((report) => {
+      const date = report.tanggal_pelaksanaan.toDate();
       const monthYear = dayjs(date).locale("id").format("YYYY – MMMM").toUpperCase();
       
       if (!groups[monthYear]) {
-        groups[monthYear] = {
-          monthYear,
-          count: 0,
-          timestamp: date // Simpan timestamp untuk sorting
-        };
+        groups[monthYear] = { monthYear, count: 0, timestamp: date };
       }
-      
       groups[monthYear].count++;
     });
-    
-    // Ubah menjadi array dan urutkan berdasarkan timestamp (terbaru pertama)
-    return Object.values(groups).sort((a, b) => 
-      b.timestamp.getTime() - a.timestamp.getTime()
-    );
-  }, [reports]);
+
+    return Object.values(groups).sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+  }, [laporan]);
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -100,11 +114,11 @@ export default function LpkDetailPage() {
                 title={group.monthYear}
                 body={`${group.count} Laporan`}
                 icon={<BsBriefcaseFill className="text-black" />}
-                onClick={() => router.push(`/dashboard/lpk/${id}/history/laporan?month=${group.monthYear}`)}
+                onClick={() => router.push(`/dashboard/lpk/${lpkId}/history/laporan?month=${group.monthYear}`)}
               />
             ))}
           </div>
-          
+
           <div className="flex justify-center mt-8 gap-2">
             <button
               onClick={() => setCurrentPage(currentPage - 1)}
@@ -113,21 +127,19 @@ export default function LpkDetailPage() {
             >
               <HiOutlineArrowSmLeft />
             </button>
-            
+
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
               <button
                 key={pageNum}
                 onClick={() => setCurrentPage(pageNum)}
                 className={`px-3 py-2 text-sm border rounded ${
-                  currentPage === pageNum 
-                    ? 'bg-blue-500 text-white' 
-                    : 'text-black hover:bg-gray-300'
+                  currentPage === pageNum ? 'bg-blue-500 text-white' : 'text-black hover:bg-gray-300'
                 }`}
               >
                 {pageNum}
               </button>
             ))}
-            
+
             <button
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={currentPage === totalPages}

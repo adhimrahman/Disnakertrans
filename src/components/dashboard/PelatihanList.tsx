@@ -92,7 +92,7 @@ export default function PelatihanList({ pelatihan, lpkId, pageSize = 10 }: Pelat
                       type="button"
                       className="inline-flex items-center px-3 py-1.5 bg-red-50 border border-red-300 rounded-md font-medium text-red-700 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150 ease-in-out"
                       onClick={() => {
-                        deletePelatihan(lpkId, item.id).then(() => {
+                        deletePelatihan(item.id).then(() => {
                           window.location.reload();
                         });
                       }}
