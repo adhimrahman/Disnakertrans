@@ -36,5 +36,21 @@ export async function uploadLowonganImage(file: File): Promise<string> {
   } catch (error) {
     console.error("Error uploading file to Firebase Storage:", error);
     throw error;
+  };
+};
+
+export async function uploadProfileImage(file: File): Promise<string> {
+  const uniqueFileName = `${uuidv4()}_${file.name}`;
+  const fileRef = ref(storage, `profile/${uniqueFileName}`);
+  try {
+    // Upload file ke Firebase Storage
+    await uploadBytes(fileRef, file);
+
+    // Dapatkan URL download agar bisa diakses publik
+    const downloadUrl = await getDownloadURL(fileRef);
+    return downloadUrl;
+  } catch (error) {
+    console.error("Error uploading file to Firebase Storage:", error);
+    throw error;
   }
 }

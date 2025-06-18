@@ -26,7 +26,7 @@ export default async function LaporanLPKDashboardPage({ searchParams }: LaporanL
     <div className="flex flex-col gap-y-4">
       <SearchSortControls
         sortOptions={[
-          { value: "nama_lembaga", label: "Nama LPK" },
+          { value: "nama_lembaga", label: "Nama Lembaga" },
           { value: "tanggal_pelaksanaan", label: "Tanggal Pelaksanaan" },
         ]}
       />
