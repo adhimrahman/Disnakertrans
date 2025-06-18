@@ -28,6 +28,7 @@ export default async function AduanDashboardPage({ searchParams }: AduanDashboar
         sortOptions={[
           { value: "created_at", label: "Tanggal Unggah" },
           { value: "nama_depan", label: "Nama" },
+          { value: "is_done", label: "Status" },
         ]}
       />
       <span className="px-3" />

@@ -32,7 +32,7 @@ export default function AddPelatihanPage() {
 
   useEffect(() => {
     async function fetchPelatihanPage() {
-      const data = await getPelatihanById(lpkId as string, id as string);
+      const data = await getPelatihanById(id as string);
       if (data) {
         setFormData({
           id: id as string,

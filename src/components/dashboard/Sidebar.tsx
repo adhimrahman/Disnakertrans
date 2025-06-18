@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from "react";
-import { BsHouseDoor, BsBook, BsFillPeopleFill, BsFolder2Open } from "react-icons/bs";
+import { BsHouseDoor, BsBook, BsFolder2Open } from "react-icons/bs";
 import { IoLogOutOutline } from "react-icons/io5";
 import { GrContact } from "react-icons/gr";
 import { HiMenu, HiX } from "react-icons/hi";
@@ -8,6 +8,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase/config";
+import { CgProfile } from "react-icons/cg";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -37,10 +38,9 @@ export default function Sidebar() {
   const Menus: MenuItem[] = [
     { title: "Dashboard", icon: <BsHouseDoor />, to: "/dashboard/disnaker/", spacing: true },
     { title: "Content Pages", icon: <BsBook />, to: "/dashboard/disnaker/contents", spacing: true },
-    { title: "Accounts", icon: <BsFillPeopleFill />, to: "/dashboard/disnaker/accounts", spacing: true },
     { title: "Aduan", icon: <GrContact />, to: "/dashboard/disnaker/aduan", spacing: true },
-    { title: "LPK", icon: <BsFolder2Open />, to: "/dashboard/disnaker/lpk", spacing: true },
-    { title: "Laporan LPK", icon: <BsFolder2Open />, to: "/dashboard/disnaker/LaporanLPK", spacing: true },
+    { title: "Laporan Lembaga", icon: <BsFolder2Open />, to: "/dashboard/disnaker/LaporanLembaga", spacing: true },
+    { title: "Profile", icon: <CgProfile />, to: `/dashboard/disnaker/profile/${process.env.NEXT_PUBLIC_PROFILE_ID}`, spacing: true },
   ];
   const handleLogout = async () => {
     try {

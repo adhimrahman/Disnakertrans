@@ -25,6 +25,7 @@ export const getPelatihan = cache(async (): Promise<PelatihanItem[]> => {
             deskripsi: docData.deskripsi ?? "Tidak ada Deskripsi",
             gambar_pelatihan: docData.gambar_pelatihan ?? "/images/placeholder.jpg",
             link_form: docData.link_form ?? "",
+            link_konten: docData.link_konten ?? "",
             created_at: docData.created_at?.toDate().toISOString() ?? "",
             updated_at: docData.updated_at?.toDate().toISOString() ?? "",
             tanggal_kegiatan: tanggalStr,

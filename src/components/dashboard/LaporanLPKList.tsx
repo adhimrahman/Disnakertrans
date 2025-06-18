@@ -16,17 +16,17 @@ export default function LaporanLPKList({ laporanLPK, pageSize = 10 }: LaporanLPK
   const visibleRow = laporanLPK.slice(startIndex, startIndex + pageSize);
 
   return (
-    <>
+    <div className="bg-white rounded-md p-4 overflow-auto">
       <table className="min-w-full table-auto shadow-md">
         <thead className="bg-gray-100 text-sm font-medium">
           <tr className="text-white bg-steelBlue">
             <th className="px-4 py-3 text-center">No</th>
             <th className="px-4 py-3 min-w-[180px] text-center">Nama Lembaga</th>
             <th className="px-4 py-3 min-w-[180px] text-center">Tanggal Pelaksanaan</th>
-            <th className="px-4 py-3 min-w-[180px] text-center">Jmh Instruktur</th>
-            <th className="px-4 py-3 min-w-[120px] text-center">Jmh Inst. Bersertifikat</th>
-            <th className="px-4 py-3 min-w-[140px] text-center">Yang Mendaftar</th>
-            <th className="px-4 py-3 text-center">Yang Dilatih</th>
+            <th className="px-4 py-3 min-w-[110px] text-center">Jmh Instruktur</th>
+            <th className="px-4 py-3 min-w-[110px] text-center">Jmh Inst. Bersertifikat</th>
+            <th className="px-4 py-3 min-w-[110px] text-center">Yang Mendaftar</th>
+            <th className="px-4 py-3 min-w-[110px] text-center">Yang Dilatih</th>
             <th className="px-4 py-3 min-w-[120px] text-center">Lulus Bersertifikat</th>
             <th className="px-4 py-3 text-center">Lulus Kompeten</th>
             <th className="px-4 py-3 text-center">Bekerja</th>
@@ -36,9 +36,9 @@ export default function LaporanLPKList({ laporanLPK, pageSize = 10 }: LaporanLPK
           {visibleRow.length > 0 && laporanLPK.length > 0 ? (
             visibleRow.map((item, index) => (
               <tr key={item.id} className="text-sm text-gray-800 font-medium hover:bg-blue-50 transition-colors duration-150 ease-in-out">
-                <td className="px-4 py-3">{(currentPage - 1) * 10 + (index + 1)}</td>
+                <td className="px-4 py-3 text-center">{(currentPage - 1) * 10 + (index + 1)}</td>
                 <td className="px-4 py-3">{item.nama_lembaga|| "Tidak ada"}</td>
-                <td className="px-4 py-3">{item.tanggal_pelaksanaan|| "Tidak ada"}</td>
+                <td className="px-4 py-3 text-center">{item.tanggal_pelaksanaan|| "Tidak ada"}</td>
                 <td className="px-4 py-3 text-center">{item.instruktur.jumlah_instruktur || 0 }</td>
                 <td className="px-4 py-3 text-center">{item.instruktur.jumlah_instruktur_sertifikat || 0 }</td>
                 <td className="px-4 py-3 text-center">{item.peserta.jumlah_pendaftar || 0 }</td>
@@ -71,6 +71,6 @@ export default function LaporanLPKList({ laporanLPK, pageSize = 10 }: LaporanLPK
             onPageChange={setCurrentPage}
           />
         </div>
-    </>
+    </div>
   );
-}
+};

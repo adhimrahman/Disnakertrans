@@ -24,21 +24,21 @@ export default function KegiatanList({ kegiatan, pageSize = 10 }: KegiatanListPr
       <table className="min-w-full table-auto shadow-md">
         <thead className="bg-gray-100 text-sm font-medium">
           <tr>
-            <th className="px-4 py-3 text-left text-white bg-steelBlue">No</th>
-            <th className="px-4 py-3 text-left text-white bg-steelBlue min-w-[250px]">Judul</th>
-            <th className="px-4 py-3 text-left text-white bg-steelBlue">Tanggal</th>
-            <th className="px-4 py-3 text-left text-white bg-steelBlue">Link Unggahan</th>
-            <th className="px-4 py-3 text-left text-white bg-steelBlue">Aksi</th>
+            <th className="px-4 py-3 text-center text-white bg-steelBlue">No</th>
+            <th className="px-4 py-3 text-center text-white bg-steelBlue w-[600px]">Judul</th>
+            <th className="px-4 py-3 text-center text-white bg-steelBlue">Tanggal</th>
+            <th className="px-4 py-3 text-center text-white bg-steelBlue">Link Unggahan</th>
+            <th className="px-4 py-3 text-center text-white bg-steelBlue">Aksi</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-500">
           { visibleRow.length > 0 && kegiatan.length > 0 ? (
             visibleRow.map((item, index) => (
               <tr key={item.id} className="hover:bg-blue-50 font-medium transition-colors duration-150 ease-in-out">
-                <td className="px-4 py-3 text-sm text-gray-800 font-medium">{(currentPage - 1) * 10 + (index + 1)}</td>
+                <td className="px-4 py-3 text-sm text-gray-800 font-medium text-center">{(currentPage - 1) * 10 + (index + 1)}</td>
                 <td className="px-4 py-3 text-sm text-gray-800 font-medium">{item.judul || "Tidak ada"}</td>
-                <td className="px-4 py-3 text-sm text-gray-800">{item.created_at || "Tidak ada"}</td>
-                <td className="px-4 py-3 text-sm">
+                <td className="px-4 py-3 text-sm text-gray-800 text-center">{item.created_at || "Tidak ada"}</td>
+                <td className="px-4 py-3 text-sm text-center">
                   {item.link ? (
                     <Link
                       href={item.link || "Tidak ada"}
@@ -57,7 +57,7 @@ export default function KegiatanList({ kegiatan, pageSize = 10 }: KegiatanListPr
                   )}
                 </td>
                 <td className="px-4 py-3 text-sm">
-                  <div className="flex space-x-2">
+                  <div className="flex space-x-2 justify-center">
                     <button
                       type="button"
                       className="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 ease-in-out"
