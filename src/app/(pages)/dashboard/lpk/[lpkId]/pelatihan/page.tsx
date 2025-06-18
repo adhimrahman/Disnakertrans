@@ -12,8 +12,8 @@ import {
 import { db } from "@/firebase/config";
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { SearchInput } from "@/components/Dashboard/SearchTable";
-import { SortColumn } from "@/components/Dashboard/Sort";
+import { SearchInput } from "@/components/dashboard/SearchTable";
+import { SortColumn } from "@/components/dashboard/Sort";
 import { IoTrash } from "react-icons/io5";
 import { PulseLoader } from "react-spinners";
 
@@ -56,9 +56,22 @@ export default function PelatihanLpkPage() {
   }, [akunDocId]);
 
   const filteredData = useMemo(() => {
-    const filtered = pelatihan.filter((item) =>
-      item.judul.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const term = searchTerm.toLowerCase();
+    const filtered = pelatihan.filter((item) => {
+      // Format and lowercase the date for searching
+      const tanggalKegiatan = item.tanggal_kegiatan?.toDate().toLocaleDateString("id-ID", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      }).toLowerCase();
+
+      // Check if search term exists in any relevant field
+      return (
+        (item.judul?.toLowerCase() || '').includes(term) ||
+        (item.link_form?.toLowerCase() || '').includes(term) ||
+        tanggalKegiatan.includes(term)
+      );
+    });
 
     const sorted = [...filtered].sort((a, b) => {
       const aVal = sortField === "judul" ? a.judul.toLowerCase() : a.tanggal_kegiatan?.toDate().getTime();
