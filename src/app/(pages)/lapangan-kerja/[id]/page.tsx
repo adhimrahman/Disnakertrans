@@ -9,20 +9,20 @@ import LowonganDetail from "@/components/ClientCompo/LowonganDetail";
 export default async function LowonganDetailPage({
   params,
 }: {
-  params: { id: string };
+	params: Promise<{ id: string }>;
 }) {
-  const { id } = params;
-  const lowongan = await getLowonganById(id);
-  const semuaLowongan = await getLowongan();
+	const { id } = await params;
+	const lowongan = await getLowonganById(id);
+	const semuaLowongan = await getLowongan();
 
-  if (!lowongan) return notFound();
+  	if (!lowongan) return notFound();
 
-  return (
-    <div className="bg-white min-h-screen flex flex-col">
-      <Navbar />
-      <LowonganDetail lowongan={lowongan} semuaLowongan={semuaLowongan} />
-      <ContactHighlight />
-      <Footer />
-    </div>
-  );
+	return (
+		<div className="bg-white min-h-screen flex flex-col">
+		<Navbar />
+		<LowonganDetail lowongan={lowongan} semuaLowongan={semuaLowongan} />
+		<ContactHighlight />
+		<Footer />
+		</div>
+	);
 }
