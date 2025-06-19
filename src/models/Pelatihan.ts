@@ -11,5 +11,6 @@ export type Pelatihan = {
     tanggal_kegiatan: string;
     created_at: string;
     updated_at: string;
+}
 
 export type PelatihanItem = Omit<Pelatihan, "created_at" | "updated_at" | "gambar_pelatihan" | "deskripsi">;

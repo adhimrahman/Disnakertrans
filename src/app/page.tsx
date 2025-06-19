@@ -13,8 +13,9 @@ import InfografisSection from "@/components/home/InfografisSection";
 import HeroCarousel from "@/components/home/Carousel";
 import CustomButton from "@/components/ui/CustomButton";
 import { getKegiatan } from "@/lib/getKegiatan";
+import AboutUs from "@/components/home/AboutUs";
 
-import kami from "../../public/images/kami.jpg"
+// import kami from "../../public/images/kami.jpg"
 import Job1 from "../../public/images/Job1.png"
 import Job2 from "../../public/images/Job2.png"
 import { getPelatihan } from "@/lib/getPelatihan";
@@ -71,7 +72,7 @@ export default async function HomePage() {
 				<Lowongan />
 				<InfografisSection />
 			
-				<section className="py-20 bg-gray-50">
+				{/* <section className="py-20 bg-gray-50">
 					<div className="container mx-auto px-6 lg:px-20 flex flex-col-reverse lg:flex-row items-center gap-16">
 						<div className="lg:w-1/2 text-center lg:text-left">
 							<h2 className="text-3xl lg:text-5xl font-bold text-gray-900 mb-6 capitalize">
@@ -89,8 +90,8 @@ export default async function HomePage() {
 							<Image src={kami} alt="Ilustrasi Tentang Kami" className="hidden lg:flex h-[460px] w-auto object-cover rounded-3xl shadow-lg hover:scale-105 transition duration-300" />
 						</div>
 					</div>
-				</section>
-			
+				</section> */}
+				<AboutUs />
 				<ContactHighlight />
 			
 				<Footer />

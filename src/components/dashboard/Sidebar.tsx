@@ -11,37 +11,31 @@ import { auth } from "@/firebase/config";
 import { CgProfile } from "react-icons/cg";
 
 export default function Sidebar() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [isMounted, setIsMounted] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+	const pathname = usePathname();
+	const router = useRouter();
+	const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+	const [isMounted, setIsMounted] = useState(false);
+	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  	useEffect(() => { setIsMounted(true) }, []);
+  	useEffect(() => { setIsMobileMenuOpen(false) }, [pathname]);
 
-  // Close sidebar when route changes on mobile
-  useEffect(() => {
-    setIsMobileMenuOpen(false);
-  }, [pathname]);
+  	if (!isMounted) return null;
 
-  if (!isMounted) return null;
+	type MenuItem = {
+		title: string;
+		icon: React.ReactNode;
+		to: string;
+		spacing?: boolean;
+	};
 
-  type MenuItem = {
-    title: string;
-    icon: React.ReactNode;
-    to: string;
-    spacing?: boolean;
-  };
-
-  const Menus: MenuItem[] = [
-    { title: "Dashboard", icon: <BsHouseDoor />, to: "/dashboard/disnaker/", spacing: true },
-    { title: "Content Pages", icon: <BsBook />, to: "/dashboard/disnaker/contents", spacing: true },
-    { title: "Aduan", icon: <GrContact />, to: "/dashboard/disnaker/aduan", spacing: true },
-    { title: "Laporan Lembaga", icon: <BsFolder2Open />, to: "/dashboard/disnaker/LaporanLembaga", spacing: true },
-    { title: "Profile", icon: <CgProfile />, to: `/dashboard/disnaker/profile/${process.env.NEXT_PUBLIC_PROFILE_ID}`, spacing: true },
-  ];
+	const Menus: MenuItem[] = [
+		{ title: "Dashboard", icon: <BsHouseDoor />, to: "/disnaker/", spacing: true },
+		{ title: "Content Pages", icon: <BsBook />, to: "/disnaker/konten", spacing: true },
+		{ title: "Aduan", icon: <GrContact />, to: "/disnaker/aduan", spacing: true },
+		{ title: "Laporan Lembaga", icon: <BsFolder2Open />, to: "/disnaker/laporan-lembaga", spacing: true },
+		{ title: "Profile", icon: <CgProfile />, to: `/disnaker/profil/${process.env.NEXT_PUBLIC_PROFILE_ID}`, spacing: true },
+	];
   const handleLogout = async () => {
     try {
       // Logout dari Firebase Auth

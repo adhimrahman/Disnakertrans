@@ -59,7 +59,7 @@ export default function PaginationControls({
           <button
             key={page}
             onClick={() => onPageChange(page as number)}
-            className={`rounded border px-3 py-1 font-semibold ${
+            className={`rounded border px-3 py-1 font-semibold hover:cursor-pointer ${
               isActive ? 'bg-blue-500 text-white' : 'hover:bg-gray-200 text-gray-500'
             }`}
             aria-current={isActive ? 'page' : undefined}
@@ -73,7 +73,7 @@ export default function PaginationControls({
       <button
         onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
         disabled={currentPage === totalPages}
-        className={`rounded border px-2 py-0.5 text-lg font-semibold ${
+        className={`rounded border px-2 py-0.5 text-lg font-semibold hover:cursor-pointer ${
           currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 text-gray-500'
         }`}
         aria-label="Next page"
