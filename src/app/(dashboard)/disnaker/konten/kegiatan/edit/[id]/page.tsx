@@ -68,13 +68,13 @@ export default function UpdateKontenKegiatanPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'gambar_sampul' | 'gambar_kegiatan') => {
     const MAX_FILE_SIZE = 2 * 1024 * 1024;
     if (field === 'gambar_kegiatan') {
-      const filesArray = Array.from(e.target.files || []);
-      if (filesArray.length > 5 || filesArray.some(file => file.size > MAX_FILE_SIZE)) {
-        alert('Maksimal 5 gambar dan ukuran maksimal 2MB.');
+      const file = e.target.files?.[0];
+      if (!file || file.size > MAX_FILE_SIZE) {
+        alert('Ukuran file terlalu besar. Maksimum 2MB.');
         return;
       }
-      setFiles(prev => ({ ...prev, [field]: filesArray[0] }));
-      setPreviews(prev => ({ ...prev, [field]: URL.createObjectURL(filesArray[0]) }));
+      setFiles(prev => ({ ...prev, [field]: file }));
+      setPreviews(prev => ({ ...prev, [field]: URL.createObjectURL(file) }));
     } else {
       const file = e.target.files?.[0];
       if (!file || file.size > MAX_FILE_SIZE) {
@@ -124,7 +124,7 @@ export default function UpdateKontenKegiatanPage() {
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Card elevation={1} sx={{ borderRadius: 2, overflow: 'hidden' }}>
         <Box sx={{ bgcolor: 'primary.main', color: 'white', py: 2, px: 3 }}>
-          <Typography variant="h5" fontWeight="bold">Tambah Konten Kegiatan</Typography>
+          <Typography variant="h5" fontWeight="bold">Edit Konten Kegiatan</Typography>
         </Box>
         <Box component="form" onSubmit={handleSubmit} sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 3 }}>
           <Stack spacing={3}>
