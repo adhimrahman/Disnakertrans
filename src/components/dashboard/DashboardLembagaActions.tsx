@@ -10,12 +10,12 @@ export default function DashboardLembagaActions({ lpkId }: { lpkId: string }) {
         <Typography variant="h6" gutterBottom fontWeight="bold">Aksi Cepat</Typography>
         <Grid container spacing={2} mt={1}>
           <Grid item xs={12} sm={6}>
-            <Button fullWidth variant="outlined" sx={{ py: 2, borderRadius: 2 }} onClick={() => router.push(`/dashboard/lpk/${lpkId}/pelatihan`)}>
+            <Button fullWidth variant="outlined" sx={{ py: 2, borderRadius: 2 }} onClick={() => router.push(`/lembaga/${lpkId}/pelatihan`)}>
               Lihat Pelatihan
             </Button>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Button fullWidth variant="outlined" sx={{ py: 2, borderRadius: 2 }} onClick={() => router.push(`/dashboard/lpk/${lpkId}/laporan`)}>
+            <Button fullWidth variant="outlined" sx={{ py: 2, borderRadius: 2 }} onClick={() => router.push(`/lembaga/${lpkId}/laporan`)}>
               Lihat Laporan
             </Button>
           </Grid>

@@ -83,8 +83,8 @@ export default function LowonganList({ lowongan, pageSize = 10 }: LowonganListPr
                   <div className="flex space-x-2 justify-center">
                     <button
                       type="button"
-                      className="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 ease-in-out"
-                      onClick={() => {redirect(`/dashboard/disnaker/contents/lowongan/edit/${item.id}`)}}
+                      className="inline-flex items-center px-3 py-1.5 bg-white border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-150 ease-in-out hover:cursor-pointer"
+                      onClick={() => {redirect(`/disnaker/konten/lowongan/edit/${item.id}`)}}
                     >
                       <svg className="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
@@ -93,7 +93,7 @@ export default function LowonganList({ lowongan, pageSize = 10 }: LowonganListPr
                     </button>
                     <button
                       type="button"
-                      className="inline-flex items-center px-3 py-1.5 bg-red-50 border border-red-300 rounded-md font-medium text-red-700 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150 ease-in-out"
+                      className="inline-flex items-center px-3 py-1.5 bg-red-50 border border-red-300 rounded-md font-medium text-red-700 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-150 ease-in-out hover:cursor-pointer"
                       onClick={() => {
                         deleteLowonganById(item.id).then(() => {
                           window.location.reload();
@@ -126,7 +126,7 @@ export default function LowonganList({ lowongan, pageSize = 10 }: LowonganListPr
         <div className="flex flex-row justify-between">
           <button
             className="bg-steelBlue hover:bg-darkBlue transition px-4 py-2 rounded-xl text-white w-full lg:w-auto hover:cursor-pointer"
-              onClick={() => redirect('/dashboard/disnaker/contents/lowongan/add')}
+              onClick={() => redirect('/disnaker/konten/lowongan/add')}
           >
             + Tambah Konten
           </button>

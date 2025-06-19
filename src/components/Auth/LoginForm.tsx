@@ -24,8 +24,8 @@ export default function LoginForm() {
 			localStorage.setItem("token", token); // dari response handleLogin
 			localStorage.setItem("lastActivity", new Date().toISOString());
 
-			if (userData.role === "disnaker") router.push("/dashboard/disnaker");
-			else if (userData.role === "lpk") router.push(`/dashboard/lpk/${userData.lpkId}`);
+			if (userData.role === "disnaker") router.push("/disnaker");
+			else if (userData.role === "lpk") router.push(`/lembaga/${userData.lpkId}`);
 			else setError("Role tidak valid.");
 		} catch (err) {
 			console.error(err);
