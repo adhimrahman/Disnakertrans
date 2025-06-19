@@ -131,3 +131,9 @@ export async function getAduanFilteredByNames(
 
 	return filtered;
 };
+
+export async function getAllAduan(): Promise<AduanItem[]> {
+  const q = query(collection(db, "aduan"));
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })) as AduanItem[];
+}
