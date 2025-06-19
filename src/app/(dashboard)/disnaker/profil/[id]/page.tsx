@@ -43,12 +43,12 @@ export default function ProfilePage () {
           {profile ? (
             <div className="flex flex-col items-center">
               <Image
-                src={profile.gambar}
-                alt={profile.nama_lengkap}
-                width={200}
-                height={200}
-                className="rounded-full mb-4"
-              />
+  src={profile.gambar}
+  alt={profile.nama_lengkap}
+  width={200}
+  height={200}
+  className="rounded-full object-cover aspect-square mb-4"
+/>
               <div className="flex flex-col gap-y-3">
                 <div className="flex flex-row justify-center gap-x-2 text-xl">
                   <p className="font-semibold">Nama Lengkap</p>
