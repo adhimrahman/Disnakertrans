@@ -66,8 +66,8 @@ export default function AddKegiatanPage() {
 
         const result = createKegiatanSchema.safeParse({
             ...formData,
-            gambar_sampul: previews.gambar_sampul,
-            gambar_kegiatan: previews.gambar_kegiatan,
+            gambar_sampul: previews.gambar_sampul || "",
+            gambar_kegiatan: previews.gambar_kegiatan?.[0] || "",
         });
 
         if (!result.success) {
