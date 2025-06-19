@@ -6,19 +6,8 @@ import { getLowongan } from "@/lib/getLowongan";
 import { getLowonganById } from "@/lib/getLowonganById";
 import LowonganDetail from "@/components/ClientCompo/LowonganDetail";
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-	const { id } = await params;
-	const data = await getLowonganById(id);
-	if (!data) return { title: "Lowongan Tidak Ditemukan" };
-
-	return {
-		title: `Disnakertrans - ${data.Judul}`,
-		description: data.Deskripsi?.slice(0, 150),
-	};
-}
-
 export default async function LowonganDetailPage({ params }: { params: { id: string } }) {
-	const { id } = await params;
+	const { id } = params;
 	const lowongan = await getLowonganById(id);
 	const semuaLowongan = await getLowongan();
 	
