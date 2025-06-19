@@ -1,20 +1,16 @@
-import { AduanItem } from "@/models/Aduan";
+import { type AduanItem } from "@/models/Aduan";
 import { getAduanBySort, getAduanFilteredByNames } from "@/firebase/utils/aduan-service";
 import AduanList from "@/components/dashboard/AduanList";
 import SearchSortControls from "@/components/dashboard/SearchandSort";
 
-export default async function AduanDashboardPage({
-  searchParams,
-}: {
-  searchParams: {
-    search?: string;
-    sort?: keyof AduanItem;
-    order?: "asc" | "desc";
-  };
-}) {
-  const search = searchParams?.search ?? "";
-  const sort = searchParams?.sort ?? "created_at";
-  const order = searchParams?.order ?? "asc";
+interface PageProps {
+  searchParams?: Record<string, string | string[]>;
+}
+
+export default async function AduanDashboardPage({ searchParams }: PageProps) {
+  const search = typeof searchParams?.search === "string" ? searchParams.search : "";
+  const sort = typeof searchParams?.sort === "string" ? (searchParams.sort as keyof AduanItem) : "created_at";
+  const order = typeof searchParams?.order === "string" ? (searchParams.order as "asc" | "desc") : "asc";
 
   const aduan = search
     ? await getAduanFilteredByNames(search, sort, order)
