@@ -6,8 +6,8 @@ import { useMemo } from "react";
 import type { PelatihanItem } from "@/lib/getPelatihan";
 
 type Props = {
-    pelatihan: PelatihanItem;
-    semuaPelatihan: PelatihanItem[];
+    pelatihan: PelatihanPreview;
+    semuaPelatihan: PelatihanPreview[];
 };
 
 function formatTanggal(dateString: string | undefined) {
@@ -23,6 +23,8 @@ function formatTanggal(dateString: string | undefined) {
         timeZoneName: "short",
     }).replace("Waktu Indonesia Tengah", "WITA");
 }
+
+export type PelatihanPreview = Omit<PelatihanItem, "created_at" | "updated_at">;
 
 export default function PelatihanDetail({ pelatihan, semuaPelatihan }: Props) {
     const { id } = useParams();
