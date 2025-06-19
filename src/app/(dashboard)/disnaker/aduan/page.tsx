@@ -1,4 +1,4 @@
-import { type AduanItem } from "@/models/Aduan";
+import { AduanItem } from "@/models/Aduan";
 import { getAduanBySort, getAduanFilteredByNames } from "@/firebase/utils/aduan-service";
 import AduanList from "@/components/dashboard/AduanList";
 import SearchSortControls from "@/components/dashboard/SearchandSort";
