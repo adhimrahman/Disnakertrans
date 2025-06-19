@@ -14,7 +14,7 @@ export default function useSessionExpire() {
 
 			const lastTime = new Date(lastActivity).getTime();
 			const now = Date.now();
-			const timeout = 1 * 60 * 1000; // 3 menit
+			const timeout = 24 * 60 * 60 * 1000; // 24 jam
 
 			if (now - lastTime > timeout) {
 				localStorage.removeItem("lastActivity");
@@ -22,8 +22,7 @@ export default function useSessionExpire() {
 				await signOut(auth);
 				router.push("/expired");
 			}
-		}, 1 * 60 * 1000); // Cek setiap 5 menit
-		// }, 24 * 60 * 60 * 1000; // Cek setiap 24 jam
+		}, 12 * 60 * 60 * 1000); // Cek setiap 12 jam
 
 		const updateActivity = () => {
 			localStorage.setItem("lastActivity", new Date().toISOString());
