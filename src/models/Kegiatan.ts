@@ -5,7 +5,7 @@ export interface Kegiatan {
 	gambar_kegiatan: string;
 	link: string;
 	tanggal_kegiatan?: string;
-	[key: string]: any; // Membolehkan akses key lain dengan tipe string
+	[key: string]: unknown;
 }
 
 export interface KegiatanItem {

@@ -2,7 +2,15 @@
 import { Paper, Box, Typography, Divider } from '@mui/material';
 import { BarChart } from '@mui/icons-material';
 
-export default function DashboardPerformanceSummary({ stats }: { stats: any }) {
+interface DashboardStats {
+  totalAkun: number;
+  totalLPK: number;
+  totalKegiatan: number;
+  totalLowongan: number;
+  totalLaporan: number;
+}
+
+export default function DashboardPerformanceSummary({ stats }: { stats: DashboardStats }) {
   const formatNumber = (number: number) => number.toLocaleString('id-ID');
 
   return (

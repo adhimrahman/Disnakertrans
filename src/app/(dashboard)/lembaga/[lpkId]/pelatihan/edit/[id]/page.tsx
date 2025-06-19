@@ -12,7 +12,15 @@ import { updatePelatihan } from '@/firebase/utils/pelatihan-service';
 import { UpdatePelatihanSchema, UpdatePelatihan } from '@/validation/pelatihan-validation';
 import { CloudUploadIcon } from 'lucide-react';
 import { getPelatihanById } from '@/firebase/utils/pelatihan-service';
-import { Timestamp } from 'firebase/firestore';
+import { ZodFormattedError } from 'zod';
+
+interface PelatihanFirebaseData {
+  judul: string;
+  deskripsi: string;
+  tanggal_kegiatan: string | { toDate: () => Date };
+  gambar_pelatihan: string;
+  link_form: string;
+}
 
 export default function EditPelatihanPage() {
   const [formData, setFormData] = useState<Partial<UpdatePelatihan>>({
@@ -23,26 +31,19 @@ export default function EditPelatihanPage() {
     link_form: '',
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [errors, setErrors] = useState<Record<string, any>>({});
+  const [errors, setErrors] = useState<ZodFormattedError<UpdatePelatihan, string> | null>(null);
   const [files, setFiles] = useState<{ gambar_pelatihan?: File}>({});
   const [previews, setPreviews] = useState<{ gambar_pelatihan?: string}>({});
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [originalData, setOriginalData] = useState<any>(null);
+  const [, setOriginalData] = useState<PelatihanFirebaseData | null>(null);
   const { lpkId, id } = useParams();
   const router = useRouter();
 
   useEffect(() => {
     async function fetchPelatihanPage() {
       try {
-        const data = await getPelatihanById(id as string) as {
-          judul?: string;
-          deskripsi?: string;
-          tanggal_kegiatan?: string | { toDate: () => Date };
-          gambar_pelatihan?: string;
-          link_form?: string;
-          [key: string]: any;
-        };
+        const data = await getPelatihanById(id as string) as PelatihanFirebaseData;
+
         if (data) {
           setOriginalData(data);
           // Convert timestamp to date string format (YYYY-MM-DD)
@@ -60,11 +61,11 @@ export default function EditPelatihanPage() {
           
           setFormData({
             id: id as string,
-            judul: data.judul || '',
-            deskripsi: data.deskripsi || '',
+            judul: data.judul,
+            deskripsi: data.deskripsi,
             tanggal_kegiatan: dateString,
-            gambar_pelatihan: data.gambar_pelatihan || '',
-            link_form: data.link_form || ''
+            gambar_pelatihan: data.gambar_pelatihan,
+            link_form: data.link_form
           });
         }
       } catch (error) {
@@ -87,10 +88,7 @@ export default function EditPelatihanPage() {
       ...formData,
       [name]: value,
     });
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: { _errors: [] },
-    }));
+    setErrors(null);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'gambar_pelatihan') => {
@@ -104,10 +102,7 @@ export default function EditPelatihanPage() {
     if (file) {
       setFiles(prev => ({ ...prev, [field]: file }));
       setPreviews(prev => ({ ...prev, [field]: URL.createObjectURL(file) }));
-      setErrors((prev) => ({
-        ...prev,
-        [field]: { _errors: [] },  // clear error properly
-      }));
+      setErrors(null);
     }
   };  
   const handleSubmit = async (e: React.FormEvent) => {
@@ -131,7 +126,7 @@ export default function EditPelatihanPage() {
       }
       
       // If validation passes, clear errors
-      setErrors({});
+      setErrors(null);
       
       console.log("Updating pelatihan with ID:", id);
       console.log("Form data:", newFormData);
@@ -193,14 +188,15 @@ export default function EditPelatihanPage() {
                 size="medium"
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.judul?._errors?.length > 0 && errors.judul._errors.map((msg: string, i: number) => (
+              {(errors?.judul?._errors ?? []).map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
+
             </Box>
             <Box>
               <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, color: 'text.primary' }}>Gambar Pelatihan</Typography>
               <Box sx={{
-                border: '1px dashed', borderColor: errors.gambar_pelatihan ? 'error.main' : 'divider',
+                border: '1px dashed', borderColor: errors?.gambar_pelatihan ? 'error.main' : 'divider',
                 p: 3, borderRadius: 2, display: 'flex', flexDirection: 'column',
                 alignItems: 'center', bgcolor: 'background.paper'
               }}>
@@ -245,11 +241,12 @@ export default function EditPelatihanPage() {
                     </Typography>
                   )}
                 </Box>
-                {errors?.gambar_pelatihan?._errors?.length > 0 && (
+                {(errors?.gambar_pelatihan?._errors ?? []).length > 0 && (
                   <Typography variant="caption" color="error" className='text-md text-red-700'>
-                    {errors.gambar_pelatihan._errors[0]}
+                    {(errors?.gambar_pelatihan?._errors ?? [])![0]}
                   </Typography>
                 )}
+
               </Box>
             </Box>
             <Box>
@@ -265,7 +262,7 @@ export default function EditPelatihanPage() {
                 variant="outlined"
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.deskripsi?._errors?.length > 0 && errors.deskripsi._errors.map((msg: string, i: number) => (
+              {(errors?.deskripsi?._errors ?? []).map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -281,7 +278,7 @@ export default function EditPelatihanPage() {
                 }}
                 className='w-full rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base px-2 py-3'
               />
-              {errors?.tanggal_kegiatan?._errors?.length > 0 && errors.tanggal_kegiatan._errors.map((msg: string, i: number) => (
+              {(errors?.tanggal_kegiatan?._errors ?? []).map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>
@@ -296,7 +293,7 @@ export default function EditPelatihanPage() {
                 variant="outlined"
                 className='rounded-lg ring-2 ring-gray-200 hover:ring-1 hover:ring-steelBlue focus:ring-2 focus:ring-darkBlue text-black text-sm font-base p-2 shadow-xl'
               />
-              {errors?.link_form?._errors?.length > 0 && errors.link_form._errors.map((msg: string, i: number) => (
+              {(errors?.link_form?._errors ?? []).map((msg: string, i: number) => (
                 <p key={i} className='text-red-600 mt-2 text-sm text-right'>*{msg}</p>
               ))}
             </Box>

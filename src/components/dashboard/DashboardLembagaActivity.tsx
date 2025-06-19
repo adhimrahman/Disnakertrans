@@ -2,13 +2,27 @@ import { Grid, Card, CardContent, Typography, Divider, List, ListItem, ListItemT
 import { WorkHistory as WorkHistoryIcon, Schedule as ScheduleIcon, Assessment as AssessmentIcon, School as SchoolIcon } from '@mui/icons-material';
 import dayjs from 'dayjs';
 
+interface PelatihanItem {
+  judul: string;
+  tanggal_kegiatan: { toDate: () => Date } | string;
+}
+
+interface LaporanItem {
+  nama_lembaga: string;
+  tanggal_pelaksanaan: { toDate: () => Date };
+}
+
 interface Props {
-  recentLaporan: any[];
-  recentPelatihan: any[];
+  recentLaporan: LaporanItem[];
+  recentPelatihan: PelatihanItem[];
 }
 
 export default function DashboardLembagaActivity({ recentLaporan, recentPelatihan }: Props) {
-  const formatDate = (date: any) => dayjs(date.toDate()).locale('id').format('dddd, D MMMM YYYY');
+  // const formatDate = (date: any) => dayjs(date.toDate()).locale('id').format('dddd, D MMMM YYYY');
+  const formatDate = (date: { toDate: () => Date } | string) => {
+    const d = typeof date === 'string' ? new Date(date) : date.toDate();
+    return dayjs(d).locale('id').format('dddd, D MMMM YYYY');
+  };
 
   return (
     <Grid container spacing={3}>
