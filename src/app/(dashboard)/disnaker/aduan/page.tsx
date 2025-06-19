@@ -22,8 +22,8 @@ export default async function AduanDashboardPage({ searchParams }: AduanDashboar
     } = resolvedSearchParams || {};
 
     const aduan = search
-        ? await getAduanFilteredByNames(search, sort, order)
-        : await getAduanBySort(sort, order);
+        ? (await getAduanFilteredByNames(search, sort, order)) ?? []
+        : (await getAduanBySort(sort, order)) ?? [];
     
     return (
         <div className="flex flex-col gap-y-4 bg-white rounded-md p-4">
