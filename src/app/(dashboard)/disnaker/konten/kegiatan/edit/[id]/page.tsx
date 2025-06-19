@@ -29,8 +29,8 @@ export default function UpdateKontenKegiatanPage() {
     tanggal_kegiatan: '',
   });
   const [errors, setErrors] = useState<Record<string, FieldError>>({});
-  const [files, setFiles] = useState<{ gambar_sampul?: File; gambar_kegiatan?: File[] }>({});
-  const [previews, setPreviews] = useState<{ gambar_sampul?: string; gambar_kegiatan?: string[] }>({});
+  const [files, setFiles] = useState<{ gambar_sampul?: File; gambar_kegiatan?: File}>({});
+  const [previews, setPreviews] = useState<{ gambar_sampul?: string; gambar_kegiatan?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { id } = useParams();
   const router = useRouter();
@@ -55,7 +55,7 @@ export default function UpdateKontenKegiatanPage() {
   useEffect(() => {
     return () => {
       if (previews.gambar_sampul) URL.revokeObjectURL(previews.gambar_sampul);
-      previews.gambar_kegiatan?.forEach(url => URL.revokeObjectURL(url));
+      if (previews.gambar_kegiatan) URL.revokeObjectURL(previews.gambar_kegiatan);
     };
   }, [previews]);
 
@@ -73,8 +73,8 @@ export default function UpdateKontenKegiatanPage() {
         alert('Maksimal 5 gambar dan ukuran maksimal 2MB.');
         return;
       }
-      setFiles(prev => ({ ...prev, gambar_kegiatan: filesArray }));
-      setPreviews(prev => ({ ...prev, gambar_kegiatan: filesArray.map(f => URL.createObjectURL(f)) }));
+      setFiles(prev => ({ ...prev, [field]: filesArray[0] }));
+      setPreviews(prev => ({ ...prev, [field]: URL.createObjectURL(filesArray[0]) }));
     } else {
       const file = e.target.files?.[0];
       if (!file || file.size > MAX_FILE_SIZE) {
@@ -95,8 +95,8 @@ export default function UpdateKontenKegiatanPage() {
         const uploaded = await uploadKegiatanImage(files.gambar_sampul);
         if (typeof uploaded === 'string') newFormData.gambar_sampul = uploaded;
       }
-      if (files.gambar_kegiatan?.length) {
-        const uploaded = await uploadKegiatanImage(files.gambar_kegiatan[0]);
+      if (files.gambar_kegiatan) {
+        const uploaded = await uploadKegiatanImage(files.gambar_kegiatan);
         if (typeof uploaded === 'string') newFormData.gambar_kegiatan = uploaded;
       }
       const result = updateKegiatanSchema.safeParse(newFormData);

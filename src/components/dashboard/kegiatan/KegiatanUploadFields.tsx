@@ -12,24 +12,24 @@ interface FieldError {
 interface Props {
   previews?: {
     gambar_sampul?: string;
-    gambar_kegiatan?: string[];
+    gambar_kegiatan?: string;
   };
   formData?: {
     gambar_sampul?: string;
-    gambar_kegiatan?: string | string[];
+    gambar_kegiatan?: string;
   };
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>, field: 'gambar_sampul' | 'gambar_kegiatan') => void;
   errors?: {
     gambar_sampul?: FieldError;
     gambar_kegiatan?: FieldError;
   };
-  setFiles?: React.Dispatch<React.SetStateAction<{ gambar_sampul?: File; gambar_kegiatan?: File[] }>>;
-  setPreviews?: React.Dispatch<React.SetStateAction<{ gambar_sampul?: string; gambar_kegiatan?: string[] }>>;
+  setFiles?: React.Dispatch<React.SetStateAction<{ gambar_sampul?: File; gambar_kegiatan?: File }>>;
+  setPreviews?: React.Dispatch<React.SetStateAction<{ gambar_sampul?: string; gambar_kegiatan?: string }>>;
 }
 
 export default function UpdateKegiatanUploadFields({ previews = {}, formData = {}, handleFileChange, errors = {} }: Props) {
   const imageSampulSrc = previews?.gambar_sampul ?? formData?.gambar_sampul ?? "";
-  const imageKegiatanSrc = previews?.gambar_kegiatan ?? (Array.isArray(formData?.gambar_kegiatan) ? formData?.gambar_kegiatan : []);
+  const imageKegiatanSrc = previews?.gambar_kegiatan ?? formData?.gambar_kegiatan ?? "";
 
   return (
     <>
@@ -116,14 +116,13 @@ export default function UpdateKegiatanUploadFields({ previews = {}, formData = {
             />
           </Button>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: formData?.gambar_kegiatan ? 'success.main' : 'text.secondary' }}>
-            {imageKegiatanSrc.length > 0 ? (
-              <div className="flex flex-wrap justify-center gap-4">
-                {imageKegiatanSrc.map((src: string, idx: number) => (
-                  <div key={idx} className="flex flex-col items-center">
-                    <Image src={src} alt={`Preview ${idx + 1}`} width={200} height={150} />
-                    <Typography variant="caption">Gambar {idx + 1}</Typography>
-                  </div>
-                ))}
+            {imageKegiatanSrc ? (
+              <div className='flex flex-col gap-y-3 items-center'>
+                <Image src={imageKegiatanSrc} alt="Preview Gambar Sampul" width={200} height={150} />
+                <div className='flex flex-row items-center gap-x-2'>
+                  <CheckCircleOutlineIcon fontSize="small" className='text-green-600' />
+                  <Typography variant="body2">Gambar Sampul telah diupload!</Typography>
+                </div>
               </div>
             ) : (
               <Typography variant="body2" className='text-center text-red-600'>Belum ada gambar yang diunggah</Typography>
