@@ -33,7 +33,7 @@ export default function PelatihanHome({ pelatihan }: { pelatihan: PelatihanItem[
                             </p>
                         </div>
                         <div className="px-4 md:px-5 py-4 flex justify-end">
-                            <CustomButton href={`/kegiatan/${item.id}`} variant="blue" px={5} py={2} className="text-sm md:text-base tracking-wider">
+                            <CustomButton href={`/pelatihan/${item.id}`} variant="blue" px={5} py={2} className="text-sm md:text-base tracking-wider">
                                 Selengkapnya <ArrowRight size={16} />
                             </CustomButton>
                         </div>
