@@ -5,19 +5,8 @@ import { getKegiatan } from "@/lib/getKegiatan";
 import { getKegiatanById } from "@/lib/getKegiatanById";
 import KegiatanDetail from "@/components/ClientCompo/KegiatanDetail";
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-	const { id } = await params;
-	const data = await getKegiatanById(id);
-	if (!data) return { title: "Kegiatan Tidak Ditemukan" };
-
-	return {
-		title: `Disnakertrans - ${data.Judul}`,
-		description: data.Deskripsi?.slice(0, 150),
-	};
-};
-
 export default async function KegiatanDetailPage({ params }: { params: { id: string } }) {
-	const { id } = await params;
+	const { id } = params;
 	const kegiatan = await getKegiatanById(id);
 	const semuaKegiatan = await getKegiatan();
 
