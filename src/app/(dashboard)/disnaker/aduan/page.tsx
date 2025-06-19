@@ -1,15 +1,12 @@
+import { AduanItem } from "@/models/Aduan";
+import { getAduanBySort, getAduanFilteredByNames } from "@/firebase/utils/aduan-service";
 import AduanList from "@/components/dashboard/AduanList";
 import SearchSortControls from "@/components/dashboard/SearchandSort";
-import { getAduanBySort, getAduanFilteredByNames } from "@/firebase/utils/aduan-service";
-import { AduanItem } from "@/models/Aduan";
-
-// type SortKey = keyof AduanItem;
-// type Order = 'asc' | 'desc';
 
 export default async function AduanDashboardPage({
   searchParams,
 }: {
-  searchParams?: {
+  searchParams: {
     search?: string;
     sort?: keyof AduanItem;
     order?: "asc" | "desc";
@@ -20,8 +17,8 @@ export default async function AduanDashboardPage({
   const order = searchParams?.order ?? "asc";
 
   const aduan = search
-    ? (await getAduanFilteredByNames(search, sort, order)) ?? []
-    : (await getAduanBySort(sort, order)) ?? [];
+    ? await getAduanFilteredByNames(search, sort, order)
+    : await getAduanBySort(sort, order);
 
   return (
     <div className="flex flex-col gap-y-4 bg-white rounded-md p-4">
@@ -33,7 +30,7 @@ export default async function AduanDashboardPage({
         ]}
       />
       <span className="px-3" />
-      <AduanList aduan={aduan} />
+      <AduanList aduan={aduan ?? []} />
     </div>
   );
 }
