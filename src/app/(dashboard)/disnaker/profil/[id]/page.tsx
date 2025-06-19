@@ -47,7 +47,7 @@ export default function ProfilePage () {
                 alt={profile.nama_lengkap}
                 width={200}
                 height={200}
-                className="rounded-full mb-4"
+                className="rounded-full object-cover aspect-square mb-4"
               />
               <div className="flex flex-col gap-y-3">
                 <div className="flex flex-row justify-center gap-x-2 text-xl">

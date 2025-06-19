@@ -30,10 +30,10 @@ export default function SidebarLPK() {
 	};
 
 	const Menus: MenuItem[] = [
-		{ title: "Dashboard", icon: <BsHouseDoor />, to: `/dashboard/lpk/${lpkId}`, spacing: true },
-		{ title: "Laporan", icon: <BsFileText />, to: `/dashboard/lpk/${lpkId}/laporan`, spacing: true },
-		{ title: "Pelatihan", icon: <BsFileText />, to: `/dashboard/lpk/${lpkId}/pelatihan`, spacing: true },
-		{ title: "History", icon: <BsClockHistory />, to: `/dashboard/lpk/${lpkId}/history`, spacing: true },
+		{ title: "Dashboard", icon: <BsHouseDoor />, to: `/lembaga/${lpkId}`, spacing: true },
+		{ title: "Laporan", icon: <BsFileText />, to: `/lembaga/${lpkId}/laporan`, spacing: true },
+		{ title: "Pelatihan", icon: <BsFileText />, to: `/lembaga/${lpkId}/pelatihan`, spacing: true },
+		{ title: "History", icon: <BsClockHistory />, to: `/lembaga/${lpkId}/history`, spacing: true },
 	];
 
 	const handleLogout = async () => {
