@@ -120,7 +120,11 @@ export async function getLowonganById (id: string): Promise<Partial<Lowongan> | 
 export async function updateLowongan (formData: Partial<Lowongan>, files: { gambar_sampul?: File }) {
 	const gambarSampulUrl = files.gambar_sampul ? await uploadLowonganImage(files.gambar_sampul) : formData.gambar_sampul || "";
 
+	if (!formData.id || typeof formData.id !== 'string') {
+		throw new Error("ID lowongan tidak valid");
+	}
 	const docRef = doc(db, "lowongan", formData.id);
+
 	const data = { ...formData, gambar_sampul: gambarSampulUrl };
 
 	try {
