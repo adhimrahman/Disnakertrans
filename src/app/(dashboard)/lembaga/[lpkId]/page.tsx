@@ -16,7 +16,7 @@ type Laporan = {
 };
 
 type Pelatihan = {
-    nama: string;
+    judul: string;
     tanggal_kegiatan: { toDate: () => Date };
 };
 
@@ -62,12 +62,23 @@ export default function DashboardLembagaPage() {
         // Ambil pelatihan
         const pelatihanRef = query(collection(db, 'pelatihan'), where('reference', '==', akunRef));
         const pelatihanSnapshot = await getDocs(pelatihanRef);
-        const pelatihanData = pelatihanSnapshot.docs.map(doc => doc.data() as Pelatihan);
+        // const pelatihanData = pelatihanSnapshot.docs.map(doc => doc.data() as Pelatihan);
+        const pelatihanData = pelatihanSnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                judul: data.nama,
+                tanggal_kegiatan: data.tanggal_kegiatan,
+            };
+        });
         setStats(prev => ({ ...prev, totalPelatihan: pelatihanData.length }));
         setRecentPelatihan(
             pelatihanData
-            .sort((a, b) => b.tanggal_kegiatan.toDate().getTime() - a.tanggal_kegiatan.toDate().getTime())
-            .slice(0, 2)
+                .sort((a, b) => {
+                const aDate = typeof a.tanggal_kegiatan === 'string' ? new Date(a.tanggal_kegiatan) : a.tanggal_kegiatan.toDate();
+                const bDate = typeof b.tanggal_kegiatan === 'string' ? new Date(b.tanggal_kegiatan) : b.tanggal_kegiatan.toDate();
+                return bDate.getTime() - aDate.getTime();
+                })
+                .slice(0, 2)
         );
 
         setLoading(false);

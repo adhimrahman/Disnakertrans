@@ -8,7 +8,7 @@ interface PelatihanItem {
 }
 
 interface LaporanItem {
-  nama_lembaga: string;
+  nama_pelatihan: string;
   tanggal_pelaksanaan: { toDate: () => Date };
 }
 
@@ -68,7 +68,7 @@ export default function DashboardLembagaActivity({ recentLaporan, recentPelatiha
                       <AssessmentIcon sx={{ color: '#d81b60' }} />
                     </Avatar>
                   </ListItemIcon>
-                  <ListItemText primary={item.nama_lembaga || 'Laporan'} secondary={formatDate(item.tanggal_pelaksanaan)} />
+                  <ListItemText primary={item.nama_pelatihan || 'Laporan'} secondary={formatDate(item.tanggal_pelaksanaan)} />
                 </ListItem>
               )) : (
                 <Typography align="center" color="text.secondary">Belum ada laporan terbaru</Typography>
