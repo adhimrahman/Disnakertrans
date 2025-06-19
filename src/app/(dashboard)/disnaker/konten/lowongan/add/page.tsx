@@ -173,9 +173,9 @@ export default function AddLowonganKerjaPage() {
               ))}
             </Box>
             <Box>
-              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Nama Pekerjaan</Typography>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, color: 'text.primary' }}>Posisi Lowongan</Typography>
               <TextField
-                placeholder='Tuliskan nama pekerjaan disini'
+                placeholder='Tuliskan posisi Lowongan disini'
                 name="posisi_lowongan"
                 value={formData.posisi_lowongan}
                 onChange={handleChange}
