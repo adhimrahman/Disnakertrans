@@ -49,8 +49,14 @@ export default function UpdateKontenLowonganPage() {
           gambar_sampul: data.gambar_sampul as string,
           deskripsi: data.deskripsi,
           tenggat_lowongan: data.tenggat_lowongan as string,
-          max_gaji: data.range_gaji?.max ?? 0 as number, 
-          min_gaji: data.range_gaji?.min ?? 0 as number,
+          max_gaji: (typeof data.range_gaji === 'object' && data.range_gaji !== null && 'max' in data.range_gaji)
+          ? (data.range_gaji as { max: number }).max
+          : 0,
+
+        min_gaji: (typeof data.range_gaji === 'object' && data.range_gaji !== null && 'min' in data.range_gaji)
+          ? (data.range_gaji as { min: number }).min
+          : 0,
+
           tipe: data.tipe,
           syarat: data.syarat,
           perusahaan: data.perusahaan,
