@@ -102,32 +102,53 @@ export async function getPelatihanById(pelatihanId: string): Promise<Partial<Pel
 	};
 }
 
-export async function updatePelatihan(pelatihanId: string, formData: UpdatePelatihan, files: { gambar_pelatihan?: File }) {
-	const gambarPelatihanUrl = files.gambar_pelatihan
-		? await uploadPelatihanImage(files.gambar_pelatihan) : formData.gambar_pelatihan || "";
+export async function updatePelatihan(lpkId: string, pelatihanId: string, formData: UpdatePelatihan, files?: { gambar_pelatihan?: File }) {
+	console.log("Updating pelatihan:", pelatihanId, "with data:", formData);
+	
+	// Handle image upload if there's a new file
+	let gambarPelatihanUrl = formData.gambar_pelatihan || "";
+	if (files?.gambar_pelatihan) {
+		try {
+			gambarPelatihanUrl = await uploadPelatihanImage(files.gambar_pelatihan);
+			console.log("New image uploaded:", gambarPelatihanUrl);
+		} catch (error) {
+			console.error("Error uploading image:", error);
+			return false;
+		}
+	}
+	
+	// Prepare the document reference
 	const docRef = doc(db, "pelatihan", pelatihanId);
 	const data = { ...formData, gambar_pelatihan: gambarPelatihanUrl };
 
 	try {
+		// Validate the data
 		const validateData = Validation.validate(UpdatePelatihanSchema, data);
-		const tanggal = typeof validateData.tanggal_kegiatan === 'string'
-			? new Date(validateData.tanggal_kegiatan)
-			: validateData.tanggal_kegiatan;
 		
+		// Parse the date
+		let tanggalKegiatan;
+		if (validateData.tanggal_kegiatan) {
+			tanggalKegiatan = typeof validateData.tanggal_kegiatan === 'string'
+				? new Date(validateData.tanggal_kegiatan)
+				: validateData.tanggal_kegiatan;
+		}
+		
+		// Update document
 		await updateDoc(docRef, {
 			judul: validateData.judul,
 			deskripsi: validateData.deskripsi,
-			gambar_pelatihan: validateData.gambar_pelatihan,
-			tanggal_kegiatan: tanggal ? Timestamp.fromDate(tanggal) : undefined,
-			link_form: validateData.link_form,
+			gambar_pelatihan: gambarPelatihanUrl, // Use the URL we determined above
+			tanggal_kegiatan: tanggalKegiatan ? Timestamp.fromDate(tanggalKegiatan) : null,
+			link_form: validateData.link_form || "",
 			updated_at: Timestamp.now()
 		});
 
+		console.log("Pelatihan updated successfully!");
 		return true;
 	} catch (e) {
-		console.log(e);
+		console.error("Error updating pelatihan:", e);
 		return false;
-	};
+	}
 };
 
 export async function deletePelatihan(pelatihanId: string) {
