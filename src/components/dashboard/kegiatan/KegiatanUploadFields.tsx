@@ -118,10 +118,10 @@ export default function UpdateKegiatanUploadFields({ previews = {}, formData = {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: formData?.gambar_kegiatan ? 'success.main' : 'text.secondary' }}>
             {imageKegiatanSrc ? (
               <div className='flex flex-col gap-y-3 items-center'>
-                <Image src={imageKegiatanSrc} alt="Preview Gambar Sampul" width={200} height={150} />
+                <Image src={imageKegiatanSrc} alt="Preview Gambar Kegiatan" width={200} height={150} />
                 <div className='flex flex-row items-center gap-x-2'>
                   <CheckCircleOutlineIcon fontSize="small" className='text-green-600' />
-                  <Typography variant="body2">Gambar Sampul telah diupload!</Typography>
+                  <Typography variant="body2">Gambar Kegiatan telah diupload!</Typography>
                 </div>
               </div>
             ) : (

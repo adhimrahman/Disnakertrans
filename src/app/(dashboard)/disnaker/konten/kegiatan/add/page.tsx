@@ -36,29 +36,24 @@ export default function AddKegiatanPage() {
         setErrors((prev) => ({ ...prev, [name]: { _errors: [] } }));
     };
 
-    const handleFileChange = (
-        e: React.ChangeEvent<HTMLInputElement>,
-        field: 'gambar_sampul' | 'gambar_kegiatan'
-    ) => {
-        const filesInput = e.target.files;
-        if (!filesInput) return;
-
-        if (field === 'gambar_sampul') {
-            const file = filesInput[0];
-            if (file) {
-            setFiles((prev) => ({ ...prev, gambar_sampul: file }));
-            const previewUrl = URL.createObjectURL(file);
-            setPreviews((prev) => ({ ...prev, gambar_sampul: previewUrl }));
-            }
-        }
-
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'gambar_sampul' | 'gambar_kegiatan') => {
+        const MAX_FILE_SIZE = 2 * 1024 * 1024;
         if (field === 'gambar_kegiatan') {
-            const file = filesInput[0];
-            if (file) {
-            setFiles((prev) => ({ ...prev, gambar_kegiatan: file }));
-            const previewUrl = URL.createObjectURL(file);
-            setPreviews((prev) => ({ ...prev, gambar_kegiatan: previewUrl }));
-            }
+        const file = e.target.files?.[0];
+        if (!file || file.size > MAX_FILE_SIZE) {
+            alert('Ukuran file terlalu besar. Maksimum 2MB.');
+            return;
+        }
+        setFiles(prev => ({ ...prev, [field]: file }));
+        setPreviews(prev => ({ ...prev, [field]: URL.createObjectURL(file) }));
+        } else {
+        const file = e.target.files?.[0];
+        if (!file || file.size > MAX_FILE_SIZE) {
+            alert('Ukuran file terlalu besar. Maksimum 2MB.');
+            return;
+        }
+        setFiles(prev => ({ ...prev, [field]: file }));
+        setPreviews(prev => ({ ...prev, [field]: URL.createObjectURL(file) }));
         }
     };
 
@@ -76,18 +71,21 @@ export default function AddKegiatanPage() {
             setErrors(result.error.format());
             setIsSubmitting(false);
             return;
+        } else {
+            setErrors({});
         }
 
         try {
             const success = await addKegiatan(formData, files);
             if (success) {
+                alert('Kegiatan berhasil ditambahkan!');
                 router.push('/disnaker/konten/kegiatan');
             } else {
                 alert('Gagal menambahkan kegiatan.');
             }
         } catch (e) {
-            console.error(e);
             alert('Terjadi kesalahan.');
+            console.error(e);
         } finally {
             setIsSubmitting(false);
         }

@@ -123,6 +123,8 @@ export default function AddLowonganKerjaPage() {
     const result = createLowonganSchema.safeParse(newFormData);
     if (!result.success) {
       setErrors(result.error.format());
+      setIsSubmitting(false);
+      return;
     } else {
       setErrors({});
     }

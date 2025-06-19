@@ -10,7 +10,7 @@ import { Kegiatan, KegiatanItem } from "@/models/Kegiatan";
 
 export async function addKegiatan (formData: createKegiatanFormData, files: { gambar_sampul?: File, gambar_kegiatan?: File }) {
 	const gambarSampulUrl   = files.gambar_sampul ? await uploadKegiatanImage(files.gambar_sampul) : "";
-	const gambarKegiatanUrl = files.gambar_kegiatan ? await uploadKegiatanImage(files.gambar_kegiatan) : [];
+	const gambarKegiatanUrl = files.gambar_kegiatan ? await uploadKegiatanImage(files.gambar_kegiatan) : "";
 
 	const collectionRef = collection(db, "kegiatan");
 	const data = {
