@@ -26,7 +26,7 @@ export default function KegiatanList({ kegiatan, pageSize = 10 }: KegiatanListPr
           <tr>
             <th className="px-4 py-3 text-center text-white bg-steelBlue">No</th>
             <th className="px-4 py-3 text-center text-white bg-steelBlue w-[600px]">Judul</th>
-            <th className="px-4 py-3 text-center text-white bg-steelBlue">Tanggal</th>
+            <th className="px-4 py-3 text-center text-white bg-steelBlue">Tanggal Diunggah</th>
             <th className="px-4 py-3 text-center text-white bg-steelBlue">Link Unggahan</th>
             <th className="px-4 py-3 text-center text-white bg-steelBlue">Aksi</th>
           </tr>
