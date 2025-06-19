@@ -16,9 +16,9 @@ export default function RedirectIfAuthenticated({ children }: { children: React.
 				if (docSnap.exists()) {
 					const userData = docSnap.data();
 					if (userData.role === "disnaker") {
-						router.push("/dashboard/disnaker");
+						router.push("/disnaker");
 					} else if (userData.role === "lpk") {
-						router.push(`/dashboard/lpk/${userData.lpkId}`);
+						router.push(`/lembaga/${userData.lpkId}`);
 					}
 				}
 			} else {
