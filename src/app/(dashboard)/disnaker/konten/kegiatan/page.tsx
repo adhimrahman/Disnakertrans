@@ -12,13 +12,12 @@ interface KegiatanDashboardPageProps {
 }
 
 export default async function KegiatanDashboardPage({ searchParams }: KegiatanDashboardPageProps) {
-    const resolvedSearchParams = await searchParams;
     const {
         search = '',
         sort = 'created_at',
         order = 'asc',
-    } = resolvedSearchParams || {};
-    
+    } = searchParams || {};
+
     const kegiatan = search
         ? await getKegiatanFilteredByJudulContains(search, sort, order) 
         : await getKegiatanByDateAndSort(sort, order);
