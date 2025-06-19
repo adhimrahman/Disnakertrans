@@ -25,8 +25,8 @@ export default function AddKegiatanPage() {
         gambar_kegiatan: '',
     });
     const [errors, setErrors] = useState<KegiatanFormErrors>({});
-    const [files, setFiles] = useState<{ gambar_sampul?: File; gambar_kegiatan?: File[] }>({});
-    const [previews, setPreviews] = useState<{ gambar_sampul?: string; gambar_kegiatan?: string[] }>({});
+    const [files, setFiles] = useState<{ gambar_sampul?: File; gambar_kegiatan?: File }>({});
+    const [previews, setPreviews] = useState<{ gambar_sampul?: string; gambar_kegiatan?: string }>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
 
@@ -53,10 +53,12 @@ export default function AddKegiatanPage() {
         }
 
         if (field === 'gambar_kegiatan') {
-            const selectedFiles = Array.from(filesInput);
-            setFiles((prev) => ({ ...prev, gambar_kegiatan: selectedFiles }));
-            const previewsUrl = selectedFiles.map((file) => URL.createObjectURL(file));
-            setPreviews((prev) => ({ ...prev, gambar_kegiatan: previewsUrl }));
+            const file = filesInput[0];
+            if (file) {
+            setFiles((prev) => ({ ...prev, gambar_kegiatan: file }));
+            const previewUrl = URL.createObjectURL(file);
+            setPreviews((prev) => ({ ...prev, gambar_kegiatan: previewUrl }));
+            }
         }
     };
 
@@ -67,7 +69,7 @@ export default function AddKegiatanPage() {
         const result = createKegiatanSchema.safeParse({
             ...formData,
             gambar_sampul: previews.gambar_sampul || "",
-            gambar_kegiatan: previews.gambar_kegiatan?.[0] || "",
+            gambar_kegiatan: previews.gambar_kegiatan || "",
         });
 
         if (!result.success) {
