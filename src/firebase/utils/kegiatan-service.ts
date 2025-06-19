@@ -109,6 +109,9 @@ export async function updateKegiatan(formData: Partial<Kegiatan>, files: { gamba
 	const gambarKegiatanUrl = files.gambar_kegiatan
 		? await uploadKegiatanImage(files.gambar_kegiatan) : formData.gambar_kegiatan || [];
 
+	if (!formData.id || typeof formData.id !== 'string') {
+		throw new Error("ID kegiatan tidak valid");
+	}
 	const docRef = doc(db, "kegiatan", formData.id);
 	const data = {
 		...formData,
