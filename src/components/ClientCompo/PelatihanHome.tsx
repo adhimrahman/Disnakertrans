@@ -6,10 +6,6 @@ import { ArrowRight } from "lucide-react";
 import { PelatihanItem } from "@/lib/getPelatihan";
 import CustomButton from "../ui/CustomButton";
 
-function limitChars(text: string, maxLength: number) {
-    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
-}
-
 export default function PelatihanHome({ pelatihan }: { pelatihan: PelatihanItem[] }) {
     return (        <Swiper 
             modules={[Navigation]} 
