@@ -26,9 +26,8 @@ export default function KegiatanHome({ kegiatan }: { kegiatan: KegiatanItem[] })
             }}
         >
             {kegiatan.map((item) => (
-                <SwiperSlide key={item.id}>                    <div className="bg-white shadow-md rounded-2xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-2 m-3 sm:m-4 flex flex-col justify-between h-full w-full max-w-[95%] sm:max-w-xs mx-auto">
-                        {item.ImageSampul ? (
-                            <div className="relative w-full aspect-[4/3] overflow-hidden">
+                <SwiperSlide key={item.id}>                    <div className="bg-white shadow-md rounded-2xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-2 m-3 sm:m-4 flex flex-col justify-between h-[500px] w-full max-w-[95%] sm:max-w-xs mx-auto">                        {item.ImageSampul ? (
+                            <div className="relative w-full h-[225px] overflow-hidden">
                                 <Image 
                                     fill
                                     src={item.ImageSampul} 
@@ -39,7 +38,7 @@ export default function KegiatanHome({ kegiatan }: { kegiatan: KegiatanItem[] })
                                 />
                             </div>
                         ) : (
-                            <div className="w-full aspect-[4/3] bg-gray-200" />
+                            <div className="w-full h-[225px] bg-gray-200" />
                         )}
                         <div className="p-4 md:p-5 flex flex-col gap-1 flex-grow">
                             <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1 line-clamp-2">
@@ -48,14 +47,13 @@ export default function KegiatanHome({ kegiatan }: { kegiatan: KegiatanItem[] })
                             <p className="text-gray-700 text-xs sm:text-sm leading-relaxed pt-2 line-clamp-3">
                                 {item.Deskripsi}
                             </p>
-                        </div>
-                        <div className="px-3 sm:px-4 md:px-5 py-3 sm:py-4 flex justify-end mt-auto">
+                        </div>                        <div className="px-3 sm:px-4 md:px-5 py-3 sm:py-4 flex items-center justify-center mt-auto">
                             <CustomButton 
                                 href={`/kegiatan/${item.id}`} 
                                 variant="blue" 
                                 px={4} 
                                 py={2} 
-                                className="text-xs sm:text-sm md:text-base tracking-wider whitespace-nowrap"
+                                className="text-xs sm:text-sm md:text-base tracking-wider whitespace-nowrap w-full flex items-center justify-center"
                             >
                                 Selengkapnya <ArrowRight size={14} className="ml-1" />
                             </CustomButton>

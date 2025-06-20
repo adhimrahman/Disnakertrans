@@ -33,8 +33,7 @@ export default function LowonganHome({ lowongan }: { lowongan: LowonganItem[] })
             }}
         >
 			{lowongan.map((item) => (
-				<SwiperSlide key={item.id}>					<div className="bg-white shadow-md rounded-2xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-2 m-3 sm:m-4 flex flex-col justify-between h-full w-full max-w-[95%] sm:max-w-xs mx-auto">
-						<div className="relative w-full aspect-[4/3] overflow-hidden">
+				<SwiperSlide key={item.id}>					<div className="bg-white shadow-md rounded-2xl overflow-hidden hover:shadow-xl transition transform hover:-translate-y-2 m-3 sm:m-4 flex flex-col justify-between h-[500px] w-full max-w-[95%] sm:max-w-xs mx-auto">						<div className="relative w-full h-[225px] overflow-hidden">
 							{item.ImageSampul ? (
 								<Image 
 									src={item.ImageSampul} 
@@ -45,7 +44,7 @@ export default function LowonganHome({ lowongan }: { lowongan: LowonganItem[] })
 									loading="lazy" 
 								/>
 							) : (
-								<div className="w-full h-full bg-gray-200" />
+								<div className="w-full h-[225px] bg-gray-200" />
 							)}
 						</div>
 						<div className="flex flex-col p-3 sm:p-4 md:p-5 gap-1 sm:gap-2 flex-grow">
@@ -68,14 +67,13 @@ export default function LowonganHome({ lowongan }: { lowongan: LowonganItem[] })
 								<MapPin size={14} className="flex-shrink-0" />
 								<span className="line-clamp-1">{item.Alamat}</span>
 							</div>
-						</div>
-						<div className="px-3 sm:px-4 md:px-5 py-3 sm:py-4 flex justify-end mt-auto">
+						</div>						<div className="px-3 sm:px-4 md:px-5 py-3 sm:py-4 flex items-center justify-center mt-auto">
 							<CustomButton 
 								href={`/lapangan-kerja/${item.id}`} 
 								variant="blue" 
 								px={4} 
 								py={2} 
-								className="text-xs sm:text-sm md:text-base tracking-wider whitespace-nowrap"
+								className="text-xs sm:text-sm md:text-base tracking-wider whitespace-nowrap w-full flex items-center justify-center"
 							>
 								Selengkapnya <ArrowRight size={14} className="ml-1" />
 							</CustomButton>
