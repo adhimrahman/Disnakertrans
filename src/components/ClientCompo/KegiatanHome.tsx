@@ -6,10 +6,6 @@ import { ArrowRight } from "lucide-react";
 import { KegiatanItem } from "@/lib/getKegiatan";
 import CustomButton from "../ui/CustomButton";
 
-function limitChars(text: string, maxLength: number) {
-    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
-}
-
 export default function KegiatanHome({ kegiatan }: { kegiatan: KegiatanItem[] }) {
     return (        <Swiper 
             modules={[Navigation]} 
