@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMemo } from "react";
-import type { PelatihanItem } from "@/lib/getPelatihanById";
+import type { PelatihanItem } from "@/lib/getPelatihan";
 
 type Props = {
     pelatihan: PelatihanPreview;
@@ -24,7 +24,7 @@ function formatTanggal(dateString: string | undefined) {
     }).replace("Waktu Indonesia Tengah", "WITA");
 }
 
-export type PelatihanPreview = Pick<PelatihanItem, "id" | "judul" | "deskripsi" | "gambar_pelatihan" | "tanggal_kegiatan">;
+export type PelatihanPreview = Pick<PelatihanItem, "id" | "judul" | "deskripsi" | "gambar_pelatihan" | "tanggal_kegiatan" | "link_form">;
 
 export default function PelatihanDetail({ pelatihan, semuaPelatihan }: Props) {
     const { id } = useParams();
@@ -62,11 +62,29 @@ export default function PelatihanDetail({ pelatihan, semuaPelatihan }: Props) {
 
                     <div className="relative w-full h-64 md:h-[420px] mb-8 rounded-xl overflow-hidden shadow-sm">
                         <Image src={pelatihan.gambar_pelatihan} alt={pelatihan.judul} fill sizes="1080px" className="object-cover" />
-                    </div>
-
-                    <article className="prose prose-lg prose-slate text-gray-900 max-w-none text-justify mb-10">
+                    </div>                    <article className="prose prose-lg prose-slate text-gray-900 max-w-none text-justify mb-6">
                         <p className="whitespace-pre-line">{pelatihan.deskripsi}</p>
                     </article>
+
+                    {/* Registration Link Button */}
+                    {pelatihan.link_form && (
+                        <div className="mb-10">
+                            <a 
+                                href={pelatihan.link_form}
+                                target="_blank"
+                                rel="noopener noreferrer" 
+                                className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                                </svg>
+                                Daftar Pelatihan Sekarang
+                            </a>
+                            <p className="text-sm text-gray-500 mt-2">
+                                Klik tombol di atas untuk mendaftar pada pelatihan ini
+                            </p>
+                        </div>
+                    )}
 
                     {/* Navigasi sebelumnya & berikutnya */}
                     <div className="grid md:grid-cols-2 gap-6 border-t border-gray-200 pt-9">
