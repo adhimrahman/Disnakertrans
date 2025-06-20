@@ -18,6 +18,7 @@ export const getPelatihan = cache(async (): Promise<PelatihanItem[]> => {
         const docData = doc.data();
         const tanggal = docData.tanggal_kegiatan?.toDate();
         const tanggalStr = tanggal ? tanggal.toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" }) : "";
+        console.log(docData.gambar_pelatihan);
 
         return {
             id: doc.id,

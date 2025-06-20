@@ -22,7 +22,7 @@ export async function getPelatihanById(id: string): Promise<PelatihanItem | null
         id: docSnap.id,
         judul: docData.judul ?? "Tidak ada Judul",
         deskripsi: docData.deskripsi ?? "Tidak ada Deskripsi",
-        gambar_pelatihan: docData.gambar_sampul ?? "/images/placeholder.jpg",
+        gambar_pelatihan: docData.gambar_pelatihan ?? "/images/placeholder.jpg",
         Created: docData.created_at?.toDate().toISOString() ?? "",
         Updated: docData.updated_at?.toDate().toISOString() ?? "",
         link_form: docData.link ?? "",

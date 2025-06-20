@@ -6,6 +6,7 @@ export interface Aduan {
 	pesan?: string;
 	no_telp: string;
 	created_at?: string;
+	updated_at?: string | null;
 	is_done: boolean;
 };
 
@@ -16,4 +17,5 @@ export interface AduanItem {
 	email: string;
 	created_at?: string;
 	is_done: boolean;
+	updated_at?: string | null;
 }

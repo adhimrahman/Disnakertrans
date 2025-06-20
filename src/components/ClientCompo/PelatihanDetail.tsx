@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMemo } from "react";
-import type { PelatihanItem } from "@/lib/getPelatihan";
+import type { PelatihanItem } from "@/lib/getPelatihanById";
 
 type Props = {
     pelatihan: PelatihanPreview;
@@ -24,7 +24,7 @@ function formatTanggal(dateString: string | undefined) {
     }).replace("Waktu Indonesia Tengah", "WITA");
 }
 
-export type PelatihanPreview = Omit<PelatihanItem, "created_at" | "updated_at">;
+export type PelatihanPreview = Pick<PelatihanItem, "id" | "judul" | "deskripsi" | "gambar_pelatihan" | "tanggal_kegiatan">;
 
 export default function PelatihanDetail({ pelatihan, semuaPelatihan }: Props) {
     const { id } = useParams();
@@ -32,6 +32,7 @@ export default function PelatihanDetail({ pelatihan, semuaPelatihan }: Props) {
     const index = useMemo(() => semuaPelatihan.findIndex((item) => item.id === id), [id, semuaPelatihan]);
     const pelatihanSebelumnya = semuaPelatihan[index - 1];
     const pelatihanBerikutnya = semuaPelatihan[index + 1];
+    console.log("Gambar utama:", pelatihan.gambar_pelatihan);
 
     return (
         <div className="bg-white min-h-screen flex flex-col">
