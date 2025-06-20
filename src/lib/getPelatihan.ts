@@ -7,6 +7,7 @@ export type PelatihanItem = {
     judul: string;
     deskripsi: string;
     gambar_pelatihan: string;
+    link_form: string;
     created_at: string;
     updated_at: string;
     tanggal_kegiatan: string;
