@@ -108,7 +108,8 @@ export async function updateKegiatan(formData: Partial<Kegiatan>, files: { gamba
 		? await uploadKegiatanImage(files.gambar_sampul) : formData.gambar_sampul || "";
 	const gambarKegiatanUrl = files.gambar_kegiatan
 		? await uploadKegiatanImage(files.gambar_kegiatan) : formData.gambar_kegiatan || [];
-
+	
+	if (!formData.id) return false;
 	const docRef = doc(db, "kegiatan", formData.id);
 	const data = {
 		...formData,

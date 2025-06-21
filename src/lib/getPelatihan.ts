@@ -7,6 +7,7 @@ export type PelatihanItem = {
     judul: string;
     deskripsi: string;
     gambar_pelatihan: string;
+    link_form: string;
     created_at: string;
     updated_at: string;
     tanggal_kegiatan: string;
@@ -18,6 +19,7 @@ export const getPelatihan = cache(async (): Promise<PelatihanItem[]> => {
         const docData = doc.data();
         const tanggal = docData.tanggal_kegiatan?.toDate();
         const tanggalStr = tanggal ? tanggal.toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" }) : "";
+        console.log(docData.gambar_pelatihan);
 
         return {
             id: doc.id,

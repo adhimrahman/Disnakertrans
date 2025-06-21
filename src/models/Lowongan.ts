@@ -13,7 +13,7 @@ export interface Lowongan {
 	syarat: string[];
 	created_at?: string;
 	tipe: string[];
-	[key: string]: any;
+	[key: string]: unknown;
 }
 
 export interface LowonganItem {

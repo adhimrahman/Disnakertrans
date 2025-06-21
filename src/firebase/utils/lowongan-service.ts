@@ -105,8 +105,8 @@ export async function getLowonganById (id: string): Promise<Partial<Lowongan> | 
 		gambar_sampul: data.gambar_sampul ?? null,
 		tenggat_lowongan: batasStr ?? '',
 		range_gaji: {
+			max: data.range_gaji?.max ?? 0,
 			min: data.range_gaji?.min ?? 0,
-			max: data.range_gaji?.max ?? 0
 		},
 		tipe: data.tipe ?? [],
 		syarat: data.syarat ?? [],
@@ -120,6 +120,9 @@ export async function getLowonganById (id: string): Promise<Partial<Lowongan> | 
 export async function updateLowongan (formData: Partial<Lowongan>, files: { gambar_sampul?: File }) {
 	const gambarSampulUrl = files.gambar_sampul ? await uploadLowonganImage(files.gambar_sampul) : formData.gambar_sampul || "";
 
+	if (!formData.id || typeof formData.id !== 'string') {
+		throw new Error("ID lowongan tidak valid");
+	}
 	const docRef = doc(db, "lowongan", formData.id);
 	const data = { ...formData, gambar_sampul: gambarSampulUrl };
 

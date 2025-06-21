@@ -4,20 +4,20 @@ import { getKegiatanFilteredByJudulContains, getKegiatanByDateAndSort } from "@/
 import { KegiatanItem } from "@/models/Kegiatan";
 
 interface KegiatanDashboardPageProps {
-    searchParams?: {
+    searchParams?: Promise<{
         search?: string;
         sort?: keyof KegiatanItem;
         order?: "asc" | "desc";
-    };
+    }> | undefined;
 }
 
 export default async function KegiatanDashboardPage({ searchParams }: KegiatanDashboardPageProps) {
-    const resolvedSearchParams = await searchParams;
+    const resolvedSearchParams = searchParams ? await searchParams : {};  // Resolving searchParams if it's a Promise
     const {
         search = '',
         sort = 'created_at',
         order = 'asc',
-    } = resolvedSearchParams || {};
+    } = resolvedSearchParams;
     
     const kegiatan = search
         ? await getKegiatanFilteredByJudulContains(search, sort, order) 

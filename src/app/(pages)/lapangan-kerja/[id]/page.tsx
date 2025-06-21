@@ -6,8 +6,9 @@ import { getLowongan } from "@/lib/getLowongan";
 import { getLowonganById } from "@/lib/getLowonganById";
 import LowonganDetail from "@/components/ClientCompo/LowonganDetail";
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-	const { id } = await params;
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+	const resolvedParams = await params; 
+  const { id } = resolvedParams; 	
 	const data = await getLowonganById(id);
 	if (!data) return { title: "Lowongan Tidak Ditemukan" };
 
@@ -17,8 +18,9 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 	};
 }
 
-export default async function LowonganDetailPage({ params }: { params: { id: string } }) {
-	const { id } = await params;
+export default async function LowonganDetailPage({ params }: { params: Promise<{ id: string }> }) {
+	const resolvedParams = await params; 
+	const { id } = resolvedParams;
 	const lowongan = await getLowonganById(id);
 	const semuaLowongan = await getLowongan();
 	

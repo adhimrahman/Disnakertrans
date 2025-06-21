@@ -4,16 +4,16 @@ import { getLowonganFilteredByJudulContains, getLowonganByDateAndSort } from "@/
 import { LowonganItem } from "@/models/Lowongan";
 
 interface LowonganDashboardPageProps {
-    searchParams?: {
+    searchParams?: Promise<{
         search?: string;
         sort?: keyof LowonganItem;
         order?: "asc" | "desc";
-    };
+    }> | undefined;
 };
 
-export default async function LowonganDashboardPage ({ searchParams }: LowonganDashboardPageProps) {
-    const resolvedSearchParams = await searchParams;
-    const { search = '', sort = 'created_at', order = 'asc', } = resolvedSearchParams || {};
+export default async function LowonganDashboardPage({ searchParams }: LowonganDashboardPageProps) {
+    const resolvedSearchParams = searchParams ? await searchParams : {};  // Resolving searchParams if it's a Promise
+    const { search = '', sort = 'created_at', order = 'asc', } = resolvedSearchParams;
 
     const lowongan = search
         ? await getLowonganFilteredByJudulContains(search, sort, order) 

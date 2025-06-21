@@ -4,20 +4,20 @@ import { getLaporanLPKBySort, getLaporanLPKFiltered } from "@/firebase/utils/lpk
 import { LaporanItem } from "@/models/LPK";
 
 interface LaporanLPKDashboardPageProps {
-  searchParams?: {
+  searchParams?: Promise<{
     search?: string;
     sort?: keyof LaporanItem;
     order?: "asc" | "desc";
-  };
+  }> | undefined;
 };
 
 export default async function LaporanLPKDashboardPage({ searchParams }: LaporanLPKDashboardPageProps) {
-  const resolvedSearchParams = await searchParams;
+  const resolvedSearchParams = searchParams ? await searchParams : {};
   const {
     search =  "",
     sort   = "nama_lembaga",
     order  = "asc",
-  } = resolvedSearchParams || {};
+  } = resolvedSearchParams;
 
   const laporanLPK = search
     ? await getLaporanLPKFiltered(search, sort, order)

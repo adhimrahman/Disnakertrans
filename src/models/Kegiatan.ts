@@ -1,11 +1,11 @@
 export interface Kegiatan {
+	id: string;
 	judul: string;
 	deskripsi: string;
 	gambar_sampul: string;
 	gambar_kegiatan: string;
 	link: string;
 	tanggal_kegiatan?: string;
-	[key: string]: any; // Membolehkan akses key lain dengan tipe string
 }
 
 export interface KegiatanItem {

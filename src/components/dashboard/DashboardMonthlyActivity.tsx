@@ -1,7 +1,11 @@
 'use client';
 import { Grid, Card, CardContent, Typography, Box, LinearProgress } from '@mui/material';
+interface MonthlyChartData {
+  kegiatanByMonth: number[];
+  lowonganByMonth: number[];
+}
 
-export default function DashboardMonthlyActivity({ chartData }: { chartData: any }) {
+export default function DashboardMonthlyActivity({ chartData }: { chartData: MonthlyChartData }) {
   const bulan = [...Array(12)].map((_, i) => new Date(0, i).toLocaleString('id-ID', { month: 'long' }));
 
   return (

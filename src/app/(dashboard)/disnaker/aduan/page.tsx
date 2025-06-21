@@ -4,20 +4,20 @@ import { getAduanBySort, getAduanFilteredByNames } from "@/firebase/utils/aduan-
 import { AduanItem } from "@/models/Aduan";
 
 interface AduanDashboardPageProps {
-    searchParams?: {
+    searchParams?: Promise<{
         search?: string;
         sort?: keyof AduanItem;
         order?: "asc" | "desc";
-    };
+    }> | undefined;
 };
 
 export default async function AduanDashboardPage({ searchParams }: AduanDashboardPageProps) {
-    const resolvedSearchParams = await searchParams;
+    const resolvedSearchParams = searchParams ? await searchParams : {};  // Resolving searchParams if it's a Promise    
     const {
         search =  "",
         sort   = "created_at",
         order  = "asc",
-    } = resolvedSearchParams || {};
+    } = resolvedSearchParams;
 
     const aduan = search
         ? await getAduanFilteredByNames(search, sort, order)
