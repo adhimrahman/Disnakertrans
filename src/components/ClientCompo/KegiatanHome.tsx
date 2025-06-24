@@ -7,7 +7,8 @@ import { KegiatanItem } from "@/lib/getKegiatan";
 import CustomButton from "../ui/CustomButton";
 
 export default function KegiatanHome({ kegiatan }: { kegiatan: KegiatanItem[] }) {
-    return (        <Swiper 
+    return (       
+        <Swiper 
             modules={[Navigation]} 
             spaceBetween={10}
             slidesOffsetBefore={10}
@@ -17,8 +18,8 @@ export default function KegiatanHome({ kegiatan }: { kegiatan: KegiatanItem[] })
                 0: { slidesPerView: 1, spaceBetween: 10 },
                 640: { slidesPerView: 1.2, spaceBetween: 15 }, 
                 768: { slidesPerView: 2, spaceBetween: 20 },
-                1024: { slidesPerView: 3, spaceBetween: 25 }, 
-                1280: { slidesPerView: 4, spaceBetween: 30 },
+                1024: { slidesPerView: 3, spaceBetween: -15 }, 
+                1280: { slidesPerView: 4, spaceBetween: -15 },
             }}
         >
             {kegiatan.map((item) => (

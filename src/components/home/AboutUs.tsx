@@ -50,8 +50,8 @@ export default function ProfileAndAbout() {
                     <Image
                     src={profile.gambar}
                     alt={`Foto ${profile.nama_lengkap}`}
-                    width={460}
-                    height={460}
+                    width={700}
+                    height={700}
                     className="rounded-3xl shadow-lg hover:scale-105 transition duration-300 object-cover"
                     />
                 )}
