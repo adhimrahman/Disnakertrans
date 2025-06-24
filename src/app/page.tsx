@@ -66,31 +66,14 @@ export default async function HomePage() {
 
 					</div>
 				</section>
-
-				<Kegiatan kegiatan={kegiatan} />
-				<Pelatihan pelatihan={pelatihan} />
-				<Lowongan />
-				<InfografisSection />
+				
+				<div className="bg-gray-100 pl-6 pr-6">
+					<Kegiatan kegiatan={kegiatan} />
+					<Pelatihan pelatihan={pelatihan} />
+					<Lowongan />
+				</div>
 			
-				{/* <section className="py-20 bg-gray-50">
-					<div className="container mx-auto px-6 lg:px-20 flex flex-col-reverse lg:flex-row items-center gap-16">
-						<div className="lg:w-1/2 text-center lg:text-left">
-							<h2 className="text-3xl lg:text-5xl font-bold text-gray-900 mb-6 capitalize">
-								Tentang Kami
-							</h2>
-							<p className="text-lg text-gray-700 leading-relaxed text-justify">
-								Dinas Ketenagakerjaan Gowa memiliki komitmen untuk meningkatkan kualitas
-								sumber daya manusia dan menciptakan lapangan kerja yang inklusif dan berkelanjutan.
-								Melalui berbagai program pelatihan, pendampingan pencari kerja, serta kerjasama dengan
-								berbagai pihak, kami hadir untuk memberikan solusi ketenagakerjaan yang nyata bagi masyarakat.
-							</p>
-						</div>
-
-						<div className="lg:w-1/2 hidden lg:flex justify-center">
-							<Image src={kami} alt="Ilustrasi Tentang Kami" className="hidden lg:flex h-[460px] w-auto object-cover rounded-3xl shadow-lg hover:scale-105 transition duration-300" />
-						</div>
-					</div>
-				</section> */}
+				<InfografisSection />
 				<AboutUs />
 				<ContactHighlight />
 			
