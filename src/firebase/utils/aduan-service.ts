@@ -133,20 +133,20 @@ export async function getAduanFilteredByNames(
 };
 
 export async function getAllAduan(): Promise<AduanItem[]> {
-  const snapshot = await getDocs(collection(db, "aduan"));
-  return snapshot.docs.map((doc) => {
-    const data = doc.data();
+	const snapshot = await getDocs(collection(db, "aduan"));
+	return snapshot.docs.map((doc) => {
+		const data = doc.data();
 
-    return {
-      id: doc.id,
-      nama_depan: data.nama_depan ?? '',
-      nama_belakang: data.nama_belakang ?? '',
-      email: data.email ?? '',
-      pesan: data.pesan ?? '',
-      no_telp: data.no_telp ?? '',
-      is_done: data.is_done ?? false,
-      created_at: data.created_at?.toDate().toISOString() ?? null,
-      updated_at: data.updated_at?.toDate().toISOString() ?? null,
-    };
-  });
+		return {
+			id: doc.id,
+			nama_depan: data.nama_depan ?? '',
+			nama_belakang: data.nama_belakang ?? '',
+			email: data.email ?? '',
+			pesan: data.pesan ?? '',
+			no_telp: data.no_telp ?? '',
+			is_done: data.is_done ?? false,
+			created_at: data.created_at?.toDate().toISOString() ?? null,
+			updated_at: data.updated_at?.toDate().toISOString() ?? null,
+		};
+	});
 }
