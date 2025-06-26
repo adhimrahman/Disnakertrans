@@ -53,7 +53,7 @@ export default function ContactForm() {
 
             <div>
                 <label className="text-gray-800 font-medium mb-2 block">No Telp</label>
-                <input type="text" {...register("no_telp")} placeholder="08xxxxxxxx"
+                <input type="text" inputMode="numeric" {...register("no_telp")} placeholder="08xxxxxxxx"
                     className="w-full p-3 rounded-lg border border-gray-300 bg-gray-50 placeholder:text-gray-400"
                 />
                 {errors.no_telp && <p className="text-red-500 text-sm mt-1">{errors.no_telp.message}</p>}
