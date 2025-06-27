@@ -136,3 +136,26 @@ export async function fetchLaporanPage (pageNumber: number, pageSize: number) {
 		};
 	});
 };
+
+export async function getStatistikLaporan(): Promise<{
+	jumlahTenagaKerja: number;
+	jumlahPencariKerja: number;
+}> {
+	const snapshot = await getDocs(collection(db, "laporan"));
+
+	let jumlahTenagaKerja = 0;
+	let jumlahPencariKerja = 0;
+
+	snapshot.forEach((doc) => {
+		const data = doc.data();
+		const peserta = data.peserta || {};
+
+		const bekerja = Number(peserta.jumlah_bekerja);
+		const pendaftar = Number(peserta.jumlah_pendaftar);
+
+		jumlahTenagaKerja += isNaN(bekerja) ? 0 : bekerja;
+		jumlahPencariKerja += isNaN(pendaftar) ? 0 : pendaftar;
+	});
+
+	return { jumlahTenagaKerja, jumlahPencariKerja };
+}
