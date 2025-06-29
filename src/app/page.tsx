@@ -14,8 +14,8 @@ import HeroCarousel from "@/components/home/Carousel";
 import CustomButton from "@/components/ui/CustomButton";
 import { getKegiatan } from "@/lib/getKegiatan";
 import AboutUs from "@/components/home/AboutUs";
+import FAQPage from "@/components/FAQ";
 
-// import kami from "../../public/images/kami.jpg"
 import Job1 from "../../public/images/Job1.png"
 import Job2 from "../../public/images/Job2.png"
 import { getPelatihan } from "@/lib/getPelatihan";
@@ -76,7 +76,7 @@ export default async function HomePage() {
 				<InfografisSection />
 				<AboutUs />
 				<ContactHighlight />
-			
+				<FAQPage />
 				<Footer />
 			</div>
 		);
