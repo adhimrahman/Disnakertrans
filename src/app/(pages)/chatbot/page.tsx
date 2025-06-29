@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
-import { searchRelevantDocs } from "@/lib/semantic/search";
+import { searchRelevantDocsFromRaw } from "@/lib/semantic/search";
 import Link from "next/link";
+import Header from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default function ChatbotPage() {
     const [query, setQuery] = useState("");
@@ -11,8 +13,7 @@ export default function ChatbotPage() {
     >([]);
     const [summary, setSummary] = useState<string>("");
     const [filter, setFilter] = useState("all");
-    // const [minScore, setMinScore] = useState(0.6);
-    const [minScore] = useState(0.6);
+    const [minScore] = useState(0.2);
 
     const handleAsk = async () => {
         if (!query.trim()) return;
@@ -25,39 +26,47 @@ export default function ChatbotPage() {
         });
 
         const { embedding } = await res.json();
-        const docs = await searchRelevantDocs(embedding, 5);
+
+        const docsRes = await fetch("/api/embedding", { cache: "no-store" });
+        const rawDocs = await docsRes.json();
+        const docs = await searchRelevantDocsFromRaw(rawDocs, embedding, 2, minScore);
+
         const filtered = filter === "all" ? docs : docs.filter((doc) => doc.type === filter);
 
         if (filtered.length === 0) {
-            const allDocs: { id: string; type: string; text: string; score: number }[] = [];
-            const keywordHits = allDocs.filter((doc) =>
-                doc.text.toLowerCase().includes(query.toLowerCase())
-            );
-            setResults(keywordHits.slice(0, 3));
-            setSummary("Menampilkan hasil berdasarkan pencocokan kata kunci.");
+            setResults([]);
+            setSummary("Tidak ditemukan hasil dengan skor memadai.");
             setLoading(false);
             return;
         }
 
-        setResults(filtered);
-        setSummary(filtered.length > 0 ? filtered[0].text.split("\n")[0] : "");
+        setResults(filtered.map((doc: { id: string; type: string; text: string; score?: number }) => ({
+            id: doc.id,
+            type: doc.type,
+            text: doc.text,
+            score: doc.score ?? 0
+        })));
+        setSummary(filtered[0].text.split("\n")[0]);
         setLoading(false);
     };
 
     return (
-        <div className="max-w-2xl mx-auto px-4 py-8">
+        <>
+        <Header />
+        <div className="mx-auto px-56 py-8 pt-26 bg-steelBlue w-full min-h-[calc(100vh-64px)]">
+
             <h1 className="text-2xl font-bold mb-4">🤖 Chatbot Disnaker AI</h1>
 
             <div className="flex gap-2 mb-4">
                 <input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="flex-1 p-2 border rounded"
+                    className="flex-1 px-4 py-3 border rounded outline-0"
                     placeholder="Tanyakan tentang kegiatan, pelatihan, atau lowongan..."
                 />
                 <button
                     onClick={handleAsk}
-                    className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+                    className="bg-darkBlue text-white px-4 py-3 rounded disabled:opacity-50 hover:cursor-pointer"
                     disabled={loading}
                 >
                     {loading ? "Mencari..." : "Tanya"}
@@ -69,7 +78,7 @@ export default function ChatbotPage() {
                 <select
                     value={filter}
                     onChange={(e) => setFilter(e.target.value)}
-                    className="border p-2 rounded text-gray-200 bg-black"
+                    className="border p-2 rounded text-gray-200 bg-darkBlue hover:cursor-pointer"
                 >
                     <option value="all">Semua</option>
                     <option value="pelatihan">Pelatihan</option>
@@ -81,7 +90,7 @@ export default function ChatbotPage() {
             {summary && (
                 <div className="mb-6 p-4 bg-green-50 border border-green-300 rounded">
                     <strong className="text-green-700">Jawaban AI:</strong>
-                    <span className="text-xs text-green-800 mt-1 opacity-30">{summary}</span>
+                    <span className="text-xs text-green-800 mt-1 opacity-0">{summary}</span>
                 </div>
             )}
 
@@ -106,5 +115,7 @@ export default function ChatbotPage() {
                 </div>
             )}
         </div>
+        <Footer />
+        </>
     );
 }
