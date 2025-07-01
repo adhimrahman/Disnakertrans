@@ -20,7 +20,7 @@ export default function FAQPage() {
                     {faqs.map((item, index) => (
                         <div key={item.id} className="border rounded-lg overflow-hidden shadow-sm bg-white">
                             <button onClick={() => toggleFAQ(index)}
-                                className={`w-full flex justify-between items-center px-6 py-4 text-left transition-colors ${
+                                className={`w-full flex justify-between items-center px-6 py-4 hover:cursor-pointer text-left transition-colors ${
                                     activeIndex === index ? "bg-darkBlue text-white" : "bg-white text-gray-800"
                                 }`} aria-expanded={activeIndex === index} aria-controls={`faq-answer-${index}`}
                             >
@@ -28,7 +28,7 @@ export default function FAQPage() {
                                 {activeIndex === index ? ( <FaChevronUp className="ml-2" /> ) : ( <FaChevronDown className="ml-2" /> )}
                             </button>
                             <div id={`faq-answer-${index}`}
-                            className={`transition-all duration-300 px-6 text-sm leading-relaxed ${
+                            className={`transition-all duration-300 px-6 text-sm hover:cursor-pointer leading-relaxed ${
                                 activeIndex === index ? "max-h-[300px] py-4 bg-darkBlue text-white" : "max-h-0 overflow-hidden"
                             }`}>
                                 <p>{item.answer}</p>
