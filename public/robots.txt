@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://disnakertrans-gowa.vercel.app/sitemap.xml
