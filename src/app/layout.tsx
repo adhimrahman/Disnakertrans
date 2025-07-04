@@ -9,7 +9,9 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
 	title: "Disnakertrans Gowa",
-	description: "Lorem ipsum dolor ci amet anjay",
+	description: "Website resmi Dinas Tenaga Kerja dan Transmigrasi (Disnakertrans) Kabupaten Gowa.",
+	robots: 'index, follow',
+  	viewport: 'width=device-width, initial-scale=1.0',
 	icons: {
 		icon: "/pemkabGowaLogo.svg"
 	}
