@@ -6,7 +6,8 @@
 		"dev": "next dev --turbopack",
 		"build": "next build",
 		"start": "next start",
-		"lint": "next lint"
+		"lint": "next lint",
+		"postbuild": "next-sitemap"
 	},
 	"dependencies": {
 		"@date-io/date-fns": "^3.2.1",
@@ -29,6 +30,7 @@
 		"immutable": "^5.1.2",
 		"lucide-react": "^0.487.0",
 		"next": "^15.3.3",
+		"next-sitemap": "^4.2.3",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
 		"react-hook-form": "^7.58.0",
